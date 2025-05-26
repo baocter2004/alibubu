@@ -1,5 +1,6 @@
 <?php
 
+use App\Const\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,9 +18,20 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedInteger('role')->default(0);
+            $table->string('avatar')->nullable();
+            $table->unsignedInteger('role')->default(User::ROLE_USER);
+            $table->string('phone_number')->unique()->nullable();
+            $table->unsignedInteger('gender')->nullable();
+            $table->datetime('birthday')->nullable();
+            $table->unsignedInteger('status')->nullable();
+            $table->string('reason_lock')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('user_bank_name')->nullable();
+            $table->string('bank_account')->nullable();
+            $table->bigInteger('loyalty_points')->default(0);
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

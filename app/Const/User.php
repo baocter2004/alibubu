@@ -35,6 +35,11 @@ class User
         self::NOT => 'no',
     ];
 
+    const YES_NO_ONLY = [
+        self::YES => 'yes',
+        self::NOT => 'no',
+    ];
+
     const FULL_TIME = 1;
     const PART_TIME = 2;
     const BOARD_MEMBER = 3;
