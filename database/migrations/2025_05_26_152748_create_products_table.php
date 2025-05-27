@@ -1,5 +1,6 @@
 <?php
 
+use App\Const\ProductConst;
 use App\Models\Branch;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('short_descriptions')->nullable();
             $table->text('descriptions')->nullable();
             $table->string('thumbnail')->nullable();
-            $table->tinyInteger('type')->default(Product::SINGLE);
+            $table->tinyInteger('type')->default(ProductConst::SINGLE);
             $table->string('sku')->unique()->nullable();
             $table->decimal('price', 11, 2)->nullable();
             $table->decimal('sale_price', 11, 2)->nullable();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AttributeValue;
 use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,15 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_variants', function (Blueprint $table) {
-            $table->id();
+        Schema::create('attribute_value_product', function (Blueprint $table) {
             $table->foreignIdFor(Product::class)->constrained()->onDelete('cascade');
-            $table->string('sku')->unique()->nullable();
-            $table->decimal('price', 11, 2);
-            $table->decimal('sale_price', 11, 2)->nullable();
-            $table->string('thumbnail');
-            $table->boolean('is_active');
-            $table->timestamps();
+            $table->foreignIdFor(AttributeValue::class)->constrained()->onDelete('cascade');
+
+            $table->primary(['product_id', 'attribute_value_id']);
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_variants');
+        Schema::dropIfExists('attribute_value_product');
     }
 };
