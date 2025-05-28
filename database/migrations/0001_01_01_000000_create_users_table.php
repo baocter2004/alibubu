@@ -1,6 +1,6 @@
 <?php
 
-use App\Const\User;
+use App\Const\UserConst;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
-            $table->unsignedInteger('role')->default(User::ROLE_USER);
+            $table->unsignedInteger('role')->default(UserConst::ROLE_USER);
             $table->string('phone_number')->unique()->nullable();
             $table->unsignedInteger('gender')->nullable();
             $table->datetime('birthday')->nullable();

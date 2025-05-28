@@ -2,7 +2,7 @@
 
 namespace App\Const;
 
-class User
+class UserConst
 {
     const ROLE_USER = 1;
     const ROLE_EMPLOYEE = 2;
