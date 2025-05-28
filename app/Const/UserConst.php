@@ -1,8 +1,8 @@
-<?
+<?php
 
 namespace App\Const;
 
-class User
+class UserConst
 {
     const ROLE_USER = 1;
     const ROLE_EMPLOYEE = 2;
@@ -31,6 +31,11 @@ class User
 
     const YES_NO_OPTIONS = [
         self::NOT_SELECTED => 'not selected',
+        self::YES => 'yes',
+        self::NOT => 'no',
+    ];
+
+    const YES_NO_ONLY = [
         self::YES => 'yes',
         self::NOT => 'no',
     ];
