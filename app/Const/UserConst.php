@@ -49,4 +49,14 @@ class UserConst
         self::PART_TIME => 'parttime',
         self::BOARD_MEMBER => 'board Member'
     ];
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
+    const STATUS_LOCKED = 3;
+
+    const STATUS = [
+        self::STATUS_ACTIVE => 'active',
+        self::STATUS_INACTIVE => 'inactive',
+        self::STATUS_LOCKED => 'locked'
+    ];
 }

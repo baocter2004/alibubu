@@ -24,16 +24,19 @@ Route::get('/thanks-you', function () {
 // ===================== AUTHENTICATE ===================
 Route::name('auth.')
     ->group(function () {
-        Route::name(
-            'client.'
-        )
+        Route::name('client.')
             ->controller(ClientAuthController::class)
             ->group(function () {
                 Route::get('/login', 'showFormLogin')->name('showFormLogin');
+                Route::post('/login', 'handleLogin')->name('handleLogin');
+                Route::get('/google', 'redirectToGoogle')->name('redirectToGoogle');
+                Route::get('/google/callback', 'handleGoogleCallback')->name('handleGoogleCallback');
                 Route::get('/register', 'showFormRegister')->name('showFormRegister');
+                Route::post('/register', 'handleRegister')->name('handleRegister');
                 Route::get('/forgot-password', 'showFormForgotPassword')->name('showFormForgotPassword');
                 Route::get('/otp', 'showFormOtp')->name('showFormOtp');
                 Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword');
+                Route::get('/logout', 'logout')->name('logout');
             });
 
 
@@ -59,5 +62,5 @@ Route::name('auth.')
 Route::prefix('/admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/',[DashboardController::class,'dashboard'])->name('dashboard');
+        Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
     });

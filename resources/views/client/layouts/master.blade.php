@@ -26,7 +26,7 @@
     </div>
 
     @include('client.layouts.partials.script')
-
+    @stack('scripts')
 </body>
 
 </html>
