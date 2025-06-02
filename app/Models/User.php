@@ -34,6 +34,8 @@ class User extends Authenticatable
         'user_bank_name',
         'bank_account',
         'loyalty_points',
+        'google_id',
+        'remember_token'
     ];
 
     /**
@@ -63,6 +65,10 @@ class User extends Authenticatable
             'gender'            => 'integer',
         ];
     }
+
+    public $attributes = [
+        'remember' => 0
+    ];
 
     // Relations
 

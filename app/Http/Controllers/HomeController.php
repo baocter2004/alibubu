@@ -21,10 +21,17 @@ class HomeController extends Controller
         return view('client.shop-detail');
     }
 
-    public function cart() {
+    public function cart()
+    {
         return view("client.cart");
     }
-    public function checkout() {
+    public function checkout()
+    {
         return view("client.checkout");
+    }
+
+    public function  error()
+    {
+        return view('common.404');
     }
 }

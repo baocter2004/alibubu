@@ -7,7 +7,6 @@
                 <div class="d-flex justify-content-center mb-4">
                     <a href="{{ route('index') }}" class="logo d-flex align-items-center text-decoration-none">
                         <img src="views/logo.png" alt="Alibubu Logo" class="img-fluid rounded me-2" style="height: 50px;">
-                        <span class="ml-3 fw-bold text-primary fs-3">Alibubu</span>
                     </a>
                 </div>
 
@@ -63,6 +62,14 @@
                             <button class="btn btn-primary w-100 py-2" type="submit">Create Account</button>
                         </div>
 
+                        <div class="col-12 mt-2 mb-2">
+                            <a href="{{ route('auth.client.redirectToGoogle') }}"
+                                class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+                                <i class="fa-brands fa-google mr-2"></i>
+                                Register with Google
+                            </a>
+                        </div>
+
                         <div class="col-12 text-center">
                             <p class="small mb-0 mt-2">Already have an account? <a
                                     href="{{ route('auth.client.showFormLogin') }}">Log in</a></p>
@@ -97,4 +104,3 @@
         });
     </script>
 @endpush
-    

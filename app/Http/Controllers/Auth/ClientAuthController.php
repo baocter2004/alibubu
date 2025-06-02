@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AuthRegisterRequest;
+use App\Http\Requests\User\ResetPasswordRequest;
 use App\Repositories\UserRepository;
-use App\Services\Client\AuthService;
+use App\Services\Auth\AuthService;
 use App\Services\Client\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,48 @@ class ClientAuthController extends Controller
         return view('client.auth.forgot-password');
     }
 
+    public function sendResetLinkEmail(Request $request)
+    {
+        $params = $request->validate([
+            'email' => [
+                'required',
+                'email'
+            ],
+        ]);
+
+        $result = $this->authService->sendResetLinkEmail($params);
+        if ($result) {
+            return redirect()
+                ->route('index')
+                ->with('success', 'Email đã được gửi thành công. Vui lòng kiểm tra hộp thư đến của bạn!');
+        } else {
+            return back()
+                ->withInput()
+                ->with('error', 'Gửi Email thất bại. Vui lòng thử lại sau.');
+        }
+    }
+
+    public function showFormNewPassword($token, $email)
+    {
+        return view('client.auth.reset-password', compact('token', 'email'));
+    }
+
+    public function reset(ResetPasswordRequest $request)
+    {
+        $result = $this->authService->reset($request->validated());
+
+        if ($result) {
+            return redirect()
+                ->route('auth.client.showFormLogin')
+                ->with('success', 'Đổi mật khẩu mới thành công . Vui lòng đăng nhập lại !');
+        } else {
+            return back()
+                ->withInput()
+                ->with('error', 'Có lỗi xảy ra. Vui lòng thử lại sau.');
+        }
+    }
+
+
     public function logout()
     {
         Auth::logout();
@@ -63,9 +106,10 @@ class ClientAuthController extends Controller
             'email' => [
                 'email',
                 'required',
-                Rule::exists('users', 'email')
+                Rule::exists('users', 'email'),
             ],
-            'password' => ['required', 'string', 'min:6']
+            'password' => ['required', 'string', 'min:6'],
+            'remember' => ['nullable', 'boolean']
         ]));
 
         if ($result) {
