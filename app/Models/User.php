@@ -3,15 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -34,6 +37,8 @@ class User extends Authenticatable
         'user_bank_name',
         'bank_account',
         'loyalty_points',
+        'google_id',
+        'remember_token'
     ];
 
     /**
@@ -64,10 +69,14 @@ class User extends Authenticatable
         ];
     }
 
-    // Relations
-
-    public function userAddresses() {
-        return $this->hasMany(UserAddress::class);
+    public function getEmailForVerification()
+    {
+        return $this->email;
     }
 
+    // Relations
+    public function userAddresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
 }

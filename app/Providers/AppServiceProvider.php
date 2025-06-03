@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Authenticate::redirectUsing(function ($request) {
+            session()->flash('error', 'Bạn cần đăng nhập để tiếp tục.');
+            return route('auth.client.showFormLogin');
+        });
     }
 }
