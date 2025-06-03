@@ -13,3 +13,6 @@
 <link rel="stylesheet" href="/views/shoppers/css/aos.css">
 
 <link rel="stylesheet" href="/views/shoppers/css/style.css">
+
+<script src="/views/shoppers/js/jquery-3.3.1.min.js"></script>
+<script src="/views/shoppers/js/jquery-ui.js"></script>

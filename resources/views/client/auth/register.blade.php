@@ -23,7 +23,7 @@
                             <label for="yourName" class="form-label">Full Name</label>
                             <input type="text" name="fullname"
                                 class="form-control @error('fullname') is-invalid @enderror" id="yourName"
-                                value="{{ old('email') }}" placeholder="John Doe">
+                                value="{{ old('fullname') }}" placeholder="John Doe">
                             @error('fullname')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

@@ -23,6 +23,12 @@ Route::get('/about',  function () {
 Route::get('/thanks-you', function () {
     return view('client.thanks-you');
 })->name('thanks-you');
+// ====================  VERIFY EMAIL ===================
+Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])
+    ->name('verification.verify');
+Route::get('/email/verify-success', [ClientAuthController::class, 'showVerifySuccess'])
+    ->middleware('auth')
+    ->name('verification.success');
 
 // ===================== AUTHENTICATE ===================
 Route::get('/new-password', [ClientAuthController::class, 'showFormNewPassword'])->name('password.reset');

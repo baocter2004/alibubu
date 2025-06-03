@@ -2,13 +2,15 @@
 
 namespace App\Services\Auth;
 
+use App\Mail\VerifyUserEmail;
 use App\Repositories\UserRepository;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
-use Str;
+use Illuminate\Support\Str;
 
 class AuthService
 {
@@ -24,6 +26,9 @@ class AuthService
         try {
             $params['password'] = Hash::make($params['password']);
             $user = $this->userRepository->create($params);
+            Mail::to($user->email)
+                ->queue(new VerifyUserEmail($user));
+
             return $user;
         } catch (\Throwable $th) {
             Log::error(__CLASS__ . __FUNCTION__, [
@@ -73,6 +78,9 @@ class AuthService
                     'google_id' => $googleUser->getId(),
                     'password' => Hash::make(Str::random(24)),
                 ]);
+
+                Mail::to($user->email)
+                    ->queue(new VerifyUserEmail($user));
             } else {
                 if ($user->status == 3) {
                     return null;

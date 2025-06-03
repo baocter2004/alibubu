@@ -5,7 +5,7 @@
             <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
                 <form action="" class="site-block-top-search">
                     <span class="icon icon-search2"></span>
-                    <input type="text" class="form-control border-0" placeholder="Search">
+                    <input type="text" class="form-control border-0" placeholder="Tìm Kiếm ...">
                 </form>
             </div>
 
@@ -34,10 +34,13 @@
                             </a>
                             @if (Auth::user())
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item w-100" href="#">Profile</a></li>
-                                    <li><a class="dropdown-item w-100" href="#">Settings</a></li>
-                                    <li><a class="dropdown-item w-100"
-                                            href="{{ route('auth.client.logout') }}">Logout</a></li>
+                                    <li><a class="dropdown-item w-100" href="#">Thông Tin Cá Nhân</a></li>
+                                    <li><a class="dropdown-item w-100" href="{{ route('auth.client.logout') }}">Đăng
+                                            Xuất</a></li>
+                                    @if (!Auth::user()->hasVerifiedEmail())
+                                        <li><a class="dropdown-item w-100 verify_button" href="">Xác Minh
+                                                Email</a></li>
+                                    @endif
                                 </ul>
                             @else
                                 <ul class="dropdown-menu">
@@ -65,3 +68,42 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('.verify_button').on('click', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/api/email/resend",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'Authorization': 'Bearer ' + window.userToken,
+                    'Accept': 'application/json'
+                },
+                data: {
+                    user_id: {{ Auth::id() }}
+                },
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: response.message,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                },
+                error: function(xhr) {
+                    let message = xhr.responseJSON?.message || 'Đã có lỗi xảy ra.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: message,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        });
+    });
+</script>

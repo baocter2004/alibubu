@@ -8,8 +8,10 @@ use App\Http\Requests\User\ResetPasswordRequest;
 use App\Repositories\UserRepository;
 use App\Services\Auth\AuthService;
 use App\Services\Client\UserService;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -32,7 +34,7 @@ class ClientAuthController extends Controller
 
         if ($result) {
             Auth::login($result);
-            return redirect()->route('index')->with('success', 'Đăng ký thành công!');
+            return redirect()->route('index')->with('success', 'Đăng ký thành công!  Vui Lòng Xác Nhận Email Để Có Thể Mua Hàng.');
         } else {
             return back()->with('error', 'Đăng ký thất bại. Vui lòng thử lại.');
         }
@@ -89,7 +91,6 @@ class ClientAuthController extends Controller
         }
     }
 
-
     public function logout()
     {
         Auth::logout();
@@ -132,9 +133,43 @@ class ClientAuthController extends Controller
 
         if ($user) {
             Auth::login($user);
-            return redirect()->route('index')->with('success', 'Đăng nhập thành công!');
+            return redirect()
+                ->route('index')
+                ->with('success', 'Đăng nhập thành công! ');
         } else {
-            return redirect()->route('auth.client.showFormLogin')->with('error', 'Tài khoản bị khóa hoặc không hợp lệ.');
+            return redirect()
+                ->route('auth.client.showFormLogin')
+                ->with('error', 'Tài khoản bị khóa hoặc không hợp lệ.');
         }
+    }
+
+    public function verifyEmail(EmailVerificationRequest $request)
+    {
+        try {
+            if ($request->user()->hasVerifiedEmail()) {
+                return redirect()
+                    ->route('index')
+                    ->with('error', 'Email đã được xác minh trước đó.');
+            }
+            $request->fulfill();
+
+            return redirect()
+                ->route('verification.success')
+                ->with('status', 'Xác minh email thành công!');
+        } catch (\Throwable $th) {
+            Log::error('VerifyEmailError', [
+                'message' => $th->getMessage(),
+                'file'    => $th->getFile(),
+                'line'    => $th->getLine(),
+            ]);
+            return redirect()
+                ->route('index')
+                ->with('error', 'Có lỗi khi xác minh email. Vui lòng thử lại.');
+        }
+    }
+
+    public function showVerifySuccess()
+    {
+        return view('common.verification.success');
     }
 }
