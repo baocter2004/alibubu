@@ -6,6 +6,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
+// ================ TEST  =====================
+Route::get('/test', function () {
+    return view('admin.test');
+});
+
+
 // ================ FILE - COMMON  =====================
 Route::get('/404', [HomeController::class, 'error'])->name('common.404');
 
@@ -23,6 +29,7 @@ Route::get('/about',  function () {
 Route::get('/thanks-you', function () {
     return view('client.thanks-you');
 })->name('thanks-you');
+
 // ====================  VERIFY EMAIL ===================
 Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])
     ->name('verification.verify');
