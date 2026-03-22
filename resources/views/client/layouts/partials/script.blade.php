@@ -1,8 +1,0 @@
-<script src="/views/shoppers/js/popper.min.js"></script>
-<script src="/views/shoppers/js/bootstrap.min.js"></script>
-<script src="/views/shoppers/js/owl.carousel.min.js"></script>
-<script src="/views/shoppers/js/jquery.magnific-popup.min.js"></script>
-<script src="/views/shoppers/js/aos.js"></script>
-
-<script src="/views/shoppers/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
