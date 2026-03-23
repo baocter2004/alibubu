@@ -6,9 +6,6 @@ use App\Repositories\UserRepository;
 
 class UserEmployeeService
 {
-    protected $userRepository;
-
-    function __construct(UserRepository $userRepository) {
-        $this->userRepository = $userRepository;
+    function __construct(protected UserRepository $userRepository) {
     }
 }

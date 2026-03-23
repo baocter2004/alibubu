@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
+
 abstract class BaseRepository
 {
-
     protected $model;
 
     public function __construct()
@@ -16,28 +17,22 @@ abstract class BaseRepository
 
     public function setModel()
     {
-
-        return $this->model = app()->make($this->getModel());
+        $this->model = app()->make($this->getModel());
     }
 
-    public function pagination(
-        array $columns = ['*'],
-        int $perPage = 15,
-        array $orderBy = ['id', 'DESC'],
-        array $relations = [],
-    ) {
-        return $this->model->select($columns)
-            ->with($relations)
-            ->orderBy($orderBy[0], $orderBy[1])
-            ->paginate($perPage)
-            ->withQueryString();
+    protected function query(): Builder
+    {
+        return $this->model->newQuery();
     }
 
     public function getAll(
         array $columns = ['*'],
         array $relations = [],
     ) {
-        return $this->model->select($columns)->with($relations)->get();
+        return $this->query()
+            ->select($columns)
+            ->with($relations)
+            ->get();
     }
 
     public function getAllActive(
@@ -45,19 +40,18 @@ abstract class BaseRepository
         array $relations = [],
         int $isActive = 1,
     ) {
-        return $this->model->select($columns)->with($relations)->where('is_active', $isActive)->get();
+        return $this->query()
+            ->select($columns)
+            ->with($relations)
+            ->where('is_active', $isActive)
+            ->get();
     }
 
     public function findById(int $id, array $columns = ['*'])
     {
-        $entity = $this->model->select($columns)->find($id);
-
-        if ($entity) {
-
-            return $entity;
-        }
-
-        return false;
+        return $this->query()
+            ->select($columns)
+            ->find($id);
     }
 
     public function create(array $data = [])
@@ -67,41 +61,80 @@ abstract class BaseRepository
 
     public function update(int $id, array $data = [])
     {
-        return $this->model->find($id)->update($data);
+        $model = $this->query()->find($id);
+
+        if (!$model) {
+            return false;
+        }
+
+        return $model->update($data);
     }
 
     public function delete(int $id)
     {
-        return $this->model->delete($id);
+        $model = $this->query()->find($id);
+
+        return $model ? $model->delete() : false;
     }
 
     public function forceDelete(int $id)
     {
-        return $this->model->forceDelete($id);
+        $model = $this->query()->find($id);
+
+        return $model ? $model->forceDelete() : false;
     }
+
+    // ================= FILTER =================
 
     public function filter(
         array $params = [],
         array $columns = ['*'],
         array $filters = [],
-        int $perPage = 15,
-        array $orderBy = ['id', 'DESC'],
         array $relations = [],
-        array $sorts = []
-    ) {
-        $query = $this->model->select($columns)->with($relations);
+        array $sorts = [],
+        array $orderBy = ['id', 'DESC'],
+    ): Builder {
+        $query = $this->query()
+            ->select($columns)
+            ->with($relations);
 
+        // FILTER
         foreach ($filters as $field => $operator) {
-            if (isset($params[$field]) && $params[$field] !== null) {
-                $value = $params[$field];
-                if ($operator === 'like') {
-                    $query->where($field, 'like', "%$value%");
-                } else {
+            $value = $params[$field] ?? null;
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            if (is_callable($operator)) {
+                $operator($query, $value);
+                continue;
+            }
+
+            switch (strtolower($operator)) {
+                case 'like':
+                    $query->where($field, 'LIKE', '%' . addcslashes($value, '%_') . '%');
+                    break;
+
+                case 'in':
+                    if (is_array($value)) {
+                        $query->whereIn($field, $value);
+                    }
+                    break;
+
+                case 'between':
+                    if (is_array($value) && count($value) === 2) {
+                        $query->whereBetween($field, $value);
+                    }
+                    break;
+
+                default:
                     $query->where($field, $operator, $value);
-                }
+                    break;
             }
         }
 
+        // SORT
         if (!empty($sorts)) {
             foreach ($sorts as $field => $direction) {
                 $query->orderBy($field, $direction);
@@ -110,6 +143,37 @@ abstract class BaseRepository
             $query->orderBy($orderBy[0], $orderBy[1]);
         }
 
-        return $query->paginate($perPage)->withQueryString();
+        return $query;
+    }
+
+    // ================= EXECUTE =================
+
+    public function paginateFilter(
+        array $params = [],
+        array $columns = ['*'],
+        array $filters = [],
+        array $relations = [],
+        array $sorts = [],
+        array $orderBy = ['id', 'DESC'],
+        int $perPage = 15,
+    ) {
+        return $this->filter(
+            $params,
+            $columns,
+            $filters,
+            $relations,
+            $sorts,
+            $orderBy
+        )->paginate($perPage)->withQueryString();
+    }
+
+    public function getFilter(...$args)
+    {
+        return $this->filter(...$args)->get();
+    }
+
+    public function firstFilter(...$args)
+    {
+        return $this->filter(...$args)->first();
     }
 }

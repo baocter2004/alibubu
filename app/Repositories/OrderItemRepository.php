@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Repositories;
+
 use App\Models\OrderItem;
 use App\Repositories\BaseRepository;
 

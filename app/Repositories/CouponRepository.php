@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Repositories;
+
 use App\Models\Coupon;
 use App\Repositories\BaseRepository;
 

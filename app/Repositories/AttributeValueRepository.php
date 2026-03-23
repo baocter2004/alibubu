@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Repositories;
+
 use App\Models\AttributeValue;
 use App\Repositories\BaseRepository;
 
