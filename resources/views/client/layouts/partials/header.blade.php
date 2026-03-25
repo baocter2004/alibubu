@@ -61,11 +61,19 @@
                         class="absolute -top-0.5 -right-0.5 bg-primary text-white text-[10px] font-bold min-w-4.5 h-4.5 rounded-full flex items-center justify-center px-1 border-2 border-white">3</span>
                 </a>
 
-                <a href="#"
-                    class="hidden sm:flex items-center gap-2 ml-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
-                    <i class="fa-regular fa-user text-base"></i>
-                    <span class="text-sm font-medium">Đăng nhập</span>
-                </a>
+                @if (Auth::check())
+                    <a href="#"
+                        class="hidden sm:flex items-center gap-2 ml-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+                        <i class="fa-regular fa-user text-base"></i>
+                        <span class="text-sm font-medium">{{ Auth::user()->name ?? 'Người dùng' }}</span>
+                    </a>
+                @else
+                    <a href="#"
+                        class="hidden sm:flex items-center gap-2 ml-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
+                        <i class="fa-regular fa-user text-base"></i>
+                        <span class="text-sm font-medium">Đăng nhập</span>
+                    </a>
+                @endif
             </div>
         </div>
     </div>

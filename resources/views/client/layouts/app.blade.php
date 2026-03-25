@@ -9,10 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Alibubu - Your Shop')</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('client.layouts.partials.common.css')
     @stack('styles')
 </head>
 
@@ -26,8 +23,8 @@
     </main>
 
     @include('client.layouts.partials.footer')
+    @include('client.layouts.partials.common.scripts')
     
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('scripts')
 </body>
 
