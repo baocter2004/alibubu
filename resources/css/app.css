@@ -37,3 +37,13 @@ body {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
 }
+
+.radius-left {
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+}
+
+.radius-right {
+    border-top-right-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+}
