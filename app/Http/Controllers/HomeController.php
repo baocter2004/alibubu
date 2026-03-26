@@ -29,9 +29,4 @@ class HomeController extends Controller
     {
         return view("client.checkout");
     }
-
-    public function  error()
-    {
-        return view('common.404');
-    }
 }

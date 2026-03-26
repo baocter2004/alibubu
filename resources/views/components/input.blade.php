@@ -14,7 +14,7 @@
 @endphp
 
 <div class="w-full">
-    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-medium text-teal-500 mb-1">
+    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
         @if ($icon)
             <i class="fa-solid fa-{{ $icon }}"></i>
         @endif
@@ -29,14 +29,14 @@
             <input id="{{ $name }}" name="{{ $name }}" type="{{ $type }}"
                 @if ($disabled) disabled @endif value="{{ old($name, request($name, $value)) }}"
                 placeholder="{{ $placeholder }}"
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-300
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200
                     {{ $hasError ? 'is-invalid' : '' }}
                     {{ $type === 'password' ? 'pr-10' : 'pr-4' }}">
         @endif
 
         @if ($type === 'password')
             <button type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teal-500 toggle-password"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 toggle-password"
                 data-target="#{{ $name }}" id="toggle-{{ $name }}">
                 <i class="fa-solid fa-eye"></i>
             </button>
@@ -50,7 +50,7 @@
 
                 <div id="placeholder-{{ $name }}"
                     class="flex flex-col items-center justify-center text-center p-5 {{ $value ? 'hidden' : '' }}">
-                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-teal-500 mb-2"></i>
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-blue-500 mb-2"></i>
                     <p class="text-sm text-gray-500">Click để chọn ảnh hoặc kéo thả vào đây</p>
                 </div>
 
@@ -72,10 +72,11 @@
 @if ($type === 'password')
     @push('scripts')
         <script>
-            $(function() {
+            window.addEventListener('load', function() {
                 $('#toggle-{{ $name }}').off('click').on('click', function() {
                     let $inp = $($(this).data('target'));
                     let $icon = $(this).find('i');
+
                     if ($inp.attr('type') === 'password') {
                         $inp.attr('type', 'text');
                         $icon.removeClass('fa-eye').addClass('fa-eye-slash');
@@ -92,7 +93,7 @@
 @if ($type === 'file')
     @push('scripts')
         <script>
-            $(function() {
+            window.addEventListener('load', function() {
                 $('#{{ $name }}').on('change', function(e) {
                     let file = e.target.files[0];
                     if (file && file.type.startsWith('image/')) {
