@@ -9,7 +9,7 @@
 :root {
     --primary: 221 83% 53%;
     --primary-fg: 0 0% 100%;
-    --background: 0 0% 100%;
+    --background: 260 100% 99%;
     --foreground: 222 47% 11%;
     --muted: 210 40% 96%;
     --muted-fg: 215 16% 47%;
@@ -46,4 +46,15 @@ body {
 .radius-right {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+}
+
+.is-invalid {
+    background-color: #fef2f2 !important;
+    border-color: #ef4444 !important;
+}
+
+.is-invalid:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+    outline: none;
 }

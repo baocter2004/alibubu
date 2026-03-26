@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\AuthLoginRequest;
 use App\Http\Requests\User\AuthRegisterRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
 use App\Repositories\UserRepository;
@@ -42,7 +43,7 @@ class ClientAuthController extends Controller
 
     public function showFormLogin()
     {
-        return view('client.auth.login');
+        return view('client.pages.auth.login');
     }
 
     public function showFormForgotPassword()
@@ -101,17 +102,9 @@ class ClientAuthController extends Controller
         return redirect()->route('index')->with('success', 'Đăng xuất thành công!');
     }
 
-    public function handleLogin(Request $request)
+    public function handleLogin(AuthLoginRequest $request)
     {
-        $result = $this->authService->login($request->validate([
-            'email' => [
-                'email',
-                'required',
-                Rule::exists('users', 'email'),
-            ],
-            'password' => ['required', 'string', 'min:6'],
-            'remember' => ['nullable', 'boolean']
-        ]));
+        $result = $this->authService->login($request->validated());
 
         if ($result) {
             return redirect()->route('index')->with('success', 'Đăng Nhập thành công!');
