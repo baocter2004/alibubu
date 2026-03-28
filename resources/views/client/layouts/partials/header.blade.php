@@ -45,12 +45,7 @@
 
             <div class="flex items-center gap-1 ml-auto md:ml-2">
                 <button
-                    class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors">
-                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
-                </button>
-
-                <button
-                    class="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors relative">
+                    class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors relative">
                     <i class="fa-regular fa-heart text-lg"></i>
                 </button>
 
