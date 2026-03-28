@@ -56,11 +56,14 @@ $(document).ready(function () {
 let firstInvalid = $(".is-invalid").first();
 
 if (firstInvalid.length) {
+    const isMobile = window.innerWidth < 768;
+    const offset = isMobile ? 100 : 140;
+
     $("html, body").animate(
         {
-            scrollTop: firstInvalid.offset().top - 100,
+            scrollTop: firstInvalid.offset().top - offset,
         },
         1000,
-        "linear",
+        "linear"
     );
 }
