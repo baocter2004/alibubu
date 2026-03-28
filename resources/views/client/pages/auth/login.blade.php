@@ -37,6 +37,11 @@
                     'placeholder' => '********************',
                 ])
 
+                @include('components.checkbox', [
+                    'name' => 'remember',
+                    'label' => 'Remember Me'
+                ])
+
                 <div class="flex justify-end w-full">
                     <a href="{{ route('auth.client.showFormRegister') }}" class="text-sm text-blue-500 hover:underline">
                         Don't have an account? Register
