@@ -60,7 +60,7 @@
                     <a href="#"
                         class="hidden sm:flex items-center gap-2 ml-1 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors">
                         <i class="fa-regular fa-user text-base"></i>
-                        <span class="text-sm font-medium">{{ Auth::user()->name ?? 'Người dùng' }}</span>
+                        <span class="text-sm font-medium">{{ Auth::user()->fullname ?? 'Người dùng' }}</span>
                     </a>
                 @else
                     <a href="{{ route('auth.client.showFormLogin') }}"
