@@ -13,14 +13,10 @@
     @stack('styles')
 </head>
 
-<body data-success="{{ session('success') }}" data-error="{{ session('error') }}">
-    @include('admin.layouts.partials.sidebar')
-
-    <main class="max-w-7xl mx-auto px-4 py-8">
+<body class="bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+    <main class="max-w-7xl flex justify-center items-center mx-auto h-full px-4 py-8">
         @yield('content')
     </main>
-
-    @include('admin.layouts.partials.footer')
     @include('admin.layouts.partials.common.scripts')
 
     @stack('scripts')
