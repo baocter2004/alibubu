@@ -13,7 +13,7 @@
             </h2>
         </div>
 
-        <div class="w-full m-auto max-w-md bg-white shadow-md mt-10 p-6 md:p-10">
+        <div class="w-full m-auto max-w-md bg-white shadow-md rounded-md mt-10 p-6 md:p-10">
             <form action="{{ route('auth.admin.handleLogin') }}" method="POST"
                 class="flex flex-col justify-center items-center space-y-4">
                 @csrf
