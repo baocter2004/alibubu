@@ -3,18 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\Auth\AuthService;
-use App\Services\Client\UserService;
+use App\Services\Auth\AuthAdminService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AdminAuthController extends Controller
 {
-    protected AuthService $authService;
-    public function __construct(AuthService $authService, UserService $userService)
+    public function __construct(protected AuthAdminService $authService)
     {
-        $this->authService = $authService;
     }
 
     public function showFormLogin()
@@ -42,7 +39,7 @@ class AdminAuthController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
 
         request()->session()->invalidate();
         request()->session()->regenerateToken();
