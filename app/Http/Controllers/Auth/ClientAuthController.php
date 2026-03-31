@@ -13,7 +13,6 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
 
 class ClientAuthController extends Controller
@@ -26,7 +25,7 @@ class ClientAuthController extends Controller
 
     public function showFormRegister()
     {
-        return view('client.auth.register');
+        return view('client.pages.auth.register');
     }
 
     public function HandleRegister(AuthRegisterRequest $authRegisterRequest)

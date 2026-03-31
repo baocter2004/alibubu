@@ -52,12 +52,12 @@
             <div class="border-t border-border my-4"></div>
             <p class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tài khoản</p>
             @if (!Auth::check())
-                <a href="#"
+                <a href="{{ route('auth.client.showFormLogin') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mb-1">
                     <i class="fa-regular fa-user w-4 text-center"></i>
                     Đăng nhập
                 </a>
-                <a href="#"
+                <a href="{{ route('auth.client.showFormRegister') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                     <i class="fa-solid fa-user-plus w-4 text-center"></i>
                     Đăng ký

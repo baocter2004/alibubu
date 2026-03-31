@@ -52,7 +52,7 @@ class VerifyUserEmail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'common.verification.verify-email',
+            view: 'components.mails.verify-email',
         );
     }
 
