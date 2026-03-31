@@ -4,22 +4,24 @@
 
 @section('content')
     <div class="w-full mt-10 m-auto">
-        <div class="flex flex-col justify-center items-center gap-4">
-            <h1 class="font-bold ">
+        <div class="flex flex-col justify-center items-center gap-4 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold">
                 Welcome Back
             </h1>
             <h2 class="text-sm md:text-base text-gray-500 leading-relaxed">
                 Enter your details to access your curated collection
             </h2>
         </div>
+
         <div class="w-full m-auto max-w-md bg-white rounded-lg shadow-md mt-10 p-6 md:p-10">
-            <form action="{{ route('auth.client.handleLogin') }}" method="POST" class="flex flex-col justify-center items-center space-y-4">
+            <form action="{{ route('auth.client.handleLogin') }}" method="POST"
+                class="flex flex-col justify-center items-center space-y-4">
                 @csrf
 
                 @include('components.title', [
-                    'text' => 'Login'
+                    'text' => 'Login',
                 ])
- 
+
                 @include('components.input', [
                     'label' => 'Email',
                     'name' => 'email',
@@ -39,7 +41,7 @@
 
                 @include('components.checkbox', [
                     'name' => 'remember',
-                    'label' => 'Remember Me'
+                    'label' => 'Remember Me',
                 ])
 
                 <div class="flex justify-end w-full">
@@ -51,8 +53,9 @@
                 @include('components.button', [
                     'type' => 'submit',
                     'color' => 'blue',
-                    'text' => 'Login'
+                    'text' => 'Login',
                 ])
             </form>
         </div>
-    @endsection
+    </div>
+@endsection
