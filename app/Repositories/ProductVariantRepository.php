@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class ProductVariantRepository extends BaseRepository
 {
-    public function getModel():string
+    public function getModel():ProductVariant
     {
-        return ProductVariant::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(ProductVariant::class);
+        }
+        return $this->model;
     }
 }

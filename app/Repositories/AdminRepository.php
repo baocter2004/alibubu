@@ -6,8 +6,11 @@ use App\Models\Admin;
 
 class AdminRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): Admin
     {
-        return Admin::class;
+        if(empty($this->model)) {
+            $this->model = app()->make(Admin::class);
+        }
+        return $this->model;
     }
 }

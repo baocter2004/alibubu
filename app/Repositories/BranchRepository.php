@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class BranchRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): Branch
     {
-        return Branch::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(Branch::class);
+        }
+        return $this->model;
     }
 }

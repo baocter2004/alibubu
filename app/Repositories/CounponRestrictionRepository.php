@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class CounponRestrictionRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): CouponRestriction
     {
-        return CouponRestriction::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(CouponRestriction::class);
+        }
+        return $this->model;
     }
 }

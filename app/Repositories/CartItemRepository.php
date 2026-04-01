@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class CartItemRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): CartItem
     {
-        return CartItem::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(CartItem::class);
+        }
+        return $this->model;
     }
 }

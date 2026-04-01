@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class CouponRepository extends BaseRepository
 {
-    public function getModel():string
+    public function getModel():Coupon
     {
-        return Coupon::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(Coupon::class);
+        }
+        return $this->model;
     }
 }
