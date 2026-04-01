@@ -5,11 +5,11 @@
 @section('content')
     <div class="w-full mt-10 m-auto">
         <div class="flex flex-col justify-center items-center gap-4 text-center">
-            <h1 class="text-2xl md:text-3xl font-bold">
-                Welcome Back
+            <h1 class="text-2xl md:text-3xl text-blue-500 font-bold">
+                Welcome, Admin
             </h1>
-            <h2 class="text-sm md:text-base text-gray-500 leading-relaxed">
-                Enter your details to access your curated collection
+            <h2 class="text-sm md:text-base text-blue-500 leading-relaxed">
+                Please log in to access the administration dashboard
             </h2>
         </div>
 
@@ -17,10 +17,6 @@
             <form action="{{ route('auth.admin.handleLogin') }}" method="POST"
                 class="flex flex-col justify-center items-center space-y-4">
                 @csrf
-
-                @include('components.title', [
-                    'text' => 'Login',
-                ])
 
                 @include('components.input', [
                     'label' => 'Email',
@@ -47,7 +43,7 @@
                 @include('components.button', [
                     'type' => 'submit',
                     'color' => 'blue',
-                    'text' => 'Login',
+                    'text' => 'Đăng Nhập',
                 ])
             </form>
         </div>

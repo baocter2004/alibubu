@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ClientAuthController;
-use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 // ================ TEST  =====================
@@ -50,11 +49,11 @@ Route::name('auth.')
                 Route::post('/handle', 'handleLogin')->name('handleLogin');
                 Route::get('/forgot-password', 's   howFormForgotPassword')->name('showFormForgotPassword');
                 Route::post('/send-otp', 'sendOtp')->name('sendOtp');
-                Route::get('/otp', 'showFormOtp')->name('showFormOtp')->middleware('check.reset.flow');
+                Route::get('/otp', 'showFormOtp')->name('showFormOtp');
                 Route::post('/resend-otp', 'resendOtp')->name('resendOtp');
 
                 Route::post('/verify-otp', 'verifyOtp')->name('verifyOtp');
-                Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword')->middleware('check.reset.flow');;
-                Route::post('/update-password', 'updatePassword')->name('updatePassword')->middleware('check.reset.flow');;
+                Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword');
+                Route::post('/update-password', 'updatePassword')->name('updatePassword');
             });
     });
