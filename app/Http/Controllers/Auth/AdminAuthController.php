@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Auth\AuthLoginRequest;
 use App\Services\Auth\AuthAdminService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class AdminAuthController extends Controller
 {
@@ -16,19 +15,12 @@ class AdminAuthController extends Controller
 
     public function showFormLogin()
     {
-        return view('admin.auth.login');
+        return view('admin.pages.auth.login');
     }
 
-    public function handleLogin(Request $request)
+    public function handleLogin(AuthLoginRequest $request)
     {
-        $result = $this->authService->login($request->validate([
-            'email' => [
-                'email',
-                'required',
-                Rule::exists('users', 'email')
-            ],
-            'password' => ['required', 'string', 'min:6']
-        ]));
+        $result = $this->authService->login($request->validate($request->validated()));
 
         if ($result) {
             return redirect()->route('admin.dashboard')->with('success', 'Đăng Nhập thành công!');

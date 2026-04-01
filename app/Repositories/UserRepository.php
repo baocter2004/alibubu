@@ -6,19 +6,12 @@ use App\Models\User;
 
 class UserRepository extends BaseRepository
 {
-    public function getModel(): string
+    protected function getModel(): User
     {
-        return User::class;
-    }
-
-    public function findBy(string $field, $value, array $columns = ['*'])
-    {
-        $entity = $this->model->select($columns)->where($field, $value)->first();
-
-        if ($entity) {
-            return $entity;
+        if (empty($this->model)) {
+            $this->model = app()->make(User::class);
         }
 
-        return false;
+        return $this->model;
     }
 }

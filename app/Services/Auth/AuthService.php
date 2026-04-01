@@ -14,9 +14,7 @@ use Illuminate\Support\Str;
 
 class AuthService
 {
-    function __construct(protected UserRepository $userRepository)
-    {
-    }
+    function __construct(protected UserRepository $userRepository) {}
 
     public function register(array $params)
     {

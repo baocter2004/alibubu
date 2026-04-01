@@ -12,9 +12,9 @@ Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 
 Route::get('/about',  function () {
-    return view('client.about');
+    return view('client.pages.about');
 })->name('about');
 
 Route::get('/thanks-you', function () {
-    return view('client.thanks-you');
+    return view('client.pages.thank-you');
 })->name('thanks-you');
