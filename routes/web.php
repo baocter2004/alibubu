@@ -4,11 +4,6 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ClientAuthController;
 use Illuminate\Support\Facades\Route;
 
-// ================ TEST  =====================
-Route::get('/test', function () {
-    return view('admin.test');
-});
-
 // ====================  VERIFY EMAIL ===================
 Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])
     ->name('verification.verify');

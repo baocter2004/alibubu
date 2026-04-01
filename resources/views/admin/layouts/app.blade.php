@@ -14,15 +14,25 @@
 </head>
 
 <body data-success="{{ session('success') }}" data-error="{{ session('error') }}">
-    @include('admin.layouts.partials.sidebar')
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        @yield('content')
-    </main>
+    @include('admin.layouts.partials.header')
 
-    @include('admin.layouts.partials.footer')
-    @include('admin.layouts.partials.common.scripts')
+    <div class="flex min-h-screen bg-gray-50">
+        @include('admin.layouts.partials.sidebar')
 
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-7xl mx-auto">
+                    @yield('content')
+                </div>
+            </main>
+
+            @include('admin.layouts.partials.footer')
+        </div>
+
+        @include('admin.layouts.partials.common.scripts')
+    </div>
     @stack('scripts')
 </body>
 

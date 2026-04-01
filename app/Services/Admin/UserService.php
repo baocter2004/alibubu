@@ -29,8 +29,8 @@ class UserService extends BaseCrudService
         $relates = Arr::get($params, 'relates', []);
         $relatesCount = Arr::get($params, 'relates_count', []);
 
-        if (!empty($params['name'])) {
-            $whereLikes['name'] = $params['name'];
+        if (!empty($params['fullname'])) {
+            $whereLikes['fullname'] = $params['fullname'];
         }
 
         if (!empty($params['email'])) {
@@ -46,7 +46,7 @@ class UserService extends BaseCrudService
         }
 
         if (!empty($params['search'])) {
-            $orWheres[] = ['name', 'like', '%' . $params['search'] . '%'];
+            $orWheres[] = ['fullname', 'like', '%' . $params['search'] . '%'];
             $orWheres[] = ['email', 'like', '%' . $params['search'] . '%'];
             $orWheres[] = ['phone_number', 'like', '%' . $params['search'] . '%'];
         }
