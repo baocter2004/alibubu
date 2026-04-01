@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class AttributeValueRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): AttributeValue
     {
-        return AttributeValue::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(AttributeValue::class);
+        }
+        return $this->model;
     }
 }

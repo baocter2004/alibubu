@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class TagRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): Tag
     {
-        return Tag::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(Tag::class);
+        }
+        return $this->model;
     }
 }

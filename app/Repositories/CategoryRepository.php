@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class CategoryRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): Category
     {
-        return Category::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(Category::class);
+        }
+        return $this->model;
     }
 }

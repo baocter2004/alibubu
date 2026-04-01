@@ -6,8 +6,11 @@ use App\Models\UserAddress;
 
 class UserAddressRepository extends BaseRepository
 {
-    public function getModel(): string
+    public function getModel(): UserAddress
     {
-        return UserAddress::class;
+        if(empty($this->model)) {
+            $this->model = app()->make(UserAddress::class);
+        }
+        return $this->model;
     }
 }
