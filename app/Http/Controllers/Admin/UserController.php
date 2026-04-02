@@ -16,4 +16,11 @@ class UserController extends Controller
 
         return view('admin.pages.users.index', compact('users'));
     }
+
+    public function show(int|string $id, $params = [])
+    {
+        $user = $this->userService->filter($params)->find($id);
+
+        return view('admin.pages.users.show', compact('user'));
+    }
 }

@@ -1,3 +1,5 @@
-<aside class="w-64 bg-foreground">
+<aside
+    class="bg-foreground"
+    id="sidebar">
 
 </aside>

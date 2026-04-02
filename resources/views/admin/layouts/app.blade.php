@@ -13,23 +13,24 @@
     @stack('styles')
 </head>
 
-<body data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="flex min-h-screen" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+    @include('admin.layouts.partials.sidebar')
 
-    @include('admin.layouts.partials.header')
+    <div id="content" class="flex flex-col flex-1">
+        @include('admin.layouts.partials.header')
 
-    <div class="flex min-h-screen bg-gray-50">
-        @include('admin.layouts.partials.sidebar')
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto">
+                @yield('content')
+            </div>
 
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <button id="scrollToTop"
+                class="fixed z-20 bottom-6 right-6 p-3 w-12 h-12 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition opacity-0 pointer-events-none">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+        </main>
 
-            <main class="flex-1 overflow-y-auto p-6">
-                <div class="max-w-7xl mx-auto">
-                    @yield('content')
-                </div>
-            </main>
-
-            @include('admin.layouts.partials.footer')
-        </div>
+        @include('admin.layouts.partials.footer')
 
         @include('admin.layouts.partials.common.scripts')
     </div>
