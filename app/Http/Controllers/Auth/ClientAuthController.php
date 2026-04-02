@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AuthLoginRequest;
 use App\Http\Requests\User\AuthRegisterRequest;
 use App\Http\Requests\User\ResetPasswordRequest;
-use App\Repositories\UserRepository;
 use App\Services\Auth\AuthService;
-use App\Services\Client\UserService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +16,7 @@ use Laravel\Socialite\Facades\Socialite;
 class ClientAuthController extends Controller
 {
     protected AuthService $authService;
-    public function __construct(AuthService $authService, UserService $userService)
+    public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
     }
