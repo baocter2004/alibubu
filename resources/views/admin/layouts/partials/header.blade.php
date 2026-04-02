@@ -24,7 +24,7 @@
         <div class="relative" id="buttonDropdown">
             <div class="flex border-l-2 cursor-pointer border-foreground items-center px-2 gap-3">
                 <div
-                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shadow-inner">
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border-2 border-foreground text-blue-600 font-bold shadow-inner">
                     {{ strtoupper(substr(Auth::guard('admin')->name, 0, 1)) }}
                 </div>
                 <h2 class="text-slate-700 font-medium">
