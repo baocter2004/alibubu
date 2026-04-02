@@ -11,22 +11,22 @@
                 Dashboard
             </a>
         </li>
-        <li class="sidebar-items">
-            <a href="" class="sidebar-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+        <li class="sidebar-items {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+            <a href="" class="sidebar-link">
                 <i class="fa-solid text-lg fa-box"></i>
                 Products
             </a>
         </li>
-        <li class="sidebar-items">
-            <a href="" class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+        <li class="sidebar-items {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+            <a href="" class="sidebar-link">
                 <i class="fa-solid text-lg fa-cart-shopping"></i>
                 Orders
             </a>
         </li>
-        <li class="sidebar-items">
-            <a href="" class="sidebar-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+        <li class="sidebar-items {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="sidebar-link">
                 <i class="fa-solid text-lg fa-users"></i>
-                Customers
+                Users
             </a>
         </li>
     </ul>
