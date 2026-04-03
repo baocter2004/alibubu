@@ -1,14 +1,30 @@
-<header class="flex justify-between items-center px-6 py-5 bg-white shadow-md">
+<header class="flex justify-between items-center px-6 py-3 bg-white shadow-md">
     <button type="button" id="sidebarToggle"
-        class="navbar-btn flex items-center gap-2 text-gray-700 focus:outline-none cursor-pointer">
+        class="navbar-btn w-full flex items-center gap-2 text-gray-700 focus:outline-none cursor-pointer">
         <i class="fa-solid fa-bars text-lg"></i>
     </button>
 
-    <div class="flex items-center gap-4">
+    <div class="w-full flex justify-center items-center gap-4">
+        <form class="w-full relative flex justify-center items-center">
+            <span class="absolute left-3 text-gray-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+
+            <input type="text" placeholder="Search..."
+                class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 
+               focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </form>
+
+        <div class="flex items-center gap-4">
+            <a href="#" class="text-gray-700 hover:text-gray-900 transition">
+                <i class="fa-solid fa-bell text-lg"></i>
+            </a>
+        </div>
+
         <div class="relative" id="buttonDropdown">
-            <div class="flex border-l-4 border-r-4 cursor-pointer rounded-md border-foreground items-center px-2 gap-3">
+            <div class="flex border-l-2 cursor-pointer border-foreground items-center px-2 gap-3">
                 <div
-                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold shadow-inner">
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border-2 border-foreground text-blue-600 font-bold shadow-inner">
                     {{ strtoupper(substr(Auth::guard('admin')->name, 0, 1)) }}
                 </div>
                 <h2 class="text-slate-700 font-medium">
