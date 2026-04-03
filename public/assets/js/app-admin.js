@@ -1,18 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
-    $("#sidebarToggle").on("click", function () {
-        $("#sidebar").toggleClass("active");
-        $("#content").toggleClass("active");
+    const sidebar = $("#sidebar");
+    const overlay = $("#overlay");
+
+    $("#sidebarToggle, #sidebarToggleMobile").on("click", function () {
+        if ($(window).width() <= 768) {
+            sidebar.toggleClass("show");
+            overlay.toggleClass("active");
+            $("body").toggleClass("overflow-hidden");
+        } else {
+            sidebar.toggleClass("collapsed");
+        }
+
+        $("body").toggleClass("overflow-hidden");
+    });
+
+    overlay.on("click", function () {
+        sidebar.removeClass("show");
+        overlay.removeClass("active");
+        $("body").removeClass("overflow-hidden");
     });
 
     $(window).on("resize", function () {
         if ($(window).width() > 768) {
-            $("#sidebar").removeClass("active");
-            $("#content").removeClass("active");
+            sidebar.removeClass("show");
+            overlay.removeClass("active");
+            $("body").removeClass("overflow-hidden");
         }
-    });
-
-    $("#closeSidebar").on("click", function () {
-        $("#sidebar").removeClass("active");
     });
 
     $(window).on("scroll", function () {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\Users;
 
+use App\Const\UserConst;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class GetUserRequest extends FormRequest
 {
@@ -22,7 +24,20 @@ class GetUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'keyword' => 'nullable|string|max:255',
+            'fullname' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+            'phone_number' => 'nullable|string|max:255',
+            'status' => [
+                'nullable',
+                'integer',
+                Rule::in(array_keys(UserConst::STATUS))
+            ],
+            'role' => [
+                'nullable',
+                'integer',
+                Rule::in(array_keys(UserConst::ROLE))
+            ],
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\GlobalConstant;
 use App\Services\BaseService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;

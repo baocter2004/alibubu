@@ -1,7 +1,13 @@
-<aside class="bg-foreground" id="sidebar">
+<aside class="bg-foreground relative" id="sidebar">
     <div class="header-sidebar">
         <h1 class="header-sidebar-title">Alibubu</h1>
         <span class="header-sidebar-note">ENTERPRISE ADMIN</span>
+
+        <div class="absolute top-4 right-4">
+            <button id="sidebarToggleMobile" class="text-gray-500 focus:outline-none lg:hidden">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
     </div>
     <ul class="w-full px-3 space-y-2">
         <li class="sidebar-items @if (Route::is('admin.dashboard')) active @endif">
@@ -31,3 +37,5 @@
         </li>
     </ul>
 </aside>
+
+<div id="overlay"></div>
