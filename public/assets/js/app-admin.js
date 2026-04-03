@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             sidebar.toggleClass("collapsed");
         }
-
-        $("body").toggleClass("overflow-hidden");
     });
 
     overlay.on("click", function () {
