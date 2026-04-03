@@ -13,14 +13,14 @@
     @stack('styles')
 </head>
 
-<body class="flex min-h-screen" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="flex min-h-screen bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
     @include('admin.layouts.partials.sidebar')
 
     <div id="content" class="flex flex-col flex-1">
         @include('admin.layouts.partials.header')
 
         <main class="flex-1 overflow-y-auto p-6">
-            <div class="max-w-7xl mx-auto">
+            <div class="w-full mx-auto">
                 @yield('content')
             </div>
 

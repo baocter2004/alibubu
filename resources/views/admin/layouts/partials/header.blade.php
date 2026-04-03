@@ -4,14 +4,14 @@
         <i class="fa-solid fa-bars text-lg"></i>
     </button>
 
-    <div class="w-full flex justify-center items-center gap-4">
-        <form class="w-full relative flex justify-center items-center">
+    <div class="w-full flex justify-between items-center gap-4">
+        <form class="hidden md:flex w-full relative justify-center items-center">
             <span class="absolute left-3 text-gray-400">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </span>
 
             <input type="text" placeholder="Search..."
-                class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 
+                class="w-full border border-gray-300 rounded-full py-2 pl-10 pr-4 
                focus:outline-none focus:ring-2 focus:ring-blue-500">
         </form>
 
@@ -22,14 +22,15 @@
         </div>
 
         <div class="relative" id="buttonDropdown">
-            <div class="flex border-l-2 cursor-pointer border-foreground items-center px-2 gap-3">
+            <div class="flex border-l cursor-pointer border-foreground items-center px-2 gap-3">
                 <div
-                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border-2 border-foreground text-blue-600 font-bold shadow-inner">
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border border-foreground text-blue-600 font-bold shadow-inner">
                     {{ strtoupper(substr(Auth::guard('admin')->name, 0, 1)) }}
                 </div>
-                <h2 class="text-slate-700 font-medium">
-                    {{ Auth::guard('admin')->name ?? 'Admin' }}
-                </h2>
+                <div>
+                    <p class="text-sm font-medium text-gray-700">{{ Auth::guard('admin')->name }}</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                </div>
             </div>
             <div id="dropDownMenu"
                 class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 hidden">
