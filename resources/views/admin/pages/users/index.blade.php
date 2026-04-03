@@ -72,26 +72,27 @@
             <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng</h1>
         </div>
         <div class="w-full px-4 py-2 overflow-x-auto rounded-2xl">
-            <table class="min-w-full table-fixed border border-gray-200 overflow-hidden  whitespace-nowrap">
+            <table class="w-full table-fixed border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
-                        <th class="min-w-10 px-4 py-3">ID</th>
-                        <th class="min-w-60 px-4 py-3">Tên Người Dùng</th>
-                        <th class="min-w-40 px-4 py-3">Số Điện Thoại</th>
-                        <th class="min-w-50 px-4 py-3">Email</th>
-                        <th class="min-w-20 px-4 py-3">Vai Trò</th>
-                        <th class="min-w-20 px-4 py-3">Trạng Thái</th>
-                        <th class="min-w-30 px-4 py-3">Ngày Tạo</th>
-                        <th class="min-w-30 px-4 py-3">Hành Động</th>
+                        <th class="w-[5%] text-center px-4 py-3">ID</th>
+                        <th class="w-[15%] px-4 py-3">Tên Người Dùng</th>
+                        <th class="w-[10%] px-4 py-3">Số Điện Thoại</th>
+                        <th class="w-[20%] px-4 py-3">Email</th>
+                        <th class="w-[10%] px-4 py-3">Vai Trò</th>
+                        <th class="w-[10%] px-4 py-3">Trạng Thái</th>
+                        <th class="w-[10%] text-center px-4 py-3">Điểm Số</th>
+                        <th class="w-[10%] px-4 py-3">Ngày Tạo</th>
+                        <th class="w-[10%] text-center px-4 py-3">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($users as $user)
                         <tr class="text-sm text-gray-700 hover:bg-blue-100">
-                            <td class="px-4 py-3">{{ $user->id }}</td>
-                            <td class="px-4 py-3">{{ $user->fullname }}</td>
+                            <td class="text-center px-4 py-3">{{ $user->id }}</td>
+                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->fullname }}</td>
                             <td class="px-4 py-3">{{ $user->phone_number }}</td>
-                            <td class="px-4 py-3">{{ $user->email }}</td>
+                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->email }}</td>
                             <td class="px-4 py-3">{{ \App\Const\UserConst::ROLE[$user->role] ?? 'Unknown' }}</td>
                             <td class="px-4 py-3">
                                 @if ($user->status)
@@ -103,8 +104,9 @@
                                         hoạt động</span>
                                 @endif
                             </td>
+                            <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="px-4 py-3">
+                            <td class="flex justify-center gap-4 items-center text-center px-4 py-3">
                                 <a href="" class="text-blue-500 hover:text-blue-700 mr-2" title="Xem">
                                     <i class="text-lg fas fa-eye"></i>
                                 </a>

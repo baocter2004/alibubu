@@ -45,10 +45,14 @@ class UserService extends BaseCrudService
             $wheres['status'] = $params['status'];
         }
 
-        if (!empty($params['search'])) {
-            $orWheres[] = ['fullname', 'like', '%' . $params['search'] . '%'];
-            $orWheres[] = ['email', 'like', '%' . $params['search'] . '%'];
-            $orWheres[] = ['phone_number', 'like', '%' . $params['search'] . '%'];
+        if (!empty($params['role'])) {
+            $wheres['role'] = $params['role'];
+        }
+
+        if (!empty($params['keyword'])) {
+            $orWheres[] = ['fullname', 'like', '%' . $params['keyword'] . '%'];
+            $orWheres[] = ['email', 'like', '%' . $params['keyword'] . '%'];
+            $orWheres[] = ['phone_number', 'like', '%' . $params['keyword'] . '%'];
         }
 
         return [
