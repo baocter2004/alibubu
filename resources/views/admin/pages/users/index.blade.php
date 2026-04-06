@@ -71,13 +71,13 @@
         <div class="w-full px-4 py-2 mb-4">
             <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng</h1>
         </div>
-        <div class="w-full px-4 py-2 overflow-x-auto rounded-2xl">
-            <table class="w-full table-fixed border border-gray-200 overflow-hidden">
+        <div class="w-full overflow-x-auto rounded-2xl">
+            <table class="min-w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[5%] text-center px-4 py-3">ID</th>
                         <th class="w-[15%] px-4 py-3">Tên Người Dùng</th>
-                        <th class="w-[10%] px-4 py-3">Số Điện Thoại</th>
+                        <th class="w-[10%] px-4 py-3">Sđt</th>
                         <th class="w-[20%] px-4 py-3">Email</th>
                         <th class="w-[10%] px-4 py-3">Vai Trò</th>
                         <th class="w-[10%] px-4 py-3">Trạng Thái</th>
@@ -106,22 +106,22 @@
                             </td>
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="flex justify-center gap-4 items-center text-center px-4 py-3">
-                                <a href="" class="text-blue-500 hover:text-blue-700 mr-2" title="Xem">
-                                    <i class="text-lg fas fa-eye"></i>
+                            <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
+                                <a href="" class="text-blue-500 hover:text-blue-700" title="Xem">
+                                    <i class="fas fa-eye"></i>
                                 </a>
 
-                                <a href="" class="text-yellow-500 hover:text-yellow-700 mr-2" title="Sửa">
-                                    <i class="text-lg fas fa-edit"></i>
+                                <a href="" class="text-yellow-500 hover:text-yellow-700" title="Sửa">
+                                    <i class="fas fa-edit"></i>
                                 </a>
 
-                                <form action="" method="POST" class="inline-block ml-2">
+                                <form action="" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa"
                                         onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
 
-                                        <i class="text-lg fas fa-trash"></i>
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                             </td>
