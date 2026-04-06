@@ -7,14 +7,11 @@
 @section('content')
     <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg">
         <form action="{{ route('admin.users.index') }}" method="GET">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="px-4 py-2 border-b-2 border-blue-500 md:border-b-0 md:w-auto mb-4 md:mb-0">
-                    <h1 class="text-2xl font-semibold text-gray-900">Quản Lý Người Dùng</h1>
-                </div>
-                <a href=""
+            <div class="flex flex-col md:flex-row justify-end items-center">
+                <a href="{{ route('admin.users.create') }}"
                     class="px-4 py-2 text-sm flex items-center font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                     <i class="fas fa-plus m-0 md:mr-2"></i>
-                    <span class="hidden md:block">
+                    <span>
                         Thêm Người Dùng
                     </span>
                 </a>

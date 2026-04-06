@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseCrudService
 {
@@ -65,6 +66,16 @@ class UserService extends BaseCrudService
             'relates' => $relates,
             'relates_count' => $relatesCount,
         ];
+    }
+
+    public function create(array $params = []): User
+    {
+        try {
+
+        } catch (\Exception $e) {
+            Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
+            throw $e;
+        }
     }
 
     public function find(int|string $id): ?User

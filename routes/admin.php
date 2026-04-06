@@ -14,5 +14,11 @@ Route::prefix('/admin')
 
         Route::prefix('/users')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/create', [UserController::class, 'create'])->name('create');
+            Route::post('/confirm', [UserController::class, 'confirm'])->name('confirm');
+            Route::get('/confirm', [UserController::class, 'confirmDetail'])->name('confirm-detail');
+            Route::post('/', [UserController::class, 'store'])->name('store');
+            Route::get('/{id}', [UserController::class, 'show'])->name('show');
+            Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         });
     });
