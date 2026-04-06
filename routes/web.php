@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ClientAuthController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,25 +9,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', function () {
     return view('admin.test');
 });
-
-
-// ================ FILE - COMMON  =====================
-Route::get('/404', [HomeController::class, 'error'])->name('common.404');
-
-// ================= HOME - CLIENT =====================
-Route::get('/', [HomeController::class, 'index'])->name('index');
-Route::get('/shops', [HomeController::class, 'shops'])->name('shops');
-Route::get('/shop-detail/{id}/', [HomeController::class, 'shopDetail'])->name('shop-detail');
-Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
-Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
-
-Route::get('/about',  function () {
-    return view('client.about');
-})->name('about');
-
-Route::get('/thanks-you', function () {
-    return view('client.thanks-you');
-})->name('thanks-you');
 
 // ====================  VERIFY EMAIL ===================
 Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])
@@ -77,12 +57,4 @@ Route::name('auth.')
                 Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword')->middleware('check.reset.flow');;
                 Route::post('/update-password', 'updatePassword')->name('updatePassword')->middleware('check.reset.flow');;
             });
-    });
-
-// ========================= ADMIN ===========================
-Route::prefix('/admin')
-    ->middleware(['auth', 'adminLogin'])
-    ->name('admin.')
-    ->group(function () {
-        Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
     });

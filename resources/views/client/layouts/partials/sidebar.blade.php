@@ -7,7 +7,8 @@
         <div class="flex items-center justify-between px-5 py-4 border-b border-border">
             <div class="flex items-center gap-2">
                 <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm">
-                    A</div>
+                    A
+                </div>
                 <span class="font-bold text-foreground">Alibubu</span>
             </div>
             <button id="menu-close"
