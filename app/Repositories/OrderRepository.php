@@ -7,8 +7,11 @@ use App\Repositories\BaseRepository;
 
 class OrderRepository extends BaseRepository
 {
-    public function getModel():string
+    public function getModel():Order
     {
-        return Order::class;
+        if (empty($this->model)) {
+            $this->model = app()->make(Order::class);
+        }
+        return $this->model;
     }
 }

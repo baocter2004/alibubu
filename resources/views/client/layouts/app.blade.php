@@ -13,7 +13,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-light-bg" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
     @include('client.layouts.partials.header')
 
     @include('client.layouts.partials.sidebar')

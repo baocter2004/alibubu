@@ -1,13 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Alibubu Admin Panel</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body>
-    
-</body>
-</html>
+<header class="flex justify-between items-center px-6 py-3 bg-white shadow-md">
+    <button type="button" id="sidebarToggle"
+        class="navbar-btn w-full flex items-center gap-2 text-gray-700 focus:outline-none cursor-pointer">
+        <i class="fa-solid fa-bars text-lg"></i>
+    </button>
+
+    <div class="w-full flex justify-between items-center gap-4">
+        <form class="hidden md:flex w-full relative justify-center items-center">
+            <span class="absolute left-3 text-gray-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+
+            <input type="text" placeholder="Search..."
+                class="w-full border border-gray-300 rounded-full py-2 pl-10 pr-4 
+               focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </form>
+
+        <div class="flex items-center gap-4">
+            <a href="#" class="text-gray-700 hover:text-gray-900 transition">
+                <i class="fa-solid fa-bell text-lg"></i>
+            </a>
+        </div>
+
+        <div class="relative" id="buttonDropdown">
+            <div class="flex border-l cursor-pointer border-foreground items-center px-2 gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border border-foreground text-blue-600 font-bold shadow-inner">
+                    {{ strtoupper(substr(Auth::guard('admin')->name, 0, 1)) }}
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-700">{{ Auth::guard('admin')->name }}</p>
+                    <p class="text-xs text-gray-500">Admin</p>
+                </div>
+            </div>
+            <div id="dropDownMenu"
+                class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50 hidden">
+                <a href=""
+                    class="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                    Thông tin cá nhân
+                </a>
+                <a href=""
+                    class="block px-4 py-2 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition">
+                    Đổi mật khẩu
+                </a>
+                <form action="{{ route('auth.admin.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="w-full text-left px-4 py-2 text-slate-700 hover:bg-red-50 hover:text-red-600 transition">
+                        Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+@push('scripts')
+    <script>
+        const btn = document.getElementById("buttonDropdown");
+        const menu = document.getElementById("dropDownMenu");
+
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            menu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", () => {
+            menu.classList.add("hidden");
+        });
+    </script>
+@endpush

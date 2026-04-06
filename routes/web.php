@@ -2,13 +2,7 @@
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ClientAuthController;
-use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
-
-// ================ TEST  =====================
-Route::get('/test', function () {
-    return view('admin.test');
-});
 
 // ====================  VERIFY EMAIL ===================
 Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])
@@ -36,7 +30,7 @@ Route::name('auth.')
                 Route::post('/forgot-password', 'sendResetLinkEmail')->name('sendResetLinkEmail');
                 Route::get('/reset-password', 'showResetPassword')->name('showResetPassword');
                 Route::post('/reset-password', 'reset')->name('reset');
-                Route::get('/logout', 'logout')->name('logout');
+                Route::post('/logout', 'logout')->name('logout');
             });
 
 
@@ -46,15 +40,15 @@ Route::name('auth.')
             ->group(function () {
                 Route::get('/login', 'showFormLogin')->name('showFormLogin');
                 Route::post('/login', 'handleLogin')->name('handleLogin');
-                Route::get('/logout', 'logout')->middleware('auth')->name('logout');
+                Route::post('/logout', 'logout')->middleware('auth')->name('logout');
                 Route::post('/handle', 'handleLogin')->name('handleLogin');
                 Route::get('/forgot-password', 's   howFormForgotPassword')->name('showFormForgotPassword');
                 Route::post('/send-otp', 'sendOtp')->name('sendOtp');
-                Route::get('/otp', 'showFormOtp')->name('showFormOtp')->middleware('check.reset.flow');
+                Route::get('/otp', 'showFormOtp')->name('showFormOtp');
                 Route::post('/resend-otp', 'resendOtp')->name('resendOtp');
 
                 Route::post('/verify-otp', 'verifyOtp')->name('verifyOtp');
-                Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword')->middleware('check.reset.flow');;
-                Route::post('/update-password', 'updatePassword')->name('updatePassword')->middleware('check.reset.flow');;
+                Route::get('/new-password', 'showFormNewPassword')->name('showFormNewPassword');
+                Route::post('/update-password', 'updatePassword')->name('updatePassword');
             });
     });
