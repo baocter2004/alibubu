@@ -53,13 +53,13 @@ class PostUserRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->whereNull('deleted_at')
+                Rule::unique('users', 'email')
             ],
             'phone_number' => [
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('users', 'phone_number')->whereNull('deleted_at')
+                Rule::unique('users', 'phone_number')
             ],
             'password' => 'required|string|min:8|confirmed',
             'avatar'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

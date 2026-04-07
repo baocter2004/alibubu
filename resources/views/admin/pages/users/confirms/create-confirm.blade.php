@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <div class="max-w-4xl m-auto">
+    <div class="max-w-5xl m-auto">
         <div class="mb-4">
             <h1 class="text-2xl font-bold text-gray-800">Kiểm tra thông tin người dùng</h1>
             <p class="text-gray-600 mt-1">Kiểm tra lại thông tin của người dùng.</p>
