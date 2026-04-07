@@ -69,7 +69,7 @@
             <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng</h1>
         </div>
         <div class="w-full overflow-x-auto rounded-2xl">
-            <table class="min-w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
+            <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[5%] text-center px-4 py-3">ID</th>
@@ -104,7 +104,8 @@
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
                             <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
-                                <a href="" class="text-blue-500 hover:text-blue-700" title="Xem">
+                                <a href="{{ route('admin.users.show', $user->id) }}"
+                                    class="text-blue-500 hover:text-blue-700" title="Xem">
                                     <i class="fas fa-eye"></i>
                                 </a>
 
