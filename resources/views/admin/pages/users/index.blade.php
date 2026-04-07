@@ -69,7 +69,7 @@
             <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng</h1>
         </div>
         <div class="w-full overflow-x-auto rounded-2xl">
-            <table class="min-w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
+            <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[5%] text-center px-4 py-3">ID</th>

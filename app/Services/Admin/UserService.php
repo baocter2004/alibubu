@@ -3,13 +3,17 @@
 namespace App\Services\Admin;
 
 use App\Models\User;
+use App\Repositories\UserAddressRepository;
 use App\Repositories\UserRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseCrudService
 {
+    public function __construct(protected UserAddressRepository $userAddressRepository) {}
+
     protected function getRepository(): UserRepository
     {
         if (empty($this->repository)) {
@@ -71,9 +75,29 @@ class UserService extends BaseCrudService
     public function create(array $params = []): User
     {
         try {
+            DB::beginTransaction();
+            $userData = $params;
+            unset($userData['user_addresses']);
+            $user = $this->getRepository()->create($userData);
 
+            if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
+                $addresses = [];
+                foreach ($params['user_addresses'] as $addressData) {
+                    $addressData['user_id'] = $user->id;
+                    $now = now();
+                    $addressData['created_at'] = $now;
+                    $addressData['updated_at'] = $now;
+
+                    $addresses[] = $addressData;
+                }
+                $this->userAddressRepository->insert($addresses);
+            }
+
+            DB::commit();
+            return $user;
         } catch (\Exception $e) {
             Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
+            DB::rollBack();
             throw $e;
         }
     }

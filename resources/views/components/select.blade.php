@@ -5,10 +5,14 @@
     'value' => '',
     'placeholder' => '',
     'icon' => '',
+    'required' => false,
 ])
 
 @php
-    $hasError = $errors->has($name);
+    $dotName = str_replace(['[', ']'], ['.', ''], $name);
+    $dotName = str_replace('..', '.', $dotName);
+
+    $hasError = $errors->has($dotName);
 @endphp
 
 <div class="w-full">
@@ -17,24 +21,28 @@
             <i class="fa-solid fa-{{ $icon }}"></i>
         @endif
         {{ $label }}
+        @if ($required)
+            <span class="text-red-500 text-base leading-none">*</span>
+        @endif
     </label>
 
     <select name="{{ $name }}" id="{{ $name }}"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 {{ $hasError ? 'is-invalid' : '' }}">
+        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all {{ $class ?? '' }} {{ $hasError ? 'is-invalid' : 'border-gray-300' }}">
         @if ($placeholder)
-            <option value="" disabled {{ old($name, $value) === '' ? 'selected' : '' }}>
+            <option value="" disabled {{ old($dotName, $value) === '' ? 'selected' : '' }}>
                 {{ $placeholder }}
             </option>
         @endif
+
         @foreach ($options as $optValue => $optLabel)
             <option value="{{ $optValue }}"
-                {{ (string) old($name, request($name, $value)) === (string) $optValue ? 'selected' : '' }}>
+                {{ (string) old($dotName, $value) === (string) $optValue ? 'selected' : '' }}>
                 {{ $optLabel }}
             </option>
         @endforeach
     </select>
 
-    @error($name)
+    @error($dotName)
         <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
     @enderror
 </div>
