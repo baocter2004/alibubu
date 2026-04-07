@@ -63,7 +63,7 @@ if (firstInvalid.length) {
         {
             scrollTop: firstInvalid.offset().top - offset,
         },
-        1000,
+        500,
         "linear"
     );
 }
