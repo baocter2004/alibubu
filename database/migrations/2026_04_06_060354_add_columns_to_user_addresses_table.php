@@ -16,10 +16,10 @@ return new class extends Migration
     {
         Schema::table('user_addresses', function (Blueprint $table) {
             $table->foreignIdFor(Province::class)->nullable()->after('user_id')->constrained()->nullOnDelete();
-            $table->foreignIdFor(Ward::class)->nullable()->after('province_id')->constrained()->nullOnDelete();
+            $table->foreignIdFor(Ward::class)->nullable()->after('user_id')->constrained()->nullOnDelete();
 
-            $table->string('province')->after('ward_id')->nullable();
-            $table->string('ward')->after('province')->nullable();
+            $table->string('province')->after('user_id')->nullable();
+            $table->string('ward')->after('user_id')->nullable();
         });
     }
 
