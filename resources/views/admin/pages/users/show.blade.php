@@ -165,5 +165,25 @@
             <p class="text-sm text-gray-500 mt-2">Số tài khoản</p>
             <p class="text-gray-800 font-medium">{{ $user->bank_account ?? '-' }}</p>
         </div>
+
+        <div class="w-full p-4 mt-4 bg-white rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+
+            <!-- Back -->
+            <a href="{{ route('admin.users.index') }}"
+                class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay Lại Danh Sách
+            </a>
+
+            <!-- Submit -->
+            <a href="{{ route('admin.users.edit', $user->id) }}"
+                class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                <i class="fa-solid fa-edit"></i>
+                Chỉnh Sửa Người Dùng
+            </a>
+
+        </div>
     </div>
 @endsection

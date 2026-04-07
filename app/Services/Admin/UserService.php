@@ -121,10 +121,28 @@ class UserService extends BaseCrudService
         }
     }
 
-    public function find(int|string $id): ?User
+    public function mapAddressName(array $addresses = []): array
     {
-        return $this->repository->filter([
-            'wheres' => ['id' => $id],
-        ])->first();
+        $addresses = collect($addresses);
+
+        $provinces = Province::select('id', 'name')->get()->keyBy('id');
+
+        $wardIds = $addresses->pluck('ward_id')->filter();
+        $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
+
+        return $addresses->map(function ($addr) use ($provinces, $wards) {
+            $provinceId = $addr['province_id'] ?? null;
+            $wardId = $addr['ward_id'] ?? null;
+
+            $addr['province'] = $provinceId && isset($provinces[$provinceId])
+                ? $provinces[$provinceId]->name
+                : '-';
+
+            $addr['ward'] = $wardId && isset($wards[$wardId])
+                ? $wards[$wardId]->name
+                : '-';
+
+            return $addr;
+        })->toArray();
     }
 }

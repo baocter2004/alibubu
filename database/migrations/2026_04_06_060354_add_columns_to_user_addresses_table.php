@@ -15,11 +15,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_addresses', function (Blueprint $table) {
-            $table->foreignIdFor(Province::class)->nullable()->after('user_id')->constrained()->nullOnDelete();
-            $table->foreignIdFor(Ward::class)->nullable()->after('user_id')->constrained()->nullOnDelete();
+            $table->foreignIdFor(Province::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete()
+                ->after('user_id');
 
-            $table->string('province')->after('user_id')->nullable();
-            $table->string('ward')->after('user_id')->nullable();
+            $table->foreignIdFor(Ward::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete()
+                ->after('province_id');
+
+            $table->string('province')->nullable()->after('ward_id');
+            $table->string('ward')->nullable()->after('province');
         });
     }
 
