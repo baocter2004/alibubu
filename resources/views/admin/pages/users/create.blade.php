@@ -10,15 +10,6 @@
             <h1 class="text-2xl font-bold text-gray-800">Thêm mới người dùng</h1>
             <p class="text-gray-600 mt-1">Điền đầy đủ thông tin để tạo tài khoản mới.</p>
         </div>
-        @if ($errors->any())
-            <div class="my-4 p-4 bg-red-50 border border-red-300 text-red-800 rounded-xl shadow-sm">
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         <form action="{{ route('admin.users.confirm') }}" method="POST" enctype="multipart/form-data">
             @csrf
             {{-- // Thông Tin Cơ Bản --}}
@@ -154,7 +145,8 @@
                 </button>
             </div>
 
-            <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
+            <div
+                class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4 {{ $errors->has('user_addresses') ? 'is-invalid bg-red-100 border-red-500' : '' }}">
                 @php
                     $currentAddresses = old('user_addresses') ?? ($data['user_addresses'] ?? [[]]);
 
@@ -185,6 +177,19 @@
                         'address' => [],
                     ])
                 </template>
+
+                <div class="text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i>
+                    <span class="text-sm font-medium text-gray-700">
+                        Lưu ý: Nếu có nhiều hơn 1 địa chỉ, vui lòng chọn 1 địa chỉ mặc định để làm địa chỉ nhận hàng chính.
+                    </span>
+                </div>
+
+                @if ($errors->has('user_addresses'))
+                    <div class="mt-2 p-2 bg-red-100 border text-center border-red-500 text-red-800 rounded-lg is-invalid">
+                        {{ $errors->first('user_addresses') }}
+                    </div>
+                @endif
             </div>
 
             {{-- // Thông Tin Ngân hàng --}}

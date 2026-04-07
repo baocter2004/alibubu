@@ -124,10 +124,11 @@
 
                         <p class="text-sm text-gray-500 mt-2">Tỉnh/Thành phố</p>
                         <p class="text-gray-800 font-medium">
-                            {{ $provinces->firstWhere('id', $address['province_id'] ?? '')?->name ?? '-' }}</p>
+                          {{  $address['province'] ?? '-' }}
+                        </p>
 
                         <p class="text-sm text-gray-500 mt-2">Phường/Xã</p>
-                        <p class="text-gray-800 font-medium">{{ $address['ward_name'] ?? '-' }}</p>
+                        <p class="text-gray-800 font-medium">{{ $address['ward'] ?? '-' }}</p>
 
                         <p class="text-sm text-gray-500 mt-2">Địa chỉ chi tiết</p>
                         <p class="text-gray-800 font-medium">{{ $address['address'] ?? '-' }}</p>

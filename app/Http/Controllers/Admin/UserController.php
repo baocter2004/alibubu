@@ -39,13 +39,14 @@ class UserController extends Controller
     public function confirmDetail()
     {
         $data = session()->get('user_data');
-        $provinces = Province::select('id', 'name')->get();
 
         if (!$data) {
             return redirect()->route('admin.users.create');
         }
 
-        return view('admin.pages.users.confirms.create-confirm', compact('data', 'provinces'));
+        $data['user_addresses'] = $this->userService->mapAddressName($data['user_addresses'] ?? []);
+
+        return view('admin.pages.users.confirms.create-confirm', compact('data'));
     }
 
     public function store()
@@ -62,6 +63,28 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
+    }
+
+    public function edit(int|string $id)
+    {
+        $params = [
+            'relates' => ['userAddresses']
+        ];
+        $user = $this->userService->filter($params)->find($id);
+
+        $provinces = Province::select('id', 'name')->get();
+
+        return view('admin.pages.users.edit', compact('user', 'provinces'));
+    }
+
+    public function update(PostUserRequest $request, int|string $id)
+    {
+        $data = $request->validated();
+
+        $this->userService->update($id, $data);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User updated successfully.');
     }
 
     public function show(int|string $id)
