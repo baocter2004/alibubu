@@ -37,4 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#scrollToTop").on("click", function () {
         $("html, body").animate({ scrollTop: 0 }, 500);
     });
+
+    $(".sidebar-dropdown.active").find(".submenu").show();
+    $(".sidebar-dropdown.active").find(".arrow-icon").addClass("rotate-90");
+
+    $(".dropdown-toggle").on("click", function (e) {
+        e.preventDefault();
+
+        let $parent = $(this).parent(".sidebar-dropdown");
+        let $submenu = $parent.find(".submenu");
+        let $arrow = $(this).find(".arrow-icon");
+
+        $submenu.slideToggle(300);
+
+        $arrow.toggleClass("rotate-90");
+    });
 });
