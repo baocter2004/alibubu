@@ -43,12 +43,12 @@ class UserAddress extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function province()
+    public function provinceRel()
     {
         return $this->belongsTo(Province::class);
     }
 
-    public function ward()
+    public function wardRel()
     {
         return $this->belongsTo(Ward::class);
     }

@@ -64,8 +64,11 @@ class UserController extends Controller
             ->with('success', 'User created successfully.');
     }
 
-    public function show(int|string $id, $params = [])
+    public function show(int|string $id)
     {
+        $params = [
+            'relates' => ['userAddresses']
+        ];
         $user = $this->userService->filter($params)->find($id);
 
         return view('admin.pages.users.show', compact('user'));

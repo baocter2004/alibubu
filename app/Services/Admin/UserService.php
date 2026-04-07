@@ -2,7 +2,9 @@
 
 namespace App\Services\Admin;
 
+use App\Models\Province;
 use App\Models\User;
+use App\Models\Ward;
 use App\Repositories\UserAddressRepository;
 use App\Repositories\UserRepository;
 use App\Services\BaseCrudService;
@@ -81,15 +83,32 @@ class UserService extends BaseCrudService
             $user = $this->getRepository()->create($userData);
 
             if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
+                $provinceIds = array_filter(array_column($params['user_addresses'], 'province_id'));
+                $wardIds = array_filter(array_column($params['user_addresses'], 'ward_id'));
+
+                $provinces = Province::whereIn('id', $provinceIds)->get()->keyBy('id');
+                $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
+
                 $addresses = [];
+                $now = now();
+
                 foreach ($params['user_addresses'] as $addressData) {
                     $addressData['user_id'] = $user->id;
-                    $now = now();
+
+                    if (!empty($addressData['province_id']) && isset($provinces[$addressData['province_id']])) {
+                        $addressData['province'] = $provinces[$addressData['province_id']]->name;
+                    }
+
+                    if (!empty($addressData['ward_id']) && isset($wards[$addressData['ward_id']])) {
+                        $addressData['ward'] = $wards[$addressData['ward_id']]->name;
+                    }
+
                     $addressData['created_at'] = $now;
                     $addressData['updated_at'] = $now;
 
                     $addresses[] = $addressData;
                 }
+
                 $this->userAddressRepository->insert($addresses);
             }
 
