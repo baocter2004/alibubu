@@ -109,7 +109,7 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
 
-                                <a href="" class="text-yellow-500 hover:text-yellow-700" title="Sửa">
+                                <a href="{{ route('admin.users.edit', $user->id) }}" class="text-yellow-500 hover:text-yellow-700" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
 

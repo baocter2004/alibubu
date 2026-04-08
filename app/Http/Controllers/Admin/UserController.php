@@ -83,7 +83,7 @@ class UserController extends Controller
 
         $this->userService->update($id, $data);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.users.show', $id)
             ->with('success', 'User updated successfully.');
     }
 
