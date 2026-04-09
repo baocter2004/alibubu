@@ -51,19 +51,26 @@ $(document).ready(function () {
     });
 });
 
-//Scroll To First Error
+let invalids = $(".is-invalid")
+    .filter(function () {
+        return $(this).is(":visible") && $(this).offset() !== undefined;
+    })
+    .toArray();
 
-let firstInvalid = $(".is-invalid").first();
+let firstInvalid = invalids.sort(
+    (a, b) => $(a).offset().top - $(b).offset().top,
+)[0];
 
-if (firstInvalid.length) {
-    const isMobile = window.innerWidth < 768;
-    const offset = isMobile ? 100 : 140;
+if (firstInvalid) {
+    let $target = $(firstInvalid).closest(".address-item");
+    if (!$target.length) $target = $(firstInvalid);
 
     $("html, body").animate(
         {
-            scrollTop: firstInvalid.offset().top - offset,
+            scrollTop: $target.offset().top - 150,
         },
-        1000,
-        "linear"
+        500,
     );
+
+    $(firstInvalid).focus();
 }

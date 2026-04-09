@@ -10,7 +10,10 @@
 ])
 
 @php
-    $hasError = $errors->has($name);
+    $dotName = str_replace(['[', ']'], ['.', ''], $name);
+    $dotName = str_replace('..', '.', $dotName);
+
+    $hasError = $errors->has($dotName);
 @endphp
 
 <div class="w-full">
@@ -27,7 +30,7 @@
     <div class="relative">
         @if ($type !== 'file')
             <input id="{{ $name }}" name="{{ $name }}" type="{{ $type }}"
-                @if ($disabled) disabled @endif value="{{ old($name, request($name, $value)) }}"
+                @if ($disabled) disabled @endif value="{{ old($dotName, $value) }}"
                 placeholder="{{ $placeholder }}"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200
                     {{ $hasError ? 'is-invalid' : '' }}
@@ -46,7 +49,7 @@
     @if ($type === 'file')
         <div class="mt-2">
             <label for="{{ $name }}"
-                class="flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden relative hover:bg-gray-50">
+                class="flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden relative hover:bg-gray-50 {{ $hasError ? 'border-red-500' : 'border-gray-300' }}">
 
                 <div id="placeholder-{{ $name }}"
                     class="flex flex-col items-center justify-center text-center p-5 {{ $value ? 'hidden' : '' }}">
@@ -64,7 +67,7 @@
         </div>
     @endif
 
-    @error($name)
+    @error($dotName)
         <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
     @enderror
 </div>

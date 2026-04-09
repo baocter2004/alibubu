@@ -1,41 +1,112 @@
-<aside class="bg-foreground relative" id="sidebar">
-    <div class="header-sidebar">
-        <h1 class="header-sidebar-title">Alibubu</h1>
-        <span class="header-sidebar-note">ENTERPRISE ADMIN</span>
-
-        <div class="absolute top-4 right-4">
-            <button id="sidebarToggleMobile" class="text-gray-500 focus:outline-none lg:hidden">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+<aside class="bg-[#1e1e2d] text-gray-300 w-64 min-h-screen fixed left-0 top-0 z-50 transition-all duration-300"
+    id="sidebar">
+    <div class="p-6 flex items-center justify-between border-b border-gray-700/50">
+        <div>
+            <h1 class="text-xl font-bold text-white tracking-wider">Alibubu</h1>
+            <p class="text-[10px] text-blue-400 font-semibold uppercase">Enterprise Admin</p>
         </div>
+        <button id="sidebarToggleMobile" class="lg:hidden text-gray-400 hover:text-white">
+            <i class="fa-solid fa-bars"></i>
+        </button>
     </div>
-    <ul class="w-full px-3 space-y-2">
-        <li class="sidebar-items @if (Route::is('admin.dashboard')) active @endif">
-            <a href="{{ route('admin.dashboard') }}"
-                class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <i class="fa-solid text-lg fa-chart-bar"></i>
-                Dashboard
-            </a>
-        </li>
-        <li class="sidebar-items {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
-            <a href="" class="sidebar-link">
-                <i class="fa-solid text-lg fa-box"></i>
-                Products
-            </a>
-        </li>
-        <li class="sidebar-items {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-            <a href="" class="sidebar-link">
-                <i class="fa-solid text-lg fa-cart-shopping"></i>
-                Orders
-            </a>
-        </li>
-        <li class="sidebar-items {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            <a href="{{ route('admin.users.index') }}" class="sidebar-link">
-                <i class="fa-solid text-lg fa-users"></i>
-                Users
-            </a>
-        </li>
-    </ul>
+
+    <nav class="mt-4 px-3">
+        <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Main</p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-chart-pie w-5"></i>
+                        <span class="font-medium text-sm">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Sales & Stock</p>
+            <ul class="space-y-1">
+                <li class="sidebar-dropdown {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                    <a href="javascript:void(0)"
+                        class="dropdown-toggle flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-800 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-box w-5"></i>
+                            <span class="font-medium text-sm">Products</span>
+                        </div>
+                        <i
+                            class="fa-solid fa-chevron-right text-[10px] transition-transform duration-300 arrow-icon"></i>
+                    </a>
+
+                    <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.products.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                All Products
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.products.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                Add New Product
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-dropdown {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                    <a href="javascript:void(0)"
+                        class="dropdown-toggle flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-800 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-cart-shopping w-5"></i>
+                            <span class="font-medium text-sm">Orders</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-[10px] arrow-icon"></i>
+                    </a>
+                    <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.orders.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                Pending
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.orders.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                Completed
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">System</p>
+            <ul class="space-y-1">
+                <li class="sidebar-dropdown {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <a href="javascript:void(0)"
+                        class="dropdown-toggle flex items-center justify-between px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.users.*') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-users w-5"></i>
+                            <span class="font-medium text-sm">Users</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-[10px] arrow-icon"></i>
+                    </a>
+                    <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
+                        <li>
+                            <a href="{{ route('admin.users.index') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Index</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users.create') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Create</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </aside>
 
 <div id="overlay"></div>

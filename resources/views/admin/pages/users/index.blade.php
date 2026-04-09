@@ -7,14 +7,11 @@
 @section('content')
     <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg">
         <form action="{{ route('admin.users.index') }}" method="GET">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="px-4 py-2 border-b-2 border-blue-500 md:border-b-0 md:w-auto mb-4 md:mb-0">
-                    <h1 class="text-2xl font-semibold text-gray-900">Quản Lý Người Dùng</h1>
-                </div>
-                <a href=""
+            <div class="flex flex-col md:flex-row justify-end items-center">
+                <a href="{{ route('admin.users.create') }}"
                     class="px-4 py-2 text-sm flex items-center font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                     <i class="fas fa-plus m-0 md:mr-2"></i>
-                    <span class="hidden md:block">
+                    <span>
                         Thêm Người Dùng
                     </span>
                 </a>
@@ -50,6 +47,34 @@
                        focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-2 mt-4">
+                <div class="w-full">
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Vai Trò</label>
+                    <select id="role" name="role"
+                        class="w-full border border-gray-300 rounded-md p-2 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tất Cả Vai Trò</option>
+                        @foreach ($roles as $key => $value)
+                            <option value="{{ $key }}" {{ request('role') == $key ? 'selected' : '' }}>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Trạng Thái</label>
+                    <select id="status" name="status"
+                        class="w-full border border-gray-300 rounded-md p-2 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tất Cả Trạng Thái</option>
+                        @foreach ($statuses as $key => $value)
+                            <option value="{{ $key }}" {{ request('status') == $key ? 'selected' : '' }}>
+                                {{ $value }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <div class="w-full flex justify-end items-center px-4 py-2 mt-4">
                 <button type="submit"
                     class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
@@ -72,15 +97,15 @@
             <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng</h1>
         </div>
         <div class="w-full overflow-x-auto rounded-2xl">
-            <table class="min-w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
+            <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[5%] text-center px-4 py-3">ID</th>
                         <th class="w-[15%] px-4 py-3">Tên Người Dùng</th>
                         <th class="w-[10%] px-4 py-3">Sđt</th>
-                        <th class="w-[20%] px-4 py-3">Email</th>
+                        <th class="w-[18%] px-4 py-3">Email</th>
                         <th class="w-[10%] px-4 py-3">Vai Trò</th>
-                        <th class="w-[10%] px-4 py-3">Trạng Thái</th>
+                        <th class="w-[12%] text-center px-4 py-3">Trạng Thái</th>
                         <th class="w-[10%] text-center px-4 py-3">Điểm Số</th>
                         <th class="w-[10%] px-4 py-3">Ngày Tạo</th>
                         <th class="w-[10%] text-center px-4 py-3">Hành Động</th>
@@ -90,28 +115,33 @@
                     @forelse ($users as $user)
                         <tr class="text-sm text-gray-700 hover:bg-blue-100">
                             <td class="text-center px-4 py-3">{{ $user->id }}</td>
-                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->fullname }}</td>
+                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->fullname }}
+                            </td>
                             <td class="px-4 py-3">{{ $user->phone_number }}</td>
                             <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->email }}</td>
-                            <td class="px-4 py-3">{{ \App\Const\UserConst::ROLE[$user->role] ?? 'Unknown' }}</td>
-                            <td class="px-4 py-3">
-                                @if ($user->status)
+                            <td class="px-4 py-3">{{ $roles[$user->role] ?? 'Unknown' }}</td>
+                            <td class="px-4 py-3 text-center">
+                                @if ($user->status === \App\Const\UserConst::STATUS_ACTIVE)
                                     <span
                                         class="px-2 py-1 text-xs font-semibold text-green-600 bg-green-200 rounded-full">Hoạt
                                         động</span>
-                                @else
+                                @elseif ($user->status === \App\Const\UserConst::STATUS_INACTIVE)
                                     <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-200 rounded-full">Không
                                         hoạt động</span>
+                                @else
+                                    <span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full">Đã Khóa</span>
                                 @endif
                             </td>
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
                             <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
-                                <a href="" class="text-blue-500 hover:text-blue-700" title="Xem">
+                                <a href="{{ route('admin.users.show', $user->id) }}"
+                                    class="text-blue-500 hover:text-blue-700" title="Xem">
                                     <i class="fas fa-eye"></i>
                                 </a>
 
-                                <a href="" class="text-yellow-500 hover:text-yellow-700" title="Sửa">
+                                <a href="{{ route('admin.users.edit', $user->id) }}"
+                                    class="text-yellow-500 hover:text-yellow-700" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
 
@@ -127,8 +157,10 @@
                             </td>
                         </tr>
                     @empty
-                        <tr colspan="9" class="text-center text-gray-500">
-                            <td class="px-4 py-3">Không có người dùng nào.</td>
+                        <tr class="w-full h-40 text-center text-gray-500">
+                            <td colspan="9" class="px-4 py-3">
+                                Không có người dùng nào.
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>

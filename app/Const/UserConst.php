@@ -10,9 +10,9 @@ class UserConst
 
 
     const ROLE = [
-        self::ROLE_USER => 'user',
-        self::ROLE_EMPLOYEE => 'employee',
-        self::ROLE_ADMIN => 'admin'
+        self::ROLE_USER => 'Người Dùng',
+        self::ROLE_EMPLOYEE => 'Nhân Viên',
+        self::ROLE_ADMIN => 'Quản Trị Viên'
     ];
 
     const MALE = 1;
@@ -20,9 +20,9 @@ class UserConst
     const OTHER = 3;
 
     const GENDER = [
-        1 => 'male',
-        2 => 'female',
-        3 => 'other'
+        1 => 'Nam',
+        2 => 'Nữ',
+        3 => 'Khác'
     ];
 
     const NOT_SELECTED = 0;
@@ -30,14 +30,14 @@ class UserConst
     const NOT = 2;
 
     const YES_NO_OPTIONS = [
-        self::NOT_SELECTED => 'not selected',
-        self::YES => 'yes',
-        self::NOT => 'no',
+        self::NOT_SELECTED => 'chưa chọn',
+        self::YES => 'có',
+        self::NOT => 'không',
     ];
 
     const YES_NO_ONLY = [
-        self::YES => 'yes',
-        self::NOT => 'no',
+        self::YES => 'có',
+        self::NOT => 'không',
     ];
 
     const FULL_TIME = 1;
@@ -55,8 +55,8 @@ class UserConst
     const STATUS_LOCKED = 3;
 
     const STATUS = [
-        self::STATUS_ACTIVE => 'active',
-        self::STATUS_INACTIVE => 'inactive',
-        self::STATUS_LOCKED => 'locked'
+        self::STATUS_ACTIVE => 'Hoạt Động',
+        self::STATUS_INACTIVE => 'Không Hoạt Động',
+        self::STATUS_LOCKED => 'Đã Khóa'
     ];
 }

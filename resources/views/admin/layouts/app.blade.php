@@ -19,7 +19,7 @@
     <div id="content" class="flex flex-col flex-1">
         @include('admin.layouts.partials.header')
 
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6">
             <div class="w-full mx-auto">
                 @yield('content')
             </div>

@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Services\Client;
+namespace App\Services\Admin;
 
-use App\Models\User;
-use App\Repositories\UserRepository;
+use App\Repositories\UserAddressRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
 
-class UserService extends BaseCrudService
+class UserAddressService extends BaseCrudService
 {
-    protected function getRepository(): UserRepository
+    protected function getRepository(): UserAddressRepository
     {
         if (empty($this->repository)) {
-            $this->repository = app()->make(UserRepository::class);
+            $this->repository = app()->make(UserAddressRepository::class);
         }
 
         return $this->repository;
@@ -33,22 +32,8 @@ class UserService extends BaseCrudService
             $whereLikes['name'] = $params['name'];
         }
 
-        if (!empty($params['email'])) {
-            $whereLikes['email'] = $params['email'];
-        }
-
         if (!empty($params['phone_number'])) {
             $whereLikes['phone_number'] = $params['phone_number'];
-        }
-
-        if (!empty($params['status'])) {
-            $wheres['status'] = $params['status'];
-        }
-
-        if (!empty($params['search'])) {
-            $orWheres[] = ['name', 'like', '%' . $params['search'] . '%'];
-            $orWheres[] = ['email', 'like', '%' . $params['search'] . '%'];
-            $orWheres[] = ['phone_number', 'like', '%' . $params['search'] . '%'];
         }
 
         return [
@@ -61,12 +46,5 @@ class UserService extends BaseCrudService
             'relates' => $relates,
             'relates_count' => $relatesCount,
         ];
-    }
-
-    public function find(int|string $id): ?User
-    {
-        return $this->repository->filter([
-            'wheres' => ['id' => $id],
-        ])->first();
     }
 }
