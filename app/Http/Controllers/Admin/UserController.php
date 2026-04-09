@@ -31,11 +31,13 @@ class UserController extends Controller
         return view('admin.pages.users.create', compact('data', 'provinces'));
     }
 
-    public function confirm(PostUserRequest $request)
+    public function confirm(PostUserRequest $request, $id = null)
     {
         $data = $request->validated();
+        $data['id'] = $id;
 
         session()->put('user_data', $data);
+
         return redirect()->route('admin.users.confirm-detail');
     }
 
@@ -49,23 +51,7 @@ class UserController extends Controller
 
         $data['user_addresses'] = $this->userService->mapAddressName($data['user_addresses'] ?? []);
 
-        return view('admin.pages.users.confirms.create-confirm', compact('data'));
-    }
-
-    public function store()
-    {
-        $data = session()->get('user_data');
-
-        if (!$data) {
-            return redirect()->route('admin.users.create');
-        }
-
-        $this->userService->create($data);
-
-        session()->forget('user_data');
-
-        return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully.');
+        return view('admin.pages.users.confirms.form-confirm', compact('data'));
     }
 
     public function edit(int|string $id)
@@ -80,14 +66,27 @@ class UserController extends Controller
         return view('admin.pages.users.edit', compact('user', 'provinces'));
     }
 
-    public function update(PostUserRequest $request, int|string $id)
+    public function save()
     {
-        $data = $request->validated();
+        $data = session()->get('user_data');
 
-        $this->userService->update($id, $data);
+        if (!$data) {
+            return redirect()->route('admin.users.create');
+        }
 
-        return redirect()->route('admin.users.show', $id)
-            ->with('success', 'User updated successfully.');
+        if (!empty($data['id'])) {
+            // update
+            $this->userService->update($data['id'], $data);
+            $message = 'User updated successfully.';
+        } else {
+            // create
+            $this->userService->create($data);
+            $message = 'User created successfully.';
+        }
+
+        session()->forget('user_data');
+
+        return redirect()->route('admin.users.index')->with('success', $message);
     }
 
     public function show(int|string $id)
