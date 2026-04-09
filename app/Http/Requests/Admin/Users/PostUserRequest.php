@@ -109,8 +109,11 @@ class PostUserRequest extends FormRequest
             'birthday' => 'nullable|date',
             'role'     => ['required', Rule::in(array_keys(UserConst::ROLE))],
 
-            'bank_name' => 'nullable|string',
-            'user_bank_name' => 'nullable|string',
+            'bank_name' => [
+                'nullable',
+                Rule::in(array_keys(\App\Const\BankConst::getOptions()))
+            ],
+            'user_bank_name' => 'nullable|string|regex:/^[A-Z\s]+$/',
             'bank_account' => 'nullable|string',
 
             'user_addresses' => 'array|max:5',
@@ -121,6 +124,13 @@ class PostUserRequest extends FormRequest
             'user_addresses.*.ward_id'      => 'nullable|exists:wards,id',
             'user_addresses.*.address'      => 'nullable|string|max:255',
             'user_addresses.*.is_default'   => 'nullable|boolean',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'user_bank_name.regex' => 'Tên chủ tài khoản chỉ được chứa chữ in hoa và khoảng trắng',
         ];
     }
 
