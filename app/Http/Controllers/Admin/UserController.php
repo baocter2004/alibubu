@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Const\UserConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Users\GetUserRequest;
 use App\Http\Requests\Admin\Users\PostUserRequest;
@@ -16,8 +17,10 @@ class UserController extends Controller
     {
         session()->forget('user_data');
         $users = $this->userService->search($request->validated());
+        $statuses = UserConst::STATUS;
+        $roles = UserConst::ROLE;
 
-        return view('admin.pages.users.index', compact('users'));
+        return view('admin.pages.users.index', compact('users', 'statuses', 'roles'));
     }
 
     public function create()
@@ -83,7 +86,7 @@ class UserController extends Controller
 
         $this->userService->update($id, $data);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.users.show', $id)
             ->with('success', 'User updated successfully.');
     }
 

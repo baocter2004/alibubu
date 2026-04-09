@@ -80,7 +80,7 @@ class UserService extends BaseCrudService
             DB::beginTransaction();
             $userData = $params;
             unset($userData['user_addresses']);
-            $user = $this->getRepository()->create($userData);
+            $user = parent::create($userData);
 
             if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
                 $provinceIds = array_filter(array_column($params['user_addresses'], 'province_id'));
@@ -110,6 +110,63 @@ class UserService extends BaseCrudService
                 }
 
                 $this->userAddressRepository->insert($addresses);
+            }
+
+            DB::commit();
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function update(int|string $id, array $params = []): User
+    {
+        try {
+            DB::beginTransaction();
+            $userData = $params;
+            unset($userData['user_addresses']);
+            $user = parent::update($id, $userData);
+
+            if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
+
+                $provinceIds = array_filter(array_column($params['user_addresses'], 'province_id'));
+                $wardIds = array_filter(array_column($params['user_addresses'], 'ward_id'));
+
+                $provinces = Province::whereIn('id', $provinceIds)->get()->keyBy('id');
+                $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
+
+                $currentAddresses = $user->userAddresses()->get()->keyBy('id');
+
+                $keptIds = [];
+
+                foreach ($params['user_addresses'] as $addressData) {
+
+                    if (!empty($addressData['province_id']) && isset($provinces[$addressData['province_id']])) {
+                        $addressData['province'] = $provinces[$addressData['province_id']]->name;
+                    }
+
+                    if (!empty($addressData['ward_id']) && isset($wards[$addressData['ward_id']])) {
+                        $addressData['ward'] = $wards[$addressData['ward_id']]->name;
+                    }
+
+                    if (!empty($addressData['id']) && isset($currentAddresses[$addressData['id']])) {
+
+                        $address = $currentAddresses[$addressData['id']];
+                        $address->update($addressData);
+
+                        $keptIds[] = $address->id;
+                    } else {
+                        $address = $user->userAddresses()->create($addressData);
+                        $keptIds[] = $address->id;
+                    }
+                }
+
+                // DELETE cái bị remove
+                $user->userAddresses()
+                    ->whereNotIn('id', $keptIds)
+                    ->delete();
             }
 
             DB::commit();
