@@ -17,4 +17,9 @@ abstract class BaseCrudService extends BaseService
     {
         return $this->get($params);
     }
+
+    public function searchTrashed(array $params = [], $limit = 10): LengthAwarePaginator
+    {
+        return $this->getRepository()->getListTrashed($params, $limit);
+    }
 }

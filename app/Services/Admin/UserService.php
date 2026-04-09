@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Const\UserConst;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
@@ -32,7 +33,7 @@ class UserService extends BaseCrudService
         $whereLikes = Arr::get($params, 'where_likes', []);
         $whereEquals = Arr::get($params, 'where_equals', []);
         $orWheres = Arr::get($params, 'or_wheres', []);
-        $sort = Arr::get($params, 'sort', 'created_at:desc');
+        $sort = Arr::get($params, 'sort', 'id:desc');
         $relates = Arr::get($params, 'relates', []);
         $relatesCount = Arr::get($params, 'relates_count', []);
 
@@ -173,6 +174,50 @@ class UserService extends BaseCrudService
             return $user;
         } catch (\Exception $e) {
             Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function delete($id): bool
+    {
+        try {
+            $user = $this->find($id);
+            $user->update(['status' => UserConst::STATUS_INACTIVE]);
+            $user = parent::delete($id);
+
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
+            throw $e;
+        }
+    }
+
+    public function restore(int|string $id): bool
+    {
+        try {
+            $user = $this->getRepository()->restore($id);
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('Error restoring user: ' . $e->getMessage(), ['id' => $id]);
+            throw $e;
+        }
+    }
+
+    public function forceDelete(int|string $id): bool
+    {
+        try {
+            DB::beginTransaction();
+            $user = parent::delete($id);
+
+            if ($user) {
+                $this->userAddressRepository->filter(['user_id' => $id])->delete();
+            }
+
+            DB::commit();
+            return $user;
+        } catch (\Exception $e) {
+            Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
             DB::rollBack();
             throw $e;
         }

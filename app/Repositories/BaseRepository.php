@@ -333,6 +333,11 @@ abstract class BaseRepository
         return $this->model->upsert($params, $uniqueByColumns, $updatedColumns);
     }
 
+    public function getListTrashed(array $params = [], $limit = 10): LengthAwarePaginator
+    {
+        return $this->filter($params)->onlyTrashed()->paginate($limit);
+    }
+
     public function countAll(): int
     {
         return $this->newQuery()->count();

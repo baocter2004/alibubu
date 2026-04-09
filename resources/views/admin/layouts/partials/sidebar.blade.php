@@ -96,11 +96,24 @@
                     <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
                         <li>
                             <a href="{{ route('admin.users.index') }}"
-                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Index</a>
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-list w-4"></i>
+                                Index
+                            </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.users.create') }}"
-                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Create</a>
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-plus w-4"></i>
+                                Create
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users.trash') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.trash') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-trash w-4"></i>
+                                Trash
+                            </a>
                         </li>
                     </ul>
                 </li>

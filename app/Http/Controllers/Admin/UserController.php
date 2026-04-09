@@ -23,6 +23,15 @@ class UserController extends Controller
         return view('admin.pages.users.index', compact('users', 'statuses', 'roles'));
     }
 
+    public function trash(GetUserRequest $request)
+    {
+        $users = $this->userService->searchTrashed($request->validated());
+        $statuses = UserConst::STATUS;
+        $roles = UserConst::ROLE;
+
+        return view('admin.pages.users.trash', compact('users', 'statuses', 'roles'));
+    }
+
     public function create()
     {
         $data = session()->get('user_data');
@@ -104,5 +113,19 @@ class UserController extends Controller
         $this->userService->delete($id);
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+    }
+
+    public function forceDestroy(int|string $id)
+    {
+        $this->userService->forceDelete($id);
+
+        return redirect()->route('admin.users.index')->with('success', 'User permanently deleted successfully.');
+    }
+
+    public function restore(int|string $id)
+    {
+        $this->userService->restore($id);
+
+        return redirect()->route('admin.users.index')->with('success', 'User restored successfully.');
     }
 }
