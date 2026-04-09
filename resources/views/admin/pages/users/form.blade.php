@@ -34,14 +34,16 @@
             ])
         </div>
 
-        @include('components.input', [
-            'name' => 'phone_number',
-            'required' => true,
-            'label' => 'Số Điện Thoại',
-            'placeholder' => 'Mời nhập số điện thoại',
-            'value' => $user->phone_number ?? ($data['phone_number'] ?? ''),
-            'icon' => 'phone',
-        ])
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @include('components.input', [
+                'name' => 'phone_number',
+                'required' => true,
+                'label' => 'Số Điện Thoại',
+                'placeholder' => 'Mời nhập số điện thoại',
+                'value' => $user->phone_number ?? ($data['phone_number'] ?? ''),
+                'icon' => 'phone',
+            ])
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @include('components.input', [
@@ -62,6 +64,13 @@
                 'icon' => 'lock',
             ])
         </div>
+
+        @if (!empty($user))
+            <div class="text-sm font-medium text-gray-700">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i>
+                Nếu không muốn thay đổi mật khẩu, hãy để trống 2 trường mật khẩu ở trên.
+            </div>
+        @endif
     </div>
 
     {{-- // Thông Tin Cá Nhân --}}
@@ -128,7 +137,7 @@
             </div>
         </div>
         <button type="button" id="add-address-btn"
-            class="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-all">
+            class="flex items-center px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-all">
             <i class="fa-solid fa-plus mr-1"></i> Thêm địa chỉ
         </button>
     </div>
@@ -201,11 +210,14 @@
         </div>
     </div>
     <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-        @include('components.input', [
+        @include('components.select', [
             'name' => 'bank_name',
             'label' => 'Tên ngân hàng',
             'icon' => 'building-columns',
+            'options' => \App\Const\BankConst::getOptions(),
             'value' => $user->bank_name ?? ($data['bank_name'] ?? ''),
+            'placeholder' => '-- Chọn ngân hàng --',
+            'required' => true,
         ])
 
         @include('components.input', [
