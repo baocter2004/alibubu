@@ -129,7 +129,8 @@
                                     <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-200 rounded-full">Không
                                         hoạt động</span>
                                 @else
-                                    <span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full">Đã Khóa</span>
+                                    <span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full">Đã
+                                        Khóa</span>
                                 @endif
                             </td>
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
@@ -165,7 +166,7 @@
                     @endforelse
                 </tbody>
             </table>
-            @include('components.pagination', ['paginator' => $users])
         </div>
+        @include('components.pagination', ['paginator' => $users])
     </div>
 @endsection

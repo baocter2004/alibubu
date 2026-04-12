@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProvinceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/admin')
@@ -26,8 +27,14 @@ Route::prefix('/admin')
             Route::get('/{id}', [UserController::class, 'show'])->name('show');
 
             Route::post('/restore/{id}', [UserController::class, 'restore'])->name('restore');
-            
+
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
             Route::delete('/force/{id}', [UserController::class, 'forceDestroy'])->name('force-destroy');
+        });
+
+        // Province Resource
+        Route::prefix('provinces')->name('provinces.')->group(function () {
+            Route::get('/', [ProvinceController::class, 'index'])->name('index');
+            Route::get('/{id}', [ProvinceController::class, 'show'])->name('show');
         });
     });

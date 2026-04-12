@@ -119,6 +119,19 @@
                 </li>
             </ul>
         </div>
+
+        <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Provinces And Wards</p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ route('admin.provinces.index') }}"
+                        class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.provinces.index') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-chart-pie w-5"></i>
+                        <span class="font-medium text-sm">Provinces</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </nav>
 </aside>
 
