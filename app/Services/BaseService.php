@@ -91,7 +91,6 @@ abstract class BaseService
         return $this->getRepository()->delete($id);
     }
 
-
     public function deleteAll(array $ids)
     {
         return $this->getRepository()->deleteAll($ids);
@@ -124,6 +123,11 @@ abstract class BaseService
             return $lastest->id;
 
         return 0;
+    }
+
+    public function trashed()
+    {
+        return $this->getRepository()->getListTrashed();
     }
 
     public function checkExist($column, $value)

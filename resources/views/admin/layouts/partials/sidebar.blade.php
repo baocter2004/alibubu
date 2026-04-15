@@ -96,13 +96,39 @@
                     <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
                         <li>
                             <a href="{{ route('admin.users.index') }}"
-                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Index</a>
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-list w-4"></i>
+                                Index
+                            </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.users.create') }}"
-                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">Create</a>
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-plus w-4"></i>
+                                Create
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users.trash') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.users.trash') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-trash w-4"></i>
+                                Trash
+                            </a>
                         </li>
                     </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Provinces And Wards</p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="{{ route('admin.provinces.index') }}"
+                        class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.provinces.index') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-chart-pie w-5"></i>
+                        <span class="font-medium text-sm">Provinces</span>
+                    </a>
                 </li>
             </ul>
         </div>

@@ -4,10 +4,10 @@ namespace App\Repositories;
 
 use App\Traits\HasBuildQuery;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 abstract class BaseRepository
 {
@@ -25,7 +25,7 @@ abstract class BaseRepository
     private function setModel()
     {
         $model = $this->getModel();
-        if (!($model instanceof Model)) {
+        if (! ($model instanceof Model)) {
             throw new \Exception('Model not found');
         }
         $this->model = $model;
@@ -92,7 +92,7 @@ abstract class BaseRepository
             ->when($isNull, function ($query) use ($isNull) {
                 foreach ($isNull as $name) {
                     if ($name) {
-                        $query->where(function ($query) use ($isNull, $name) {
+                        $query->where(function ($query) use ($name) {
                             $query->whereNull($name);
                             $query->orWhere($name, '');
                         });
@@ -112,29 +112,31 @@ abstract class BaseRepository
                 $query->where($whereEquals);
             })
             ->when($whereIns, function ($query) use ($whereIns) {
-                foreach ($whereIns as $key => $in)
+                foreach ($whereIns as $key => $in) {
                     $query->whereIn($key, $in);
+                }
             })
             ->when($whereNotIns, function ($query) use ($whereNotIns) {
-                foreach ($whereNotIns as $key => $in)
+                foreach ($whereNotIns as $key => $in) {
                     $query->whereNotIn($key, $in);
+                }
             })
             ->when($whereLikes, function ($query) use ($whereLikes) {
                 $query->where($whereLikes);
             })
-            ->when(!empty($whereHas), function ($query) use ($whereHas) {
+            ->when(! empty($whereHas), function ($query) use ($whereHas) {
                 foreach ($whereHas as $relateName => $conditions) {
-                    if (!empty($conditions)) {
+                    if (! empty($conditions)) {
                         if (is_array($conditions)) {
                             $query->whereHas($relateName, function ($subQuery) use ($conditions) {
                                 foreach ($conditions as $column => $condition) {
                                     if (is_array($condition) && ($condition[0] ?? false) && ($condition[2] ?? false) && strtoupper($condition[1] ?? false) === 'IN') {
                                         $subQuery->whereIn($condition[0], $condition[2]);
-                                    } else if (is_callable($condition)) {
+                                    } elseif (is_callable($condition)) {
                                         $subQuery->where($condition);
-                                    } else if (is_array($condition) && $condition[0] === 'LIKE') {
+                                    } elseif (is_array($condition) && $condition[0] === 'LIKE') {
                                         $subQuery->where($column, 'LIKE', "%$condition[1]%");
-                                    } else if (is_array($condition)) {
+                                    } elseif (is_array($condition)) {
                                         $subQuery->where([$condition]);
                                     } else {
                                         $subQuery->where($column, $condition);
@@ -147,19 +149,19 @@ abstract class BaseRepository
                     }
                 }
             })
-            ->when(!empty($whereDoesntHave), function ($query) use ($whereDoesntHave) {
+            ->when(! empty($whereDoesntHave), function ($query) use ($whereDoesntHave) {
                 foreach ($whereDoesntHave as $relateName => $conditions) {
-                    if (!empty($conditions)) {
+                    if (! empty($conditions)) {
                         if (is_array($conditions)) {
                             $query->whereDoesntHave($relateName, function ($subQuery) use ($conditions) {
                                 foreach ($conditions as $column => $condition) {
                                     if (is_array($condition) && ($condition[0] ?? false) && ($condition[2] ?? false) && strtoupper($condition[1] ?? false) === 'IN') {
                                         $subQuery->whereIn($condition[0], $condition[2]);
-                                    } else if (is_callable($condition)) {
+                                    } elseif (is_callable($condition)) {
                                         $subQuery->where($condition);
-                                    } else if (is_array($condition) && $condition[0] === 'LIKE') {
+                                    } elseif (is_array($condition) && $condition[0] === 'LIKE') {
                                         $subQuery->where($column, 'LIKE', "%$condition[1]%");
-                                    } else if (is_array($condition)) {
+                                    } elseif (is_array($condition)) {
                                         $subQuery->where([$condition]);
                                     } else {
                                         $subQuery->where($column, $condition);
@@ -177,7 +179,7 @@ abstract class BaseRepository
                     $query->whereRaw("FIND_IN_SET($value, REPLACE(REPLACE ( REPLACE ( $key, '[', '' ), ']', '' ),' ', '')) > 0");
                 }
             })
-            ->when(!empty($orWheres), function ($query) use ($orWheres) {
+            ->when(! empty($orWheres), function ($query) use ($orWheres) {
                 $query->where(function ($query) use ($orWheres) {
                     foreach ($orWheres as $value) {
                         if (is_array($value) && count($value) === 3) {
@@ -188,36 +190,36 @@ abstract class BaseRepository
                     }
                 });
             })
-            ->when(!empty($sorts), function ($query) use ($sorts) {
+            ->when(! empty($sorts), function ($query) use ($sorts) {
                 foreach ($sorts as $sort) {
-                    if (!empty($sort)) {
+                    if (! empty($sort)) {
                         if (str_contains($sort['column'], 'raw|')) {
                             $sort['column'] = str_replace('raw|', '', $sort['column']);
-                            $query->orderByRaw($sort['column'] . ' ' . $sort['direction']);
+                            $query->orderByRaw($sort['column'].' '.$sort['direction']);
                         } else {
                             $query->orderBy($sort['column'], $sort['direction']);
                         }
                     }
                 }
             })
-            ->when(!empty($sort), function ($query) use ($sort) {
+            ->when(! empty($sort), function ($query) use ($sort) {
                 if (str_contains($sort['column'], 'raw|')) {
                     $sort['column'] = str_replace('raw|', '', $sort['column']);
-                    $query->orderByRaw($sort['column'] . ' ' . $sort['direction']);
+                    $query->orderByRaw($sort['column'].' '.$sort['direction']);
                 } else {
                     $query->orderBy($sort['column'], $sort['direction']);
                 }
             })
-            ->when(!empty($relates), function ($query) use ($relates) {
+            ->when(! empty($relates), function ($query) use ($relates) {
                 $query->with($relates);
             })
-            ->when(!empty($relatesCount), function ($query) use ($relatesCount) {
+            ->when(! empty($relatesCount), function ($query) use ($relatesCount) {
                 $query->withCount($relatesCount);
             })
             ->when($withoutDomainFilter, function ($query) {
                 $query->withoutDomainFilter();
             })
-            ->when(!empty($whereBetweens), function ($query) use ($whereBetweens) {
+            ->when(! empty($whereBetweens), function ($query) use ($whereBetweens) {
                 foreach ($whereBetweens as $column => $range) {
                     $query->whereBetween($column, $range);
                 }
@@ -253,7 +255,7 @@ abstract class BaseRepository
     public function createOrUpdate(array $params, $instance = null): Model
     {
         $model = $this->getModel();
-        if (!empty($instance) && $instance instanceof $model) {
+        if (! empty($instance) && $instance instanceof $model) {
             $model = $instance;
         }
 
@@ -269,12 +271,14 @@ abstract class BaseRepository
         if ($model) {
             return $model->delete();
         }
+
         return false;
     }
 
     public function forceDelete(int $id)
     {
         $model = $this->newQuery()->find($id);
+
         return $model->forceDelete();
     }
 
@@ -328,9 +332,14 @@ abstract class BaseRepository
         return $this->newQuery()->updateOrCreate($attributes, $values);
     }
 
-    public function upsert(array $params, array $uniqueByColumns, array $updatedColumns = null)
+    public function upsert(array $params, array $uniqueByColumns, ?array $updatedColumns = null)
     {
         return $this->model->upsert($params, $uniqueByColumns, $updatedColumns);
+    }
+
+    public function getListTrashed(array $params = [], $limit = 10): LengthAwarePaginator
+    {
+        return $this->filter($params)->onlyTrashed()->paginate($limit);
     }
 
     public function countAll(): int
