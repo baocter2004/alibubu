@@ -89,7 +89,6 @@
                                     class="text-blue-500 hover:text-blue-700" title="Xem">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                </form>
                             </td>
                         </tr>
                     @empty
