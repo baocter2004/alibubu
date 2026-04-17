@@ -126,8 +126,16 @@
                 <li>
                     <a href="{{ route('admin.provinces.index') }}"
                         class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.provinces.index') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
-                        <i class="fa-solid fa-chart-pie w-5"></i>
+                        <i class="fa-solid fa-map w-5"></i>
                         <span class="font-medium text-sm">Provinces</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('admin.wards.index') }}"
+                        class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all {{ request()->routeIs('admin.wards.index') ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-gray-800' }}">
+                        <i class="fa-solid fa-map-location-dot w-5"></i>
+                        <span class="font-medium text-sm">Wards</span>
                     </a>
                 </li>
             </ul>
