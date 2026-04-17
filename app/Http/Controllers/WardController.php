@@ -15,4 +15,11 @@ class WardController extends Controller
         $wards = $this->wardService->search(array_merge($getWardRequest->validated(), ['relates' => ['province'], 'relates_count' => ['userAddresses']]));
         return view('admin.pages.wards.index', compact('wards'));
     }
+
+    public function show(int|string $id)
+    {
+        $ward = $this->wardService->filter(['relates' => ['province']])->find($id);
+
+        return view('admin.pages.wards.show', compact('ward'));
+    }
 }
