@@ -25,7 +25,7 @@ class ProvinceService extends BaseCrudService
         $orWheres = Arr::get($params, 'or_wheres', []);
         $sort = Arr::get($params, 'sort', 'id:desc');
         $relates = Arr::get($params, 'relates', []);
-        $relatesCount = Arr::get($params, 'relates_count', ['wards', 'userAddresses']);
+        $relatesCount = Arr::get($params, 'relates_count', []);
 
         if (! empty($params['name'])) {
             $whereLikes['name'] = $params['name'];

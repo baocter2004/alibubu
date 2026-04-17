@@ -3,6 +3,7 @@
 // ========================= ADMIN ===========================
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProvinceController;
 use Illuminate\Support\Facades\Route;
@@ -36,5 +37,11 @@ Route::prefix('/admin')
         Route::prefix('provinces')->name('provinces.')->group(function () {
             Route::get('/', [ProvinceController::class, 'index'])->name('index');
             Route::get('/{id}', [ProvinceController::class, 'show'])->name('show');
+        });
+
+        // Ward Resource
+        Route::prefix('wards')->name('wards.')->group(function () {
+            Route::get('/', [WardController::class, 'index'])->name('index');
+            Route::get('/{id}', [WardController::class, 'show'])->name('show');
         });
     });
