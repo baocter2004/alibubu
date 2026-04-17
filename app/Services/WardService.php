@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
+use App\Repositories\WardRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
 

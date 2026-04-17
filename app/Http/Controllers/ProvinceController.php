@@ -12,7 +12,7 @@ class ProvinceController extends Controller
 
     public function index(GetProvinceRequest $getProvinceRequest)
     {
-        $provinces = $this->provinceService->search(array_merge($getProvinceRequest->validated(), ['relates' => ['wards', 'userAddresses']]));
+        $provinces = $this->provinceService->search(array_merge($getProvinceRequest->validated(), ['relates_count' => ['wards', 'userAddresses']]));
         return view('admin.pages.provinces.index', compact('provinces'));
     }
 

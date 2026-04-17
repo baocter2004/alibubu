@@ -3,7 +3,7 @@
 // ========================= ADMIN ===========================
 
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\WardController;
+use App\Http\Controllers\WardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProvinceController;
 use Illuminate\Support\Facades\Route;
