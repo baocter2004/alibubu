@@ -2,6 +2,7 @@
 
 // ========================= ADMIN ===========================
 
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WardController;
 use App\Http\Controllers\DashboardController;
@@ -44,4 +45,24 @@ Route::prefix('/admin')
             Route::get('/', [WardController::class, 'index'])->name('index');
             Route::get('/{id}', [WardController::class, 'show'])->name('show');
         });
+
+        Route::prefix('/branches')
+            ->name('branches.')
+            ->group(function () {
+                Route::get('/', [BranchController::class, 'index'])->name('index');
+                Route::get('/trash', [BranchController::class, 'trash'])->name('trash');
+                Route::get('/create', [BranchController::class, 'create'])->name('create');
+                Route::get('/{id}/edit', [BranchController::class, 'edit'])->name('edit');
+
+                Route::post('/confirm/{id?}', [BranchController::class, 'confirm'])->name('confirm');
+                Route::get('/confirm', [BranchController::class, 'confirmDetail'])->name('confirm-detail');
+
+                Route::post('/save', [BranchController::class, 'save'])->name('save');
+                Route::get('/{id}', [BranchController::class, 'show'])->name('show');
+
+                Route::post('/restore/{id}', [BranchController::class, 'restore'])->name('restore');
+
+                Route::delete('/{id}', [BranchController::class, 'destroy'])->name('destroy');
+                Route::delete('/force/{id}', [BranchController::class, 'forceDestroy'])->name('force-destroy');
+            });
     });

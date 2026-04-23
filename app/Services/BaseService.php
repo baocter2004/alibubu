@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Const\GlobalConst;
 use App\Constants\GlobalConstant;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,7 +39,7 @@ abstract class BaseService
         return $this->filter($params)->get();
     }
 
-    public function paginate(array $params = [], $limit = 10): LengthAwarePaginator
+    public function paginate(array $params = [], $limit = GlobalConst::LIMIT): LengthAwarePaginator
     {
         if (!empty($params['limit'])) {
             $limit = $params['limit'];

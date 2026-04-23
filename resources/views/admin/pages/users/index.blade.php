@@ -55,7 +55,7 @@
                        focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">Tất Cả Vai Trò</option>
                         @foreach ($roles as $key => $value)
-                            <option value="{{ $key }}" {{ request('role') == $key ? 'selected' : '' }}>
+                            <option value="{{ $key }}" {{ request('role') === $key ? 'selected' : '' }}>
                                 {{ $value }}
                             </option>
                         @endforeach
