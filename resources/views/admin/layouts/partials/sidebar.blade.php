@@ -25,13 +25,56 @@
         </div>
 
         <div class="mb-4">
+            <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+                Branches And Categories
+            </p>
+            <ul class="space-y-1">
+                <li class="sidebar-dropdown {{ request()->routeIs('admin.branches.*') ? 'active' : '' }}">
+                    <a href="javascript:void(0)"
+                        class="dropdown-toggle flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-800 transition-all">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-store w-5"></i>
+                            <span class="font-medium text-sm">Branches</span>
+                        </div>
+                        <i
+                            class="fa-solid fa-chevron-right text-[10px] transition-transform duration-300 arrow-icon"></i>
+                    </a>
+
+                    <ul class="submenu hidden mt-1 ml-4 border-l border-gray-700 space-y-1">
+                        <li>
+                            <a href="{{ route('admin.branches.index') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.branches.index') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-list w-4"></i>
+                                Index
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.branches.create') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.branches.create') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-plus w-4"></i>
+                                Create
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.branches.trash') }}"
+                                class="block py-2 px-6 text-sm hover:text-white transition-colors {{ request()->routeIs('admin.branches.trash') ? 'text-blue-400 font-bold' : 'text-gray-500' }}">
+                                <i class="fa-solid fa-trash w-4"></i>
+                                Trash
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mb-4">
             <p class="px-4 py-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Sales & Stock</p>
             <ul class="space-y-1">
                 <li class="sidebar-dropdown {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
                     <a href="javascript:void(0)"
                         class="dropdown-toggle flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-800 transition-all">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-box w-5"></i>
+                            <i class="fa-solid fa-boxes w-5"></i>
                             <span class="font-medium text-sm">Products</span>
                         </div>
                         <i
