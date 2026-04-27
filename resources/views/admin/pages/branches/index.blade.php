@@ -77,19 +77,24 @@
             <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
-                        <th class="w-[10%] text-center px-4 py-3">ID</th>
-                        <th class="w-[20%] px-4 py-3">Tên Chi Nhánh</th>
-                        <th class="w-[20%] px-4 py-3">Mã Chi Nhánh</th>
-                        <th class="w-[15%] text-center px-4 py-3">Trạng Thái</th>
+                        <th class="w-[5%] text-center px-4 py-3">ID</th>
+                        <th class="w-[15%] text-center px-4 py-3">Ảnh Đại Diện</th>
+                        <th class="w-[15%] px-4 py-3">Tên Chi Nhánh</th>
+                        <th class="w-[15%] px-4 py-3">Mã Chi Nhánh</th>
+                        <th class="w-[10%] text-center px-4 py-3">Trạng Thái</th>
                         <th class="w-[15%] text-center px-4 py-3">Số Sản Phẩm</th>
-                        <th class="w-[15%] px-4 py-3">Ngày Tạo</th>
-                        <th class="w-[20%] text-center px-4 py-3">Hành Động</th>
+                        <th class="w-[10%] px-4 py-3">Ngày Tạo</th>
+                        <th class="w-[15%] text-center px-4 py-3">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($branches as $branch)
                         <tr class="text-sm text-gray-700 hover:bg-blue-100">
                             <td class="text-center px-4 py-3">{{ $branch->id }}</td>
+                            <td class="text-center px-4 py-3">
+                                <img src="{{ Storage::exists($branch->logo) ? Storage::url($branch->logo) : asset('/assets/images/default-shop.png') }}"
+                                    alt="Avatar" class="w-12 h-12 rounded-full object-cover mx-auto">
+                            </td>
                             <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">
                                 {{ $branch->name }}
                             </td>
@@ -108,27 +113,29 @@
                                 @endif
                             </td>
                             <td class="text-center px-4 py-3">{{ $branch->products_count ?? 0 }}</td>
-                            <td class="px-4 py-3">{{ $branch->created_at?->format('d/m/Y') ?? "Chưa Khởi Tạo" }}</td>
-                            <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
-                                <a href="{{ route('admin.branches.show', $branch->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="Xem">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                            <td class="px-4 py-3">{{ $branch->created_at?->format('d/m/Y') ?? 'Chưa Khởi Tạo' }}</td>
+                            <td class="text-center px-4 py-3">
+                                <div class="flex justify-center gap-2 items-center ">
+                                    <a href="{{ route('admin.branches.show', $branch->id) }}"
+                                        class="text-blue-500 hover:text-blue-700" title="Xem">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
-                                <a href="{{ route('admin.branches.edit', $branch->id) }}"
-                                    class="text-yellow-500 hover:text-yellow-700" title="Sửa">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                    <a href="{{ route('admin.branches.edit', $branch->id) }}"
+                                        class="text-yellow-500 hover:text-yellow-700" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
-                                <form action="{{ route('admin.branches.destroy', $branch->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa Chi Nhánh này?')">
+                                    <form action="{{ route('admin.branches.destroy', $branch->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa Chi Nhánh này?')">
 
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

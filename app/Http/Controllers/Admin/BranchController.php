@@ -18,4 +18,11 @@ class BranchController extends Controller
 
         return view('admin.pages.branches.index', compact('branches','statuses'));
     }
+
+    public function show(int|string $id)
+    {
+        $branch = $this->branchService->filter(['relates_count' => 'products'])->find($id);
+
+        return view('admin.pages.branches.show', compact('branch'));
+    }
 }

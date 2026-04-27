@@ -135,26 +135,28 @@
                             </td>
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
-                                <a href="{{ route('admin.users.show', $user->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="Xem">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                            <td class="items-center text-center px-4 py-3">
+                                <div class="flex justify-center gap-2">
+                                    <a href="{{ route('admin.users.show', $user->id) }}"
+                                        class="text-blue-500 hover:text-blue-700" title="Xem">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
-                                <a href="{{ route('admin.users.edit', $user->id) }}"
-                                    class="text-yellow-500 hover:text-yellow-700" title="Sửa">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                    <a href="{{ route('admin.users.edit', $user->id) }}"
+                                        class="text-yellow-500 hover:text-yellow-700" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
 
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
