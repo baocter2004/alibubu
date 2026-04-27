@@ -92,7 +92,7 @@
                         <tr class="text-sm text-gray-700 hover:bg-blue-100">
                             <td class="text-center px-4 py-3">{{ $branch->id }}</td>
                             <td class="text-center px-4 py-3">
-                                <img src="{{ Storage::exists($branch->logo) ? Storage::url($branch->logo) : asset('/assets/images/default-shop.png') }}"
+                                <img src="{{ Storage::disk('public')->exists($branch->logo) ? Storage::url($branch->logo) : asset('/assets/images/default-shop.png') }}"
                                     alt="Avatar" class="w-12 h-12 rounded-full object-cover mx-auto">
                             </td>
                             <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">

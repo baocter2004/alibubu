@@ -12,7 +12,7 @@
         </div>
 
         <div class="flex justify-center items-center">
-            <img src="{{ Storage::exists($branch->logo) ? Storage::url($branch->logo) : asset('/assets/images/default-shop.png') }}" alt="Branch Image" class="w-48 h-48 object-cover rounded-full border-4 border-gray-300">
+            <img src="{{ Storage::disk('public')->exists($branch->logo) ? Storage::url($branch->logo) : asset('/assets/images/default-shop.png') }}" alt="Branch Image" class="w-48 h-48 object-cover rounded-full border-4 border-gray-300">
         </div>
 
         {{-- Thông Tin Cơ Bản --}}
