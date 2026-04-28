@@ -32,9 +32,14 @@ class PostBranchRequest extends FormRequest
                 'max:255',
                 Rule::unique('branches','slug')->ignore($id)
             ],
-            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'logo' => [
+                empty($id) ? 'required' : 'nullable',
+                'image',
+                'mimes:jpeg,png,jpg',
+                'max:2048',
+            ],
             'is_active' => [
-                'nullable',
+                'required',
                 Rule::in(array_keys(GlobalConst::STATUS))
             ]
         ];
