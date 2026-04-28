@@ -113,24 +113,26 @@
                             </td>
                             <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
                             <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
-                                <form action="{{ route('admin.users.restore', $user->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="text-red-500 hover:text-red-700" title="Khôi phục">
+                            <td class="items-center text-center px-4 py-3">
+                                <div class="flex justify-center gap-2 ">
+                                    <form action="{{ route('admin.users.restore', $user->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Khôi phục">
 
-                                        <i class="fas fa-undo"></i>
-                                    </button>
-                                </form>
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </form>
 
-                                <form action="{{ route('admin.users.force-destroy', $user->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa vĩnh viễn"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này?')">
+                                    <form action="{{ route('admin.users.force-destroy', $user->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa vĩnh viễn"
+                                            onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này?')">
 
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

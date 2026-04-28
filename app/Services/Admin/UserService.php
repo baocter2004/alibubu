@@ -179,7 +179,7 @@ class UserService extends BaseCrudService
         }
     }
 
-    public function delete($id): bool
+    public function delete($id)
     {
         try {
             $user = $this->find($id);
@@ -193,7 +193,7 @@ class UserService extends BaseCrudService
         }
     }
 
-    public function restore(int|string $id): bool
+    public function restore($id)
     {
         try {
             $user = $this->getRepository()->restore($id);
@@ -204,7 +204,7 @@ class UserService extends BaseCrudService
         }
     }
 
-    public function forceDelete(int|string $id): bool
+    public function forceDelete($id)
     {
         try {
             DB::beginTransaction();
