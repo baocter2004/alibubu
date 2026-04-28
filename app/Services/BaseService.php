@@ -97,6 +97,16 @@ abstract class BaseService
         return $this->getRepository()->deleteAll($ids);
     }
 
+    public function restore($id)
+    {
+        return $this->getRepository()->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->getRepository()->forceDelete($id);
+    }
+
     protected function hashPassword($params)
     {
         if (!empty($value = Arr::get($params, 'password'))) {

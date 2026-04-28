@@ -2,10 +2,12 @@
 
 namespace App\Services\Admin;
 
+use App\Const\GlobalConst;
 use App\Models\Branch;
 use App\Repositories\BranchRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -100,6 +102,59 @@ class BranchService extends BaseCrudService
                 Storage::disk('public')->delete($newLogoPath);
             }
             Log::error('Error updating branch: ' . $e->getMessage(), ['id' => $id, 'params' => $params]);
+            throw $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $branch = $this->filter(['relates_count' => ['products']])->find($id);
+
+            if ($branch->products()->exists()) {
+                return [
+                    'status' => false,
+                    'message' => 'Cannot delete branch with associated products.'
+                ];
+            }
+
+            $branch->update(['status' => GlobalConst::IS_NOT_ACTIVE]);
+            $branch = parent::delete($id);
+
+            return [
+                'status' => true,
+                'message' => 'Branch deleted successfully.'
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error deleting branch: ' . $e->getMessage(), ['id' => $id]);
+            throw $e;
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $branch = $this->getRepository()->restore($id);
+            $branch->update(['status' => GlobalConst::IS_ACTIVE]);
+
+            return $branch;
+        } catch (\Exception $e) {
+            Log::error('Error restoring branch: ' . $e->getMessage(), ['id' => $id]);
+            throw $e;
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $branch = $this->find($id);
+            if ($branch?->logo) {
+                Storage::disk('public')->delete($branch->logo);
+            }
+            return parent::forceDelete($id);
+        } catch (\Exception $e) {
+            Log::error('Error deleting branch: ' . $e->getMessage(), ['id' => $id]);
+            DB::rollBack();
             throw $e;
         }
     }

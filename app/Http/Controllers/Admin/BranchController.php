@@ -15,10 +15,18 @@ class BranchController extends Controller
     public function index(GetBranchRequest $getBranchRequest)
     {
         session()->forget('branch_data');
-        $branches = $this->branchService->paginate(array_merge([$getBranchRequest->validated(), ['relates_count' => 'products']]));
+        $branches = $this->branchService->paginate(array_merge($getBranchRequest->validated(), ['relates_count' => ['products']]));
         $statuses = GlobalConst::STATUS;
 
         return view('admin.pages.branches.index', compact('branches', 'statuses'));
+    }
+
+    public function trash(GetBranchRequest $request)
+    {
+        $branches = $this->branchService->searchTrashed($request->validated());
+        $statuses = GlobalConst::STATUS;
+
+        return view('admin.pages.branches.trash', compact('branches', 'statuses'));
     }
 
     public function create()
@@ -81,8 +89,33 @@ class BranchController extends Controller
 
     public function show(int|string $id)
     {
-        $branch = $this->branchService->filter(['relates_count' => 'products'])->find($id);
+        $branch = $this->branchService->filter(['relates_count' => ['products']])->find($id);
 
         return view('admin.pages.branches.show', compact('branch'));
+    }
+
+    public function destroy(int|string $id)
+    {
+        $result = $this->branchService->delete($id);
+
+        if (! $result['status']) {
+            return redirect()->route('admin.branches.index')->with('error', $result['message']);
+        }
+
+        return redirect()->route('admin.branches.index')->with('success', $result['message']);
+    }
+
+    public function forceDestroy(int|string $id)
+    {
+        $this->branchService->forceDelete($id);
+
+        return redirect()->route('admin.branches.index')->with('success', 'Branch permanently deleted successfully.');
+    }
+
+    public function restore(int|string $id)
+    {
+        $this->branchService->restore($id);
+
+        return redirect()->route('admin.branches.index')->with('success', 'Branch restored successfully.');
     }
 }
