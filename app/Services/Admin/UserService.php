@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseCrudService
 {
-    public function __construct(protected UserAddressRepository $userAddressRepository) {}
+    public function __construct(protected UserAddressRepository $userAddressRepository)
+    {
+        parent::__construct();
+    }
 
     protected function getRepository(): UserRepository
     {
@@ -139,10 +142,15 @@ class UserService extends BaseCrudService
                 $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
 
                 $currentAddresses = $user->userAddresses()->get()->keyBy('id');
+                $now = now();
 
-                $keptIds = [];
+                $toUpsert    = []; // existing addresses to batch-update
+                $toInsert    = []; // new addresses to batch-insert
+                $keptIds     = []; // IDs of existing addresses that should be kept
 
                 foreach ($params['user_addresses'] as $addressData) {
+                    $addressData['user_id']    = $user->id;
+                    $addressData['updated_at'] = $now;
 
                     if (!empty($addressData['province_id']) && isset($provinces[$addressData['province_id']])) {
                         $addressData['province'] = $provinces[$addressData['province_id']]->name;
@@ -153,27 +161,46 @@ class UserService extends BaseCrudService
                     }
 
                     if (!empty($addressData['id']) && isset($currentAddresses[$addressData['id']])) {
-
-                        $address = $currentAddresses[$addressData['id']];
-                        $address->update($addressData);
-
-                        $keptIds[] = $address->id;
+                        // Existing address — queue for batch upsert
+                        $toUpsert[] = $addressData;
+                        $keptIds[]  = $addressData['id'];
                     } else {
-                        $address = $user->userAddresses()->create($addressData);
-                        $keptIds[] = $address->id;
+                        // New address — queue for batch insert
+                        unset($addressData['id']);
+                        $addressData['created_at'] = $now;
+                        $toInsert[] = $addressData;
                     }
                 }
 
-                // DELETE cái bị remove
-                $user->userAddresses()
-                    ->whereNotIn('id', $keptIds)
-                    ->delete();
+                // Batch-update existing addresses (1 query instead of N)
+                if (!empty($toUpsert)) {
+                    $updateColumns = [
+                        'province_id', 'ward_id', 'province', 'ward',
+                        'address', 'phone_number', 'fullname', 'is_default', 'updated_at',
+                    ];
+                    $this->userAddressRepository->upsert($toUpsert, ['id'], $updateColumns);
+                }
+
+                // Batch-insert new addresses (1 query)
+                if (!empty($toInsert)) {
+                    $this->userAddressRepository->insert($toInsert);
+                }
+
+                // Remove addresses that were deleted from the submitted list
+                $idsToDelete = array_diff(
+                    $currentAddresses->keys()->toArray(),
+                    $keptIds
+                );
+
+                if (!empty($idsToDelete)) {
+                    $user->userAddresses()->whereIn('id', $idsToDelete)->delete();
+                }
             }
 
             DB::commit();
             return $user;
         } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
+            Log::error('Error updating user: ' . $e->getMessage(), ['params' => $params]);
             DB::rollBack();
             throw $e;
         }
@@ -182,12 +209,25 @@ class UserService extends BaseCrudService
     public function delete($id)
     {
         try {
-            $user = $this->find($id);
-            $user->update(['status' => UserConst::STATUS_INACTIVE]);
-            $user = parent::delete($id);
+            DB::beginTransaction();
 
-            return $user;
+            $user = $this->find($id);
+
+            if (!$user) {
+                throw new \Exception("User not found: {$id}");
+            }
+
+            $user->update(['status' => UserConst::STATUS_INACTIVE]);
+            parent::delete($id);
+
+            DB::commit();
+
+            return [
+                'status'  => true,
+                'message' => 'User Deleted successfully.'
+            ];
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
             throw $e;
         }
@@ -208,17 +248,24 @@ class UserService extends BaseCrudService
     {
         try {
             DB::beginTransaction();
-            $user = parent::delete($id);
 
-            if ($user) {
-                $this->userAddressRepository->filter(['user_id' => $id])->delete();
+            $user = $this->find($id);
+
+            if (!$user) {
+                throw new \Exception("User not found: {$id}");
             }
 
+            // Use the relationship instead of filter() which does not map raw keys
+            $user->userAddresses()->delete();
+
+            $result = parent::forceDelete($id);
+
             DB::commit();
-            return $user;
+
+            return $result;
         } catch (\Exception $e) {
-            Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
             DB::rollBack();
+            Log::error('Error force deleting user: ' . $e->getMessage(), ['id' => $id]);
             throw $e;
         }
     }
@@ -227,14 +274,23 @@ class UserService extends BaseCrudService
     {
         $addresses = collect($addresses);
 
-        $provinces = Province::select('id', 'name')->get()->keyBy('id');
+        // Only load provinces/wards that are actually referenced — avoid full-table scan
+        $provinceIds = $addresses->pluck('province_id')->filter()->unique();
+        $wardIds     = $addresses->pluck('ward_id')->filter()->unique();
 
-        $wardIds = $addresses->pluck('ward_id')->filter();
-        $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
+        $provinces = Province::select('id', 'name')
+            ->whereIn('id', $provinceIds)
+            ->get()
+            ->keyBy('id');
+
+        $wards = Ward::select('id', 'name')
+            ->whereIn('id', $wardIds)
+            ->get()
+            ->keyBy('id');
 
         return $addresses->map(function ($addr) use ($provinces, $wards) {
             $provinceId = $addr['province_id'] ?? null;
-            $wardId = $addr['ward_id'] ?? null;
+            $wardId     = $addr['ward_id'] ?? null;
 
             $addr['province'] = $provinceId && isset($provinces[$provinceId])
                 ? $provinces[$provinceId]->name
