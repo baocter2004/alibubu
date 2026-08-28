@@ -69,6 +69,14 @@
                     <i class="fa-regular fa-user w-4 text-center"></i>
                     {{ Auth::user()->fullname }}
                 </span>
+
+                @foreach ([['account.profile', 'fa-user', __('client.account.nav.profile')], ['account.orders', 'fa-receipt', __('client.account.nav.orders')], ['account.addresses', 'fa-location-dot', __('client.account.nav.addresses')]] as [$route, $icon, $label])
+                    <a href="{{ route($route) }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mb-1">
+                        <i class="fa-solid {{ $icon }} w-4 text-center"></i>
+                        {{ $label }}
+                    </a>
+                @endforeach
                 <form action="{{ route('auth.client.logout') }}" method="POST">
                     @csrf
                     <button type="submit"

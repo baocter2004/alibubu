@@ -23,6 +23,9 @@ class Product extends Model
         'name',
         'slug',
         'views',
+        'rating',
+        'stock',
+        'sold',
         'short_descriptions',
         'descriptions',
         'thumbnail',
@@ -47,6 +50,9 @@ class Product extends Model
     {
         return [
             'views' => 'integer',
+            'rating' => 'decimal:2',
+            'stock' => 'integer',
+            'sold' => 'integer',
             'type' => 'integer',
             'price' => 'decimal:2',
             'sale_price' => 'decimal:2',
@@ -125,6 +131,11 @@ class Product extends Model
         }
 
         return (int) round((($base - $effective) / $base) * 100);
+    }
+
+    public function inStock(): bool
+    {
+        return $this->stock > 0;
     }
 
     public function onSale(): bool

@@ -20,6 +20,8 @@ class WardController extends Controller
     {
         $ward = $this->wardService->filter(['relates' => ['province']])->find($id);
 
+        abort_if(! $ward, 404);
+
         return view('admin.pages.wards.show', compact('ward'));
     }
 }

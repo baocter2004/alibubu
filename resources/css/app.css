@@ -58,3 +58,28 @@ body.bg-background-light {
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
     outline: none;
 }
+.alibubu-toast {
+    border-radius: 0.875rem !important;
+    box-shadow: 0 12px 32px -8px rgb(15 23 42 / 0.22) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.55rem 0.9rem !important;
+}
+
+.alibubu-toast .swal2-title {
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: hsl(var(--foreground));
+}
+
+.alibubu-toast .swal2-html-container {
+    font-size: 0.8125rem !important;
+    margin: 0.15rem 0 0 !important;
+    padding: 0 !important;
+    color: hsl(var(--muted-fg));
+}
+
+.alibubu-toast .swal2-timer-progress-bar {
+    background: hsl(var(--primary)) !important;
+}

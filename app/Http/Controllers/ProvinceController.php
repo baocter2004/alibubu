@@ -19,7 +19,10 @@ class ProvinceController extends Controller
     public function show(int|string $id)
     {
         $province = $this->provinceService->find($id);
-        $wards = $province->wards()->paginate(10);
+
+        abort_if(! $province, 404);
+
+        $wards = $province->wards()->orderBy('name')->paginate(10);
 
         return view('admin.pages.provinces.show', compact('province', 'wards'));
     }

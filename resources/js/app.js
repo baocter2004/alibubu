@@ -3,25 +3,28 @@ import $ from "jquery";
 
 window.$ = window.jQuery = $;
 
-// Alert
-$(function () {
-    if (document.body.dataset.success) {
-        Swal.fire({
-            icon: "success",
-            title: "Thành công!",
-            text: document.body.dataset.success,
-            confirmButtonText: "OK",
-        });
-    }
+const toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 4000,
+    timerProgressBar: true,
+    customClass: { popup: "alibubu-toast" },
+    didOpen: (el) => {
+        el.addEventListener("mouseenter", Swal.stopTimer);
+        el.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+});
 
-    if (document.body.dataset.error) {
-        Swal.fire({
-            icon: "error",
-            title: "Thất bại!",
-            text: document.body.dataset.error,
-            confirmButtonText: "OK",
-        });
-    }
+window.notify = function (icon, text) {
+    if (!text) return;
+    const labels = window.alertLabels || {};
+    toast.fire({ icon, title: labels[icon] || "", text });
+};
+
+$(function () {
+    notify("success", document.body.dataset.success);
+    notify("error", document.body.dataset.error);
 });
 
 // Mobile menu
@@ -86,4 +89,13 @@ $(document).on("click", "[data-locale-toggle]", function (e) {
 $(document).on("click", function () {
     $("[data-locale-menu]").addClass("hidden");
     $("[data-locale-toggle]").attr("aria-expanded", "false");
+});
+
+$(document).on("click", "#account-menu button", function (e) {
+    e.stopPropagation();
+    $("#account-dropdown").toggleClass("hidden");
+});
+
+$(document).on("click", function () {
+    $("#account-dropdown").addClass("hidden");
 });

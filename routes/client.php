@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ShopController;
@@ -22,6 +23,22 @@ Route::prefix('cart')->name('cart.')->controller(CartController::class)->group(f
     Route::delete('/clear', 'clear')->name('clear');
     Route::delete('/{key}', 'destroy')->name('destroy');
 });
+
+Route::prefix('account')
+    ->name('account.')
+    ->middleware('auth')
+    ->controller(AccountController::class)
+    ->group(function () {
+        Route::get('/', 'profile')->name('profile');
+        Route::patch('/profile', 'updateProfile')->name('profile.update');
+        Route::patch('/password', 'updatePassword')->name('password.update');
+        Route::get('/orders', 'orders')->name('orders');
+        Route::get('/orders/{id}', 'showOrder')->name('orders.show');
+        Route::get('/addresses', 'addresses')->name('addresses');
+        Route::post('/addresses', 'storeAddress')->name('addresses.store');
+        Route::patch('/addresses/{id}', 'updateAddress')->name('addresses.update');
+        Route::delete('/addresses/{id}', 'destroyAddress')->name('addresses.destroy');
+    });
 
 Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'index')->name('index');

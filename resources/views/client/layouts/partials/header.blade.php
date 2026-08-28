@@ -74,19 +74,38 @@
                 </a>
 
                 @auth
-                    <div class="hidden md:flex items-center gap-1">
-                        <span class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground">
-                            <i class="fa-regular fa-user"></i>
-                            {{ Auth::user()->fullname }}
-                        </span>
-                        <form action="{{ route('auth.client.logout') }}" method="POST">
-                            @csrf
-                            <button type="submit"
-                                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                {{ __('common.actions.logout') }}
-                            </button>
-                        </form>
+                    <div class="relative hidden md:block" id="account-menu">
+                        <button type="button"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors">
+                            <span
+                                class="w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                                {{ Str::upper(Str::substr(Auth::user()->fullname, 0, 1)) }}
+                            </span>
+                            <span class="max-w-28 truncate">{{ Auth::user()->fullname }}</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-muted-foreground"></i>
+                        </button>
+
+                        <div id="account-dropdown"
+                            class="hidden absolute right-0 top-full mt-1 w-52 bg-white border border-border rounded-xl shadow-lg py-2 z-50">
+                            @foreach ([['account.profile', 'fa-user', __('client.account.nav.profile')], ['account.orders', 'fa-receipt', __('client.account.nav.orders')], ['account.addresses', 'fa-location-dot', __('client.account.nav.addresses')]] as [$route, $icon, $label])
+                                <a href="{{ route($route) }}"
+                                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                                    <i class="fa-solid {{ $icon }} w-4 text-center"></i>
+                                    {{ $label }}
+                                </a>
+                            @endforeach
+
+                            <div class="border-t border-border my-1"></div>
+
+                            <form action="{{ route('auth.client.logout') }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors">
+                                    <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
+                                    {{ __('common.actions.logout') }}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @else
                     <div class="hidden sm:flex items-center gap-2 ml-1">

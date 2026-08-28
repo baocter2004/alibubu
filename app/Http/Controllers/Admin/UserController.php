@@ -35,7 +35,7 @@ class UserController extends Controller
     public function create()
     {
         $data = session()->get('user_data');
-        $provinces = Province::select('id', 'name')->get();
+        $provinces = Province::select('id', 'name')->orderBy('name')->get();
 
         return view('admin.pages.users.create', compact('data', 'provinces'));
     }
@@ -65,12 +65,11 @@ class UserController extends Controller
 
     public function edit(int|string $id)
     {
-        $params = [
-            'relates' => ['userAddresses']
-        ];
-        $user = $this->userService->filter($params)->find($id);
+        $user = $this->userService->filter(['relates' => ['userAddresses']])->find($id);
 
-        $provinces = Province::select('id', 'name')->get();
+        abort_if(! $user, 404);
+
+        $provinces = Province::select('id', 'name')->orderBy('name')->get();
 
         return view('admin.pages.users.edit', compact('user', 'provinces'));
     }
@@ -98,10 +97,9 @@ class UserController extends Controller
 
     public function show(int|string $id)
     {
-        $params = [
-            'relates' => ['userAddresses']
-        ];
-        $user = $this->userService->filter($params)->find($id);
+        $user = $this->userService->filter(['relates' => ['userAddresses']])->find($id);
+
+        abort_if(! $user, 404);
 
         return view('admin.pages.users.show', compact('user'));
     }

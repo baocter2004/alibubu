@@ -132,6 +132,50 @@
                 </form>
             </div>
 
+            @php
+                $activeChips = [];
+                if (request('keyword')) {
+                    $activeChips[] = ['label' => request('keyword'), 'param' => 'keyword'];
+                }
+                if (request('category_id') && $categories->firstWhere('id', (int) request('category_id'))) {
+                    $activeChips[] = ['label' => $categories->firstWhere('id', (int) request('category_id'))->name, 'param' => 'category_id'];
+                }
+                if (request('branch_id') && $branches->firstWhere('id', (int) request('branch_id'))) {
+                    $activeChips[] = ['label' => $branches->firstWhere('id', (int) request('branch_id'))->name, 'param' => 'branch_id'];
+                }
+                if (request('is_sale')) {
+                    $activeChips[] = ['label' => __('client.shop.only_sale'), 'param' => 'is_sale'];
+                }
+                if (request('min_price') || request('max_price')) {
+                    $activeChips[] = [
+                        'label' => format_price(request('min_price', 0)) . ' - ' . format_price(request('max_price', 0)),
+                        'param' => 'price',
+                    ];
+                }
+            @endphp
+
+            @if ($activeChips)
+                <div class="flex flex-wrap items-center gap-2 mb-5">
+                    @foreach ($activeChips as $chip)
+                        @php
+                            $remove = $chip['param'] === 'price'
+                                ? Arr::except(request()->query(), ['min_price', 'max_price', 'page'])
+                                : Arr::except(request()->query(), [$chip['param'], 'page']);
+                        @endphp
+                        <a href="{{ route('shop.index', $remove) }}"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                            {{ $chip['label'] }}
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    @endforeach
+
+                    <a href="{{ route('shop.index') }}"
+                        class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        {{ __('common.actions.clear_filter') }}
+                    </a>
+                </div>
+            @endif
+
             @if ($products->isEmpty())
                 <div class="bg-card border border-dashed border-border rounded-xl py-20 text-center">
                     <i class="fa-solid fa-magnifying-glass text-5xl text-muted-foreground/25 mb-4"></i>

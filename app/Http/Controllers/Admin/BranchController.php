@@ -40,6 +40,8 @@ class BranchController extends Controller
     {
         $branch = $this->branchService->find($id);
 
+        abort_if(! $branch, 404);
+
         return view('admin.pages.branches.edit', compact('branch'));
     }
 
@@ -88,6 +90,8 @@ class BranchController extends Controller
     public function show(int|string $id)
     {
         $branch = $this->branchService->filter(['relates_count' => ['products']])->find($id);
+
+        abort_if(! $branch, 404);
 
         return view('admin.pages.branches.show', compact('branch'));
     }

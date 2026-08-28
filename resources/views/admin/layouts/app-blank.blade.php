@@ -23,6 +23,13 @@
         @yield('content')
     </main>
 
+    <script>
+        window.alertLabels = {
+            success: @json(__('common.alerts.success')),
+            error: @json(__('common.alerts.error')),
+        };
+    </script>
+
     @include('admin.layouts.partials.common.scripts')
     @stack('scripts')
 </body>

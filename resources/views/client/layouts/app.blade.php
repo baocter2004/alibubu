@@ -23,6 +23,14 @@
     </main>
 
     @include('client.layouts.partials.footer')
+
+    <script>
+        window.alertLabels = {
+            success: @json(__('common.alerts.success')),
+            error: @json(__('common.alerts.error')),
+        };
+    </script>
+
     @include('client.layouts.partials.common.scripts')
 
     @stack('scripts')
