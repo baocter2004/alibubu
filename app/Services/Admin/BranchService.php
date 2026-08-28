@@ -66,7 +66,13 @@ class BranchService extends BaseCrudService
 
     public function prepareConfirmData(array $validated, $id = null, ?array $oldSessionData = null): array
     {
-        $data = $validated;
+        $data = array_merge([
+            'name' => null,
+            'slug' => null,
+            'logo' => null,
+            'is_active' => GlobalConst::IS_ACTIVE,
+        ], $validated);
+
         $data['id'] = $id;
         $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
 

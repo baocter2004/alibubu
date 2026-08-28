@@ -13,6 +13,8 @@ class CartItem extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
+        'session_id',
         'product_id',
         'product_variant_id',
         'quantity',
@@ -31,6 +33,11 @@ class CartItem extends Model
     }
 
     // Relations
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

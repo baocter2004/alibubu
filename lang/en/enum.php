@@ -26,6 +26,16 @@ return [
         ],
     ],
 
+    'order' => [
+        'status' => [
+            1 => 'Pending',
+            2 => 'Confirmed',
+            3 => 'Shipping',
+            4 => 'Completed',
+            5 => 'Cancelled',
+        ],
+    ],
+
     'coupon' => [
         'discount_type' => [
             1 => 'Fixed amount',

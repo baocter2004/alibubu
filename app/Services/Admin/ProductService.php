@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Const\GlobalConst;
 use App\Const\ProductConst;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -78,12 +79,31 @@ class ProductService extends BaseCrudService
 
     public function prepareConfirmData(array $validated, $id = null, ?array $oldSessionData = null): array
     {
-        $data = $validated;
+        $data = array_merge([
+            'name' => null,
+            'slug' => null,
+            'sku' => null,
+            'branch_id' => null,
+            'category_ids' => [],
+            'short_descriptions' => null,
+            'descriptions' => null,
+            'thumbnail' => null,
+            'type' => ProductConst::SINGLE,
+            'price' => null,
+            'sale_price' => null,
+            'sale_price_start_at' => null,
+            'sale_price_end_at' => null,
+            'is_featured' => false,
+            'is_trending' => false,
+            'is_active' => GlobalConst::IS_ACTIVE,
+            'variants' => [],
+        ], $validated);
+
         $data['id'] = $id;
         $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
         $data['category_ids'] = array_values(array_filter($validated['category_ids'] ?? []));
-        $data['variants'] = (int) ($validated['type'] ?? ProductConst::SINGLE) === ProductConst::VARIANT
-            ? array_values($validated['variants'] ?? [])
+        $data['variants'] = (int) $data['type'] === ProductConst::VARIANT
+            ? $this->normalizeVariants($data['variants'])
             : [];
 
         if (! empty($validated['thumbnail']) && $validated['thumbnail'] instanceof UploadedFile) {
@@ -106,6 +126,18 @@ class ProductService extends BaseCrudService
         }
 
         return $data;
+    }
+
+    protected function normalizeVariants(array $variants): array
+    {
+        return array_values(array_map(fn ($variant) => array_merge([
+            'id' => null,
+            'sku' => null,
+            'price' => null,
+            'sale_price' => null,
+            'is_active' => false,
+            'attribute_value_ids' => [],
+        ], $variant), $variants));
     }
 
     public function create(array $params = []): Product

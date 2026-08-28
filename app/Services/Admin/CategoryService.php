@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Const\GlobalConst;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Services\BaseCrudService;
@@ -63,7 +64,15 @@ class CategoryService extends BaseCrudService
 
     public function prepareConfirmData(array $validated, $id = null): array
     {
-        $data = $validated;
+        $data = array_merge([
+            'name' => null,
+            'slug' => null,
+            'icon' => null,
+            'parent_id' => null,
+            'ordinal' => 0,
+            'is_active' => GlobalConst::IS_ACTIVE,
+        ], $validated);
+
         $data['id'] = $id;
         $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
 

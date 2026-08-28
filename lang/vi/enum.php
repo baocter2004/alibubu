@@ -26,6 +26,16 @@ return [
         ],
     ],
 
+    'order' => [
+        'status' => [
+            1 => 'Chờ xác nhận',
+            2 => 'Đã xác nhận',
+            3 => 'Đang giao',
+            4 => 'Hoàn thành',
+            5 => 'Đã huỷ',
+        ],
+    ],
+
     'coupon' => [
         'discount_type' => [
             1 => 'Giảm số tiền',
