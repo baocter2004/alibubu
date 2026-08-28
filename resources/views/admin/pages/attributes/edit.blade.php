@@ -1,0 +1,16 @@
+@extends('admin.layouts.app')
+
+@section('title', __('admin/attribute.title.edit'))
+
+@section('content')
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ __('admin/attribute.title.edit') }}</h1>
+            <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/attribute.subtitle.edit') }}</p>
+        </div>
+
+        @include('admin.pages.attributes.form', [
+            'formAction' => route('admin.attributes.confirm', $attribute->id),
+        ])
+    </div>
+@endsection

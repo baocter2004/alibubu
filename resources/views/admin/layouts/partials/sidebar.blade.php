@@ -12,12 +12,14 @@
                 ['type' => 'dropdown', 'active' => 'admin.products.*', 'icon' => 'fa-mobile-screen-button', 'label' => __('admin/nav.products'), 'base' => 'admin.products'],
                 ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories'],
                 ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches'],
+                ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes'],
             ],
         ],
         [
             'label' => __('admin/nav.groups.sales'),
             'items' => [
                 ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders')],
+                ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons'],
             ],
         ],
         [

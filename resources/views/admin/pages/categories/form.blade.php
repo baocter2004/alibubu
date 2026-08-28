@@ -15,16 +15,6 @@
             'icon' => 'tag',
             'value' => $values['name'] ?? '',
         ])
-
-        <div>
-            @include('components.input', [
-                'label' => __('admin/category.fields.slug'),
-                'name' => 'slug',
-                'icon' => 'link',
-                'value' => $values['slug'] ?? '',
-            ])
-            <p class="text-xs text-gray-500 mt-1.5">{{ __('admin/category.hints.slug') }}</p>
-        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

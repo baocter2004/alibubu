@@ -37,16 +37,6 @@
                 'value' => $values['name'] ?? '',
             ])
 
-            <div>
-                @include('components.input', [
-                    'label' => __('admin/product.fields.slug'),
-                    'name' => 'slug',
-                    'icon' => 'link',
-                    'value' => $values['slug'] ?? '',
-                ])
-                <p class="text-xs text-gray-500 mt-1.5">{{ __('admin/product.hints.slug') }}</p>
-            </div>
-
             @include('components.select', [
                 'label' => __('admin/product.fields.branch'),
                 'name' => 'branch_id',

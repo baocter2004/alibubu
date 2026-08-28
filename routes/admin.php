@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
@@ -21,6 +23,8 @@ Route::prefix('/admin')
             'branches' => BranchController::class,
             'categories' => CategoryController::class,
             'products' => ProductController::class,
+            'coupons' => CouponController::class,
+            'attributes' => AttributeController::class,
         ] as $slug => $controller) {
             Route::prefix($slug)
                 ->name($slug . '.')

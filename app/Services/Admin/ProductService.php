@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Repositories\ProductRepository;
 use App\Services\BaseCrudService;
+use App\Traits\GeneratesSlug;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 
 class ProductService extends BaseCrudService
 {
+    use GeneratesSlug;
+
     protected function getRepository(): ProductRepository
     {
         if (empty($this->repository)) {
@@ -100,7 +103,7 @@ class ProductService extends BaseCrudService
         ], $validated);
 
         $data['id'] = $id;
-        $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
+        $data['slug'] = $this->generateSlug($data['name'], 'products', $id);
         $data['category_ids'] = array_values(array_filter($validated['category_ids'] ?? []));
         $data['variants'] = (int) $data['type'] === ProductConst::VARIANT
             ? $this->normalizeVariants($data['variants'])

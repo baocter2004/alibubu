@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Admin\Branch;
+namespace App\Http\Requests\Admin\Coupon;
 
+use App\Const\CouponConst;
 use App\Const\GlobalConst;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PostBranchRequest extends FormRequest
+class GetCouponRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,20 +24,11 @@ class PostBranchRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id');
-
         return [
-            'name' => 'required|string|max:255',
-            'logo' => [
-                empty($id) ? 'required' : 'nullable',
-                'image',
-                'mimes:jpeg,png,jpg',
-                'max:2048',
-            ],
-            'is_active' => [
-                'required',
-                Rule::in(array_keys(GlobalConst::statuses())),
-            ],
+            'keyword' => ['nullable', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50'],
+            'discount_type' => ['nullable', 'integer', Rule::in(array_keys(CouponConst::types()))],
+            'is_active' => ['nullable', Rule::in(array_keys(GlobalConst::statuses()))],
         ];
     }
 }

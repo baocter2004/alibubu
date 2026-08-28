@@ -44,7 +44,6 @@ class PostProductRequest extends FormRequest
         return [
             'type' => ['required', Rule::in([ProductConst::SINGLE, ProductConst::VARIANT])],
             'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('products', 'slug')->ignore($id)],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($id)],
             'branch_id' => ['required', 'integer', 'exists:branches,id'],
             'category_ids' => ['required', 'array', 'min:1'],
@@ -80,7 +79,6 @@ class PostProductRequest extends FormRequest
     {
         return [
             'name' => __('admin/product.fields.name'),
-            'slug' => __('admin/product.fields.slug'),
             'sku' => __('admin/product.fields.sku'),
             'branch_id' => __('admin/product.fields.branch'),
             'category_ids' => __('admin/product.fields.categories'),

@@ -6,6 +6,7 @@ use App\Const\GlobalConst;
 use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Services\BaseCrudService;
+use App\Traits\GeneratesSlug;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class CategoryService extends BaseCrudService
 {
+    use GeneratesSlug;
+
     protected function getRepository(): CategoryRepository
     {
         if (empty($this->repository)) {
@@ -74,7 +77,7 @@ class CategoryService extends BaseCrudService
         ], $validated);
 
         $data['id'] = $id;
-        $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
+        $data['slug'] = $this->generateSlug($data['name'], 'categories', $id);
 
         return $data;
     }

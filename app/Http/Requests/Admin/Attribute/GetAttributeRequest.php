@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Admin\Branch;
+namespace App\Http\Requests\Admin\Attribute;
 
 use App\Const\GlobalConst;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PostBranchRequest extends FormRequest
+class GetAttributeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,20 +23,10 @@ class PostBranchRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id');
-
         return [
-            'name' => 'required|string|max:255',
-            'logo' => [
-                empty($id) ? 'required' : 'nullable',
-                'image',
-                'mimes:jpeg,png,jpg',
-                'max:2048',
-            ],
-            'is_active' => [
-                'required',
-                Rule::in(array_keys(GlobalConst::statuses())),
-            ],
+            'keyword' => ['nullable', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['nullable', Rule::in(array_keys(GlobalConst::statuses()))],
         ];
     }
 }

@@ -16,6 +16,8 @@ return [
     'branches' => 'Thương hiệu',
     'categories' => 'Danh mục',
     'products' => 'Sản phẩm',
+    'coupons' => 'Mã giảm giá',
+    'attributes' => 'Thuộc tính',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
     'provinces' => 'Tỉnh/Thành phố',

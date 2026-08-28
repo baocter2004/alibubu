@@ -16,6 +16,8 @@ return [
     'branches' => 'Brands',
     'categories' => 'Categories',
     'products' => 'Products',
+    'coupons' => 'Discount codes',
+    'attributes' => 'Attributes',
     'orders' => 'Orders',
     'users' => 'Users',
     'provinces' => 'Provinces',
