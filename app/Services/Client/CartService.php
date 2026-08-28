@@ -15,7 +15,7 @@ class CartService
     public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): void
     {
         $items = $this->rawItems();
-        $key = $this->makeKey($product->id, $variant?->id);
+        $key = $this->makeKey((string) $product->id, $variant?->id ? (string) $variant->id : null);
         $current = $items[$key]['quantity'] ?? 0;
 
         $items[$key] = [
@@ -135,9 +135,9 @@ class CartService
         session()->put(self::SESSION_KEY, $items);
     }
 
-    protected function makeKey(int $productId, ?int $variantId): string
+    protected function makeKey(string $productId, ?string $variantId): string
     {
-        return $productId . ':' . ($variantId ?? 0);
+        return $productId . '|' . ($variantId ?? '');
     }
 
     protected function clamp(int $quantity, ?int $stock = null): int

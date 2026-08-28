@@ -4,6 +4,7 @@ return [
     'nav' => [
         'home' => 'Home',
         'shop' => 'Products',
+        'categories' => 'Categories',
         'deals' => 'Deals',
         'about' => 'About',
         'cart' => 'Cart',

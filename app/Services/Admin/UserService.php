@@ -143,7 +143,7 @@ class UserService extends BaseCrudService
         }
     }
 
-    protected function normalizeAddresses(mixed $addresses, int $userId): array
+    protected function normalizeAddresses(mixed $addresses, int|string $userId): array
     {
         if (! is_array($addresses) || $addresses === []) {
             return [];

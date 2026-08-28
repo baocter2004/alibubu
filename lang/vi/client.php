@@ -4,6 +4,7 @@ return [
     'nav' => [
         'home' => 'Trang chủ',
         'shop' => 'Sản phẩm',
+        'categories' => 'Danh mục',
         'deals' => 'Ưu đãi',
         'about' => 'Giới thiệu',
         'cart' => 'Giỏ hàng',

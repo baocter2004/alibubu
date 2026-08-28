@@ -17,7 +17,7 @@ class OrderService
         protected CouponService $couponService
     ) {}
 
-    public function place(array $params, ?int $userId = null): Order
+    public function place(array $params, int|string|null $userId = null): Order
     {
         $items = $this->cartService->items();
 
@@ -90,7 +90,7 @@ class OrderService
         ];
     }
 
-    protected function consumeCoupon(?Coupon $coupon, ?int $userId): void
+    protected function consumeCoupon(?Coupon $coupon, int|string|null $userId): void
     {
         if (! $coupon) {
             return;

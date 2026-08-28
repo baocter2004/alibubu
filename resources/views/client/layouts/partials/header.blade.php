@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border shadow-sm">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border transition-transform duration-300">
     <div class="hidden md:block bg-foreground text-white text-xs py-1.5">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <span><i class="fa-solid fa-truck mr-1"></i> {{ __('client.nav.free_shipping') }}</span>
@@ -18,7 +18,7 @@
             <div class="flex items-center gap-4">
                 <button id="menu-open" type="button"
                     class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors"
-                    aria-label="{{ __('client.nav.open_menu') }}">
+                    aria-label="{{ __('client.nav.categories') }}">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
@@ -28,21 +28,66 @@
                     <span class="font-bold text-lg text-foreground tracking-tight">{{ __('common.app_name') }}</span>
                 </a>
 
-                <nav class="hidden md:flex items-center gap-6 ml-4">
-                    <a href="{{ route('index') }}"
-                        class="text-sm font-medium transition-colors {{ request()->routeIs('index') ? 'text-primary' : 'text-muted-foreground hover:text-foreground' }}">
-                        {{ __('client.nav.home') }}
-                    </a>
-                    <a href="{{ route('shop.index') }}"
-                        class="text-sm font-medium transition-colors {{ request()->routeIs('shop.*') ? 'text-primary' : 'text-muted-foreground hover:text-foreground' }}">
-                        {{ __('client.nav.shop') }}
-                    </a>
+                <nav class="hidden md:flex items-center gap-1 ml-2">
+                    @php
+                        $onDeals = request()->routeIs('shop.*') && request()->boolean('is_sale');
+                        $navLinks = [
+                            ['route' => 'index', 'params' => [], 'label' => __('client.nav.home'), 'active' => request()->routeIs('index')],
+                            ['route' => 'shop.index', 'params' => [], 'label' => __('client.nav.shop'), 'active' => request()->routeIs('shop.*') && ! $onDeals],
+                        ];
+                    @endphp
+
+                    @foreach ($navLinks as $link)
+                        @php $isActive = $link['active']; @endphp
+                        <a href="{{ route($link['route'], $link['params']) }}"
+                            class="relative px-3 py-2 text-sm font-medium rounded-lg transition-colors {{ $isActive ? 'text-primary bg-primary/8' : 'text-muted-foreground hover:text-foreground hover:bg-muted' }}">
+                            {{ $link['label'] }}
+                            @if ($isActive)
+                                <span class="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-primary"></span>
+                            @endif
+                        </a>
+                    @endforeach
+
+                    @if ($navCategories->isNotEmpty())
+                        <div class="relative" id="category-menu">
+                            <button type="button"
+                                class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                                {{ __('client.nav.categories') }}
+                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </button>
+
+                            <div id="category-dropdown"
+                                class="hidden absolute left-0 top-full mt-1 w-64 bg-white border border-border rounded-xl shadow-lg p-2 z-50">
+                                @foreach ($navCategories as $category)
+                                    <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
+                                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                                        <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                            <i class="{{ $category->icon ?: 'fa-solid fa-tag' }} text-xs"></i>
+                                        </span>
+                                        {{ $category->name }}
+                                    </a>
+                                @endforeach
+
+                                <a href="{{ route('shop.index') }}"
+                                    class="flex items-center justify-center gap-2 mt-1 px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/5 transition-colors border-t border-border">
+                                    {{ __('common.actions.view_all') }}
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
                     <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
-                        class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        class="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors {{ $onDeals ? 'text-primary bg-primary/8' : 'text-muted-foreground hover:text-foreground hover:bg-muted' }}">
+                        <i class="fa-solid fa-fire text-orange-500 text-xs"></i>
                         {{ __('client.nav.deals') }}
+                        @if ($onDeals)
+                            <span class="absolute left-3 right-3 -bottom-px h-0.5 rounded-full bg-primary"></span>
+                        @endif
                     </a>
+
                     <a href="{{ route('about') }}"
-                        class="text-sm font-medium transition-colors {{ request()->routeIs('about') ? 'text-primary' : 'text-muted-foreground hover:text-foreground' }}">
+                        class="px-3 py-2 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('about') ? 'text-primary bg-primary/8' : 'text-muted-foreground hover:text-foreground hover:bg-muted' }}">
                         {{ __('client.nav.about') }}
                     </a>
                 </nav>

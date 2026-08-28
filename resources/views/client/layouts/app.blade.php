@@ -18,11 +18,12 @@
 
     @include('client.layouts.partials.sidebar')
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-6 md:py-8 pb-24 md:pb-8">
         @yield('content')
     </main>
 
     @include('client.layouts.partials.footer')
+    @include('client.layouts.partials.bottom-nav')
 
     <script>
         window.alertLabels = {

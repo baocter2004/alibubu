@@ -17,7 +17,7 @@
         </div>
 
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[620px] w-full table-fixed">
+            <table class="min-w-[620px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[36%] px-4 py-3">{{ __('admin/tag.fields.name') }}</th>
@@ -27,7 +27,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($tags as $tag)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="px-4 py-3 truncate">{{ $tag->name }}</td>
                             <td class="px-4 py-3">{{ $tag->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>
                             <td class="px-4 py-3">

@@ -1,25 +1,35 @@
 import "./bootstrap";
-import $ from "jquery";
 
-window.$ = window.jQuery = $;
+let toast = null;
 
-const toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 4000,
-    timerProgressBar: true,
-    customClass: { popup: "alibubu-toast" },
-    didOpen: (el) => {
-        el.addEventListener("mouseenter", Swal.stopTimer);
-        el.addEventListener("mouseleave", Swal.resumeTimer);
-    },
-});
+function getToast() {
+    if (toast || typeof Swal === "undefined") {
+        return toast;
+    }
+
+    toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        customClass: { popup: "alibubu-toast" },
+        didOpen: (el) => {
+            el.addEventListener("mouseenter", Swal.stopTimer);
+            el.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+    });
+
+    return toast;
+}
 
 window.notify = function (icon, text) {
-    if (!text) return;
+    const instance = getToast();
+
+    if (!text || !instance) return;
+
     const labels = window.alertLabels || {};
-    toast.fire({ icon, title: labels[icon] || "", text });
+    instance.fire({ icon, title: labels[icon] || "", text });
 };
 
 $(function () {
@@ -98,4 +108,36 @@ $(document).on("click", "#account-menu button", function (e) {
 
 $(document).on("click", function () {
     $("#account-dropdown").addClass("hidden");
+});
+
+$(document).on("click", "#category-menu button", function (e) {
+    e.stopPropagation();
+    $("#category-dropdown").toggleClass("hidden");
+    $("#account-dropdown").addClass("hidden");
+});
+
+$(document).on("click", function () {
+    $("#category-dropdown").addClass("hidden");
+});
+
+$(function () {
+    const $header = $("header.sticky");
+
+    if (!$header.length) return;
+
+    let lastScroll = 0;
+
+    $(window).on("scroll", function () {
+        const top = $(this).scrollTop();
+
+        $header.toggleClass("shadow-md", top > 8);
+
+        if (top > 240 && top > lastScroll) {
+            $header.addClass("-translate-y-full");
+        } else {
+            $header.removeClass("-translate-y-full");
+        }
+
+        lastScroll = top;
+    });
 });

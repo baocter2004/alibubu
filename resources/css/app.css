@@ -83,3 +83,34 @@ body.bg-background-light {
 .alibubu-toast .swal2-timer-progress-bar {
     background: hsl(var(--primary)) !important;
 }
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: rgb(249 250 251 / 0.6);
+}
+
+.admin-table tbody tr:hover {
+    background-color: rgb(239 246 255);
+}
+
+.admin-card {
+    background: #fff;
+    border: 1px solid rgb(243 244 246);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

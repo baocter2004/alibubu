@@ -41,7 +41,7 @@
         <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/address.ward.title') }}</h2>
 
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[640px] w-full table-fixed">
+            <table class="min-w-[640px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[10%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>
@@ -53,7 +53,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($wards as $ward)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="text-center px-4 py-3">{{ $ward->id }}</td>
                             <td class="px-4 py-3 truncate">{{ $ward->name }}</td>
                             <td class="text-center px-4 py-3">{{ $ward->code }}</td>

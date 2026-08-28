@@ -89,7 +89,7 @@
 
     <div class="w-full bg-white rounded-lg shadow-lg p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[980px] w-full table-fixed">
+            <table class="min-w-[980px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[15%] px-4 py-3">{{ __('admin/order.fields.code') }}</th>
@@ -104,7 +104,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($orders as $order)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="px-4 py-3">
                                 <a href="{{ route('admin.orders.show', $order->id) }}"
                                     class="font-medium text-blue-600 hover:underline">{{ $order->code }}</a>

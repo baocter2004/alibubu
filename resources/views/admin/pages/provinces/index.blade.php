@@ -46,7 +46,7 @@
 
     <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[860px] w-full table-fixed">
+            <table class="min-w-[860px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[7%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>
@@ -60,7 +60,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($provinces as $province)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="text-center px-4 py-3">{{ $province->id }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900 truncate">{{ $province->name }}</td>
                             <td class="text-center px-4 py-3">{{ $province->code }}</td>
