@@ -137,6 +137,12 @@ return [
 
     'checkout' => [
         'title' => 'Checkout',
+        'steps' => [
+            'cart' => 'Cart',
+            'info' => 'Delivery',
+            'done' => 'Done',
+        ],
+        'use_saved_address' => 'Use a saved address',
         'shipping_info' => 'Delivery information',
         'fullname' => 'Full name',
         'phone_number' => 'Phone number',

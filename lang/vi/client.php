@@ -137,6 +137,12 @@ return [
 
     'checkout' => [
         'title' => 'Thanh toán',
+        'steps' => [
+            'cart' => 'Giỏ hàng',
+            'info' => 'Giao hàng',
+            'done' => 'Hoàn tất',
+        ],
+        'use_saved_address' => 'Dùng địa chỉ đã lưu',
         'shipping_info' => 'Thông tin nhận hàng',
         'fullname' => 'Họ và tên',
         'phone_number' => 'Số điện thoại',
