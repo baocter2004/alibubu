@@ -13,12 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('wards', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->integer('code')->unique();
             $table->string('division_type');
             $table->string('codename');
-            $table->foreignIdFor(Province::class)->constrained('provinces')->onDelete('cascade');
+            $table->foreignUuid('province_id')->constrained('provinces')->onDelete('cascade');
             $table->timestamps();
         });
     }

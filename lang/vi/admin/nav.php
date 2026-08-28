@@ -18,6 +18,7 @@ return [
     'products' => 'Sản phẩm',
     'coupons' => 'Mã giảm giá',
     'attributes' => 'Thuộc tính',
+    'tags' => 'Nhãn',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
     'provinces' => 'Tỉnh/Thành phố',

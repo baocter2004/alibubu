@@ -6,6 +6,7 @@ use App\Traits\HasBuildQuery;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -306,7 +307,26 @@ abstract class BaseRepository
 
     public function insert(array $params)
     {
-        return $this->newQuery()->insert($params);
+        return $this->newQuery()->insert($this->withGeneratedKeys($params));
+    }
+
+    protected function withGeneratedKeys(array $rows): array
+    {
+        $model = $this->getModel();
+
+        if (! in_array(HasUuids::class, class_uses_recursive($model), true)) {
+            return $rows;
+        }
+
+        $key = $model->getKeyName();
+
+        return array_map(function ($row) use ($model, $key) {
+            if (empty($row[$key])) {
+                $row[$key] = $model->newUniqueId();
+            }
+
+            return $row;
+        }, $rows);
     }
 
     public function deleteBy($value, $column = 'id')

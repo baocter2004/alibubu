@@ -15,13 +15,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_addresses', function (Blueprint $table) {
-            $table->foreignIdFor(Province::class)
+            $table->foreignUuid('province_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete()
                 ->after('user_id');
 
-            $table->foreignIdFor(Ward::class)
+            $table->foreignUuid('ward_id')
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete()

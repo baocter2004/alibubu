@@ -13,6 +13,7 @@
                 ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories'],
                 ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches'],
                 ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes'],
+                ['type' => 'dropdown', 'active' => 'admin.tags.*', 'icon' => 'fa-tags', 'label' => __('admin/nav.tags'), 'base' => 'admin.tags'],
             ],
         ],
         [

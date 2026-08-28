@@ -30,13 +30,11 @@ class GetUserRequest extends FormRequest
             'phone_number' => 'nullable|string|max:255',
             'status' => [
                 'nullable',
-                'integer',
-                Rule::in(array_keys(UserConst::statuses()))
+                'integer', Rule::in(array_keys(UserConst::statuses()))
             ],
             'role' => [
                 'nullable',
-                'integer',
-                Rule::in(array_keys(UserConst::roles()))
+                'integer', Rule::in(array_keys(UserConst::roles()))
             ],
         ];
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProvinceController;
@@ -25,6 +26,7 @@ Route::prefix('/admin')
             'products' => ProductController::class,
             'coupons' => CouponController::class,
             'attributes' => AttributeController::class,
+            'tags' => TagController::class,
         ] as $slug => $controller) {
             Route::prefix($slug)
                 ->name($slug . '.')

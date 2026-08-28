@@ -3,7 +3,10 @@
     $base = $product->base_price;
     $discount = $product->discount_percent;
     $url = route('shop.show', $product->slug);
-    $outOfStock = ! $product->inStock();
+    $sellableVariants = $product->hasVariants()
+        ? $product->variants->where('is_active', true)->count()
+        : 1;
+    $outOfStock = ! $product->inStock() || $sellableVariants === 0;
 @endphp
 
 <article

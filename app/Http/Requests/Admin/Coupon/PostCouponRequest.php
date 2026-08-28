@@ -56,7 +56,7 @@ class PostCouponRequest extends FormRequest
             'min_order_value' => ['nullable', 'numeric', 'min:0'],
             'max_discount_value' => ['nullable', 'numeric', 'min:0', Rule::requiredIf($isPercent)],
             'valid_categories' => ['nullable', 'array'],
-            'valid_categories.*' => ['integer', 'exists:categories,id'],
+            'valid_categories.*' => ['uuid', 'exists:categories,id'],
         ];
     }
 

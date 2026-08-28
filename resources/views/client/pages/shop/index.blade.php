@@ -44,7 +44,7 @@
                             <label
                                 class="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-muted transition-colors">
                                 <input type="radio" name="category_id" value="{{ $category->id }}"
-                                    @checked((int) request('category_id') === $category->id) class="accent-primary">
+                                    @checked((string) request('category_id') === (string) $category->id) class="accent-primary">
                                 <span class="text-sm text-muted-foreground">{{ $category->name }}</span>
                             </label>
                         @endforeach
@@ -58,7 +58,7 @@
                         class="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                         <option value="">{{ __('client.shop.all_brands') }}</option>
                         @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}" @selected((int) request('branch_id') === $branch->id)>
+                            <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>
                                 {{ $branch->name }}
                             </option>
                         @endforeach
@@ -137,11 +137,11 @@
                 if (request('keyword')) {
                     $activeChips[] = ['label' => request('keyword'), 'param' => 'keyword'];
                 }
-                if (request('category_id') && $categories->firstWhere('id', (int) request('category_id'))) {
-                    $activeChips[] = ['label' => $categories->firstWhere('id', (int) request('category_id'))->name, 'param' => 'category_id'];
+                if (request('category_id') && $categories->firstWhere('id', request('category_id'))) {
+                    $activeChips[] = ['label' => $categories->firstWhere('id', request('category_id'))->name, 'param' => 'category_id'];
                 }
-                if (request('branch_id') && $branches->firstWhere('id', (int) request('branch_id'))) {
-                    $activeChips[] = ['label' => $branches->firstWhere('id', (int) request('branch_id'))->name, 'param' => 'branch_id'];
+                if (request('branch_id') && $branches->firstWhere('id', request('branch_id'))) {
+                    $activeChips[] = ['label' => $branches->firstWhere('id', request('branch_id'))->name, 'param' => 'branch_id'];
                 }
                 if (request('is_sale')) {
                     $activeChips[] = ['label' => __('client.shop.only_sale'), 'param' => 'is_sale'];

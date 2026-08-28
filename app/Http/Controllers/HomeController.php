@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
 use App\Services\Client\ProductService;
 
 class HomeController extends Controller
@@ -34,7 +36,13 @@ class HomeController extends Controller
 
     public function about()
     {
-        return view('client.pages.about');
+        return view('client.pages.about', [
+            'stats' => [
+                'products' => Product::where('is_active', true)->count(),
+                'brands' => Branch::where('is_active', true)->has('products')->count(),
+                'customers' => User::count(),
+            ],
+        ]);
     }
 
     public function thankYou()

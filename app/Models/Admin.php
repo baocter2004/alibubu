@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Notifications\AdminResetPassword;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, HasUuids;
 
     /**
      * The attributes that are mass assignable.

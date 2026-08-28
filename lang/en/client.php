@@ -69,6 +69,35 @@ return [
         ],
     ],
 
+    'about' => [
+        'title' => 'About us',
+        'hero_badge' => 'Since 2019',
+        'hero_title' => 'Genuine technology, honest prices',
+        'hero_text' => 'Alibubu is a Vietnamese electronics retailer. We sell authorised phones, laptops, tablets and accessories, and we stand behind every order with real warranty support.',
+        'stats' => [
+            'products' => 'Products in stock',
+            'brands' => 'Authorised brands',
+            'customers' => 'Happy customers',
+            'years' => 'Years serving Vietnam',
+        ],
+        'values_title' => 'What we stand for',
+        'values_subtitle' => 'Three commitments behind every order',
+        'values' => [
+            'genuine_title' => '100% genuine',
+            'genuine_text' => 'Every device is sourced through authorised distribution channels with full manufacturer warranty.',
+            'price_title' => 'Fair pricing',
+            'price_text' => 'Transparent prices with no hidden fees, plus regular deals on the models people actually buy.',
+            'support_title' => 'Real support',
+            'support_text' => 'A team you can reach, 30-day returns, and warranty handled without the runaround.',
+        ],
+        'story_title' => 'Our story',
+        'story_text_1' => 'We started as a single store in Ho Chi Minh City with a simple idea: selling technology should not require haggling or worrying about whether a device is genuine.',
+        'story_text_2' => 'Today we ship nationwide, but the idea has not changed. Clear prices, real stock, and a warranty you can actually use.',
+        'contact_title' => 'Talk to us',
+        'contact_subtitle' => 'We reply within one business day.',
+        'cta_shop' => 'Browse products',
+    ],
+
     'shop' => [
         'title' => 'All products',
         'breadcrumb' => 'Products',

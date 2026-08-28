@@ -14,7 +14,8 @@
             ->filter()
             ->unique()
             ->values();
-        $outOfStock = ! $product->inStock();
+        $noSellableVariant = $product->hasVariants() && $variants->isEmpty();
+        $outOfStock = ! $product->inStock() || $noSellableVariant;
     @endphp
 
     <nav class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">

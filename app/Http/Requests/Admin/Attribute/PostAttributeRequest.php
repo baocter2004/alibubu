@@ -43,7 +43,7 @@ class PostAttributeRequest extends FormRequest
             'is_active' => ['required', Rule::in(array_keys(GlobalConst::statuses()))],
 
             'values' => ['required', 'array', 'min:1', 'max:30'],
-            'values.*.id' => ['nullable', 'integer', 'exists:attribute_values,id'],
+            'values.*.id' => ['nullable', 'uuid', 'exists:attribute_values,id'],
             'values.*.value' => ['required', 'string', 'max:255'],
             'values.*.is_active' => ['nullable', 'boolean'],
         ];

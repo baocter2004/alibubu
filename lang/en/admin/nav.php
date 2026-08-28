@@ -18,6 +18,7 @@ return [
     'products' => 'Products',
     'coupons' => 'Discount codes',
     'attributes' => 'Attributes',
+    'tags' => 'Tags',
     'orders' => 'Orders',
     'users' => 'Users',
     'provinces' => 'Provinces',

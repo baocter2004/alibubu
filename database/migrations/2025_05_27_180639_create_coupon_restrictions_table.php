@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('coupon_restrictions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('coupon_id')->constrained('coupons')->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('coupon_id')->constrained('coupons')->onDelete('cascade');
             $table->decimal('min_order_value', 11, 2);
             $table->decimal('max_discount_value', 11, 2)->nullable();
             $table->jsonb('valid_categories')->nullable();

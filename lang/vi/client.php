@@ -69,6 +69,35 @@ return [
         ],
     ],
 
+    'about' => [
+        'title' => 'Về chúng tôi',
+        'hero_badge' => 'Từ năm 2019',
+        'hero_title' => 'Công nghệ chính hãng, giá minh bạch',
+        'hero_text' => 'Alibubu là nhà bán lẻ thiết bị công nghệ tại Việt Nam. Chúng tôi phân phối điện thoại, laptop, máy tính bảng và phụ kiện chính hãng, kèm hỗ trợ bảo hành thực chất cho mọi đơn hàng.',
+        'stats' => [
+            'products' => 'Sản phẩm đang bán',
+            'brands' => 'Thương hiệu chính hãng',
+            'customers' => 'Khách hàng hài lòng',
+            'years' => 'Năm đồng hành',
+        ],
+        'values_title' => 'Giá trị chúng tôi theo đuổi',
+        'values_subtitle' => 'Ba cam kết đằng sau mỗi đơn hàng',
+        'values' => [
+            'genuine_title' => 'Chính hãng 100%',
+            'genuine_text' => 'Mọi sản phẩm đều nhập qua kênh phân phối uỷ quyền, đầy đủ bảo hành từ hãng.',
+            'price_title' => 'Giá minh bạch',
+            'price_text' => 'Niêm yết rõ ràng, không phụ phí ẩn, thường xuyên ưu đãi cho các mẫu bán chạy.',
+            'support_title' => 'Hỗ trợ thật',
+            'support_text' => 'Đội ngũ luôn sẵn sàng, đổi trả trong 30 ngày, bảo hành xử lý nhanh gọn.',
+        ],
+        'story_title' => 'Câu chuyện của chúng tôi',
+        'story_text_1' => 'Chúng tôi bắt đầu từ một cửa hàng nhỏ tại TP.HCM với suy nghĩ đơn giản: mua đồ công nghệ không nên phải mặc cả hay lo lắng về hàng thật hàng giả.',
+        'story_text_2' => 'Hôm nay Alibubu đã giao hàng toàn quốc, nhưng điều đó không đổi. Giá rõ ràng, hàng có sẵn, bảo hành dùng được thật.',
+        'contact_title' => 'Liên hệ với chúng tôi',
+        'contact_subtitle' => 'Chúng tôi phản hồi trong vòng một ngày làm việc.',
+        'cta_shop' => 'Xem sản phẩm',
+    ],
+
     'shop' => [
         'title' => 'Tất cả sản phẩm',
         'breadcrumb' => 'Sản phẩm',

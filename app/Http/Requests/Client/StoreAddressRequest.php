@@ -25,8 +25,8 @@ class StoreAddressRequest extends FormRequest
         return [
             'fullname' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20', 'regex:/^0[0-9]{8,10}$/'],
-            'province_id' => ['required', 'integer', 'exists:provinces,id'],
-            'ward_id' => ['required', 'integer', 'exists:wards,id'],
+            'province_id' => ['required', 'uuid', 'exists:provinces,id'],
+            'ward_id' => ['required', 'uuid', 'exists:wards,id'],
             'address' => ['required', 'string', 'max:255'],
             'is_default' => ['nullable', 'boolean'],
         ];

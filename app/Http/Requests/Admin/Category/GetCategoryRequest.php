@@ -26,7 +26,7 @@ class GetCategoryRequest extends FormRequest
         return [
             'keyword' => ['nullable', 'string', 'max:255'],
             'name' => ['nullable', 'string', 'max:255'],
-            'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'parent_id' => ['nullable', 'uuid', 'exists:categories,id'],
             'is_active' => ['nullable', Rule::in(array_keys(GlobalConst::statuses()))],
         ];
     }

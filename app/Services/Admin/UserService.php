@@ -107,13 +107,13 @@ class UserService extends BaseCrudService
                 $user = parent::update($id, Arr::except($params, ['user_addresses', 'id']));
                 $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);
 
-                $currentIds = $user->userAddresses()->pluck('id')->all();
+                $currentIds = $user->userAddresses()->pluck('id')->map(fn ($id) => (string) $id)->all();
                 $keptIds = [];
                 $toInsert = [];
 
                 foreach ($addresses as $address) {
-                    if (! empty($address['id']) && in_array((int) $address['id'], $currentIds, true)) {
-                        $keptIds[] = (int) $address['id'];
+                    if (! empty($address['id']) && in_array((string) $address['id'], $currentIds, true)) {
+                        $keptIds[] = (string) $address['id'];
                         $user->userAddresses()
                             ->whereKey($address['id'])
                             ->update(Arr::except($address, ['id', 'user_id', 'created_at']));
