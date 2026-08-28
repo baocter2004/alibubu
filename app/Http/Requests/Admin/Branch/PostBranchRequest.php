@@ -41,7 +41,7 @@ class PostBranchRequest extends FormRequest
             ],
             'is_active' => [
                 'required',
-                Rule::in(array_keys(GlobalConst::STATUS)),
+                Rule::in(array_keys(GlobalConst::statuses())),
             ],
         ];
     }

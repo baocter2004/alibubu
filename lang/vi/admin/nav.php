@@ -1,16 +1,35 @@
 <?php
 
 return [
+    'brand' => 'Alibubu',
+    'brand_subtitle' => 'Trang quản trị',
+
+    'groups' => [
+        'main' => 'Tổng quan',
+        'catalog' => 'Danh mục',
+        'sales' => 'Bán hàng & kho',
+        'system' => 'Hệ thống',
+        'address' => 'Dữ liệu địa chỉ',
+    ],
+
     'dashboard' => 'Bảng điều khiển',
-    'catalog' => 'Danh mục sản phẩm',
-    'products' => 'Sản phẩm',
-    'categories' => 'Danh mục',
     'branches' => 'Thương hiệu',
-    'accounts' => 'Tài khoản',
+    'products' => 'Sản phẩm',
+    'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
-    'address' => 'Dữ liệu địa chỉ',
     'provinces' => 'Tỉnh/Thành phố',
     'wards' => 'Phường/Xã',
-    'view_site' => 'Xem cửa hàng',
+
+    'index' => 'Danh sách',
+    'create' => 'Thêm mới',
+    'trash' => 'Thùng rác',
+    'coming_soon' => 'Sắp ra mắt',
+
+    'search_placeholder' => 'Tìm kiếm...',
+    'notifications' => 'Thông báo',
+    'role' => 'Quản trị viên',
     'profile' => 'Tài khoản của tôi',
+    'change_password' => 'Đổi mật khẩu',
+    'logout' => 'Đăng xuất',
+    'view_site' => 'Xem cửa hàng',
 ];

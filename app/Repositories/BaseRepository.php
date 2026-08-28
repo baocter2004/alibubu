@@ -16,7 +16,7 @@ abstract class BaseRepository
 
     protected Model $model;
 
-    abstract protected function getModel(): Model;
+    abstract public function getModel(): Model;
 
     public function __construct()
     {

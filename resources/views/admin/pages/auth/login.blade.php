@@ -1,56 +1,54 @@
 @extends('admin.layouts.app-blank')
 
-@section('title', 'Alibubu Admin - Đăng Nhập Tài Khoản Quản Trị Viên')
+@section('title', __('common.app_name') . ' - ' . __('admin/auth.login.title'))
 
 @section('content')
-    <div class="w-full mt-10 m-auto">
-        <div class="flex flex-col justify-center items-center gap-4 text-center">
-            <h1 class="text-2xl md:text-3xl text-blue-500 font-bold">
-                Welcome, Admin
-            </h1>
-            <h2 class="text-sm md:text-base text-blue-500 leading-relaxed">
-                Please log in to access the administration dashboard
-            </h2>
+    <div class="w-full max-w-md mx-auto py-10">
+        <div class="text-center mb-8">
+            <span class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 mb-4">
+                <i class="fa-solid fa-shield-halved text-xl"></i>
+            </span>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ __('admin/auth.login.heading') }}</h1>
+            <p class="text-sm text-gray-500">{{ __('admin/auth.login.subheading') }}</p>
         </div>
 
-        <div class="w-full m-auto max-w-md bg-white shadow-md rounded-md mt-10 p-6 md:p-10">
-            <form action="{{ route('auth.admin.handleLogin') }}" method="POST"
-                class="flex flex-col justify-center items-center space-y-4">
+        <div class="bg-white shadow-md rounded-2xl p-6 md:p-8">
+            <form action="{{ route('auth.admin.handleLogin') }}" method="POST" class="space-y-5">
                 @csrf
 
                 @include('components.input', [
-                    'label' => 'Email',
+                    'label' => __('admin/auth.login.email'),
                     'name' => 'email',
                     'required' => true,
                     'icon' => 'envelope',
-                    'placeholder' => 'abcexample@gmail.com',
+                    'placeholder' => 'admin@example.com',
                 ])
 
                 @include('components.input', [
-                    'label' => 'Password',
+                    'label' => __('admin/auth.login.password'),
                     'name' => 'password',
                     'type' => 'password',
                     'required' => true,
                     'icon' => 'lock',
-                    'placeholder' => '********************',
                 ])
 
-                @include('components.checkbox', [
-                    'name' => 'remember',
-                    'label' => 'Ghi nhớ đăng nhập',
-                ])
+                <div class="flex items-center justify-between">
+                    @include('components.checkbox', [
+                        'name' => 'remember',
+                        'label' => __('admin/auth.login.remember'),
+                    ])
 
-                <div class="flex justify-end w-full">
-                    <a href="{{ route('admin.password.request') }}" class="text-sm text-blue-500 hover:underline">
-                        Quên mật khẩu?
+                    <a href="{{ route('admin.password.request') }}"
+                        class="text-sm font-medium text-blue-500 hover:underline whitespace-nowrap">
+                        {{ __('admin/auth.login.forgot') }}
                     </a>
                 </div>
 
-                @include('components.button', [
-                    'type' => 'submit',
-                    'color' => 'blue',
-                    'text' => 'Đăng Nhập',
-                ])
+                <button type="submit"
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {{ __('admin/auth.login.submit') }}
+                </button>
             </form>
         </div>
     </div>

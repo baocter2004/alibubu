@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Alibubu - Your Shop')</title>
+    <title>@yield('title', __('common.app_name'))</title>
     @include('admin.layouts.partials.common.css')
     @stack('styles')
 </head>

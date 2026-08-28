@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 
 class WardService extends BaseCrudService
 {
-    public function getRepository(): WardRepository
+    protected function getRepository(): WardRepository
     {
         if(empty($this->repository)) {
             $this->repository = app()->make(WardRepository::class);

@@ -16,7 +16,7 @@ class BranchController extends Controller
     {
         session()->forget('branch_data');
         $branches = $this->branchService->paginate(array_merge($getBranchRequest->validated(), ['relates_count' => ['products']]));
-        $statuses = GlobalConst::STATUS;
+        $statuses = GlobalConst::statuses();
 
         return view('admin.pages.branches.index', compact('branches', 'statuses'));
     }
@@ -24,7 +24,7 @@ class BranchController extends Controller
     public function trash(GetBranchRequest $request)
     {
         $branches = $this->branchService->searchTrashed($request->validated());
-        $statuses = GlobalConst::STATUS;
+        $statuses = GlobalConst::statuses();
 
         return view('admin.pages.branches.trash', compact('branches', 'statuses'));
     }

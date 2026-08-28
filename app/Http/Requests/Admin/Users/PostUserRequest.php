@@ -105,10 +105,10 @@ class PostUserRequest extends FormRequest
             ],
             'password' => 'nullable|min:8|confirmed',
             'avatar'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status'   => ['required', Rule::in(array_keys(UserConst::STATUS))],
-            'gender'   => ['nullable', Rule::in(array_keys(UserConst::GENDER))],
+            'status'   => ['required', Rule::in(array_keys(UserConst::statuses()))],
+            'gender'   => ['nullable', Rule::in(array_keys(UserConst::genders()))],
             'birthday' => 'nullable|date',
-            'role'     => ['required', Rule::in(array_keys(UserConst::ROLE))],
+            'role'     => ['required', Rule::in(array_keys(UserConst::roles()))],
 
             'bank_name' => [
                 'nullable',

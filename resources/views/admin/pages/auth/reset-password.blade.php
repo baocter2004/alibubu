@@ -1,24 +1,24 @@
 @extends('admin.layouts.app-blank')
 
-@section('title', 'Alibubu Admin - Đặt Lại Mật Khẩu')
+@section('title', __('common.app_name') . ' - ' . __('admin/auth.reset.title'))
 
 @section('content')
-    <div class="w-full mt-10 m-auto">
-        <div class="flex flex-col justify-center items-center gap-4 text-center">
-            <h1 class="text-2xl md:text-3xl text-blue-500 font-bold">Đặt lại mật khẩu</h1>
-            <h2 class="text-sm md:text-base text-gray-500 leading-relaxed">
-                Nhập mật khẩu mới cho tài khoản quản trị.
-            </h2>
+    <div class="w-full max-w-md mx-auto py-10">
+        <div class="text-center mb-8">
+            <span class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 mb-4">
+                <i class="fa-solid fa-lock-open text-xl"></i>
+            </span>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ __('admin/auth.reset.heading') }}</h1>
+            <p class="text-sm text-gray-500">{{ __('admin/auth.reset.subheading') }}</p>
         </div>
 
-        <div class="w-full m-auto max-w-md bg-white shadow-md rounded-md mt-10 p-6 md:p-10">
-            <form action="{{ route('admin.password.update') }}" method="POST"
-                class="flex flex-col justify-center items-center space-y-4">
+        <div class="bg-white shadow-md rounded-2xl p-6 md:p-8">
+            <form action="{{ route('admin.password.update') }}" method="POST" class="space-y-5">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 @include('components.input', [
-                    'label' => 'Email',
+                    'label' => __('admin/auth.login.email'),
                     'name' => 'email',
                     'value' => $email,
                     'required' => true,
@@ -26,7 +26,7 @@
                 ])
 
                 @include('components.input', [
-                    'label' => 'Mật khẩu mới',
+                    'label' => __('admin/auth.reset.password'),
                     'name' => 'password',
                     'type' => 'password',
                     'required' => true,
@@ -34,18 +34,18 @@
                 ])
 
                 @include('components.input', [
-                    'label' => 'Xác nhận mật khẩu',
+                    'label' => __('admin/auth.reset.password_confirmation'),
                     'name' => 'password_confirmation',
                     'type' => 'password',
                     'required' => true,
                     'icon' => 'lock',
                 ])
 
-                @include('components.button', [
-                    'type' => 'submit',
-                    'color' => 'blue',
-                    'text' => 'Đổi mật khẩu',
-                ])
+                <button type="submit"
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {{ __('admin/auth.reset.submit') }}
+                </button>
             </form>
         </div>
     </div>

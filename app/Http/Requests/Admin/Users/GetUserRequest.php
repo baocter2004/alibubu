@@ -31,12 +31,12 @@ class GetUserRequest extends FormRequest
             'status' => [
                 'nullable',
                 'integer',
-                Rule::in(array_keys(UserConst::STATUS))
+                Rule::in(array_keys(UserConst::statuses()))
             ],
             'role' => [
                 'nullable',
                 'integer',
-                Rule::in(array_keys(UserConst::ROLE))
+                Rule::in(array_keys(UserConst::roles()))
             ],
         ];
     }

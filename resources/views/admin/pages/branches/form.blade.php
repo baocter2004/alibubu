@@ -79,7 +79,7 @@
                 'icon' => 'toggle-on',
                 'placeholder' => 'Chọn trạng thái',
                 'value' => $branch->is_active ?? ($data['is_active'] ?? ''),
-                'options' => \App\Const\GlobalConst::STATUS,
+                'options' => \App\Const\GlobalConst::statuses(),
                 'required' => true,
             ])
         </div>

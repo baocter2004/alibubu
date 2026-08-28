@@ -95,7 +95,7 @@
                 'icon' => 'venus-mars',
                 'placeholder' => 'Chọn giới tính',
                 'value' => $user->gender ?? ($data['gender'] ?? ''),
-                'options' => \App\Const\UserConst::GENDER,
+                'options' => \App\Const\UserConst::genders(),
             ])
 
             @include('components.date', [
@@ -112,7 +112,7 @@
                 'label' => 'Vai trò',
                 'icon' => 'user-shield',
                 'value' => $user->role ?? ($data['role'] ?? ''),
-                'options' => \App\Const\UserConst::ROLE,
+                'options' => \App\Const\UserConst::roles(),
             ])
 
             @include('components.select', [
@@ -120,7 +120,7 @@
                 'label' => 'Trạng thái',
                 'icon' => 'toggle-on',
                 'value' => $user->status ?? ($data['status'] ?? ''),
-                'options' => \App\Const\UserConst::STATUS,
+                'options' => \App\Const\UserConst::statuses(),
             ])
         </div>
     </div>

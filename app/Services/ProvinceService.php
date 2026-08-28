@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 
 class ProvinceService extends BaseCrudService
 {
-    public function getRepository(): ProvinceRepository
+    protected function getRepository(): ProvinceRepository
     {
         if (empty($this->repository)) {
             $this->repository = app()->make(ProvinceRepository::class);

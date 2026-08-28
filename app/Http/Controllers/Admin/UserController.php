@@ -17,8 +17,8 @@ class UserController extends Controller
     {
         session()->forget('user_data');
         $users = $this->userService->search($request->validated());
-        $statuses = UserConst::STATUS;
-        $roles = UserConst::ROLE;
+        $statuses = UserConst::statuses();
+        $roles = UserConst::roles();
 
         return view('admin.pages.users.index', compact('users', 'statuses', 'roles'));
     }
@@ -26,8 +26,8 @@ class UserController extends Controller
     public function trash(GetUserRequest $request)
     {
         $users = $this->userService->searchTrashed($request->validated());
-        $statuses = UserConst::STATUS;
-        $roles = UserConst::ROLE;
+        $statuses = UserConst::statuses();
+        $roles = UserConst::roles();
 
         return view('admin.pages.users.trash', compact('users', 'statuses', 'roles'));
     }

@@ -29,7 +29,7 @@ class GetBranchRequest extends FormRequest
             'slug' => 'nullable|string|max:255',
             'is_active' => [
                 'nullable',
-                Rule::in(array_keys(GlobalConst::STATUS))
+                Rule::in(array_keys(GlobalConst::statuses()))
             ]
         ];
     }
