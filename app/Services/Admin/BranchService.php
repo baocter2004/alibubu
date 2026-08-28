@@ -141,14 +141,14 @@ class BranchService extends BaseCrudService
             if (! $branch) {
                 return [
                     'status' => false,
-                    'message' => 'Không tìm thấy chi nhánh.',
+                    'message' => __('admin/branch.messages.not_found'),
                 ];
             }
 
             if ($branch->products()->exists()) {
                 return [
                     'status' => false,
-                    'message' => 'Không thể xoá chi nhánh đang có sản phẩm.',
+                    'message' => __('admin/branch.messages.has_products'),
                 ];
             }
 
@@ -159,7 +159,7 @@ class BranchService extends BaseCrudService
 
             return [
                 'status' => true,
-                'message' => 'Xoá chi nhánh thành công.',
+                'message' => __('admin/branch.messages.deleted'),
             ];
         } catch (\Throwable $th) {
             Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);

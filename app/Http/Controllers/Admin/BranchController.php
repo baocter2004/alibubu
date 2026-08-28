@@ -73,13 +73,11 @@ class BranchController extends Controller
         }
 
         if (! empty($data['id'])) {
-            // update
             $this->branchService->update($data['id'], $data);
-            $message = 'Cập nhật chi nhánh thành công.';
+            $message = __('admin/branch.messages.updated');
         } else {
-            // create
             $this->branchService->create($data);
-            $message = 'Thêm mới chi nhánh thành công.';
+            $message = __('admin/branch.messages.created');
         }
 
         session()->forget('branch_data');
@@ -109,13 +107,13 @@ class BranchController extends Controller
     {
         $this->branchService->forceDelete($id);
 
-        return redirect()->route('admin.branches.index')->with('success', 'Branch permanently deleted successfully.');
+        return redirect()->route('admin.branches.index')->with('success', __('admin/branch.messages.force_deleted'));
     }
 
     public function restore(int|string $id)
     {
         $this->branchService->restore($id);
 
-        return redirect()->route('admin.branches.index')->with('success', 'Branch restored successfully.');
+        return redirect()->route('admin.branches.index')->with('success', __('admin/branch.messages.restored'));
     }
 }

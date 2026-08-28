@@ -83,14 +83,12 @@ class UserController extends Controller
             return redirect()->route('admin.users.create');
         }
 
-        if (!empty($data['id'])) {
-            // update
+        if (! empty($data['id'])) {
             $this->userService->update($data['id'], $data);
-            $message = 'User updated successfully.';
+            $message = __('admin/user.messages.updated');
         } else {
-            // create
             $this->userService->create($data);
-            $message = 'User created successfully.';
+            $message = __('admin/user.messages.created');
         }
 
         session()->forget('user_data');

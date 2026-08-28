@@ -85,7 +85,7 @@ abstract class BaseService
         $item = $this->getRepository()->update($id, $params);
 
         if (! $item) {
-            throw new ModelNotFoundException('Không tìm thấy bản ghi cần cập nhật: ' . $id);
+            throw (new ModelNotFoundException)->setModel($this->getRepository()->getModel()::class, [$id]);
         }
 
         return $item;
