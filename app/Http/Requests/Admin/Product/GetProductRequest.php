@@ -27,8 +27,8 @@ class GetProductRequest extends FormRequest
             'keyword' => ['nullable', 'string', 'max:255'],
             'name' => ['nullable', 'string', 'max:255'],
             'sku' => ['nullable', 'string', 'max:255'],
-            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'branch_id' => ['nullable', 'uuid', 'exists:branches,id'],
+            'category_id' => ['nullable', 'uuid', 'exists:categories,id'],
             'is_active' => ['nullable', Rule::in(array_keys(GlobalConst::statuses()))],
         ];
     }

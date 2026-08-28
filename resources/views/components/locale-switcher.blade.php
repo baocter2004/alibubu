@@ -1,4 +1,6 @@
-@props(['align' => 'right'])
+@php
+    $align = $align ?? 'right';
+@endphp
 
 <div class="relative" data-locale-switcher>
     <button type="button" data-locale-toggle

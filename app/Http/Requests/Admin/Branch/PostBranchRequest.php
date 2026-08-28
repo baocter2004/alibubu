@@ -27,12 +27,6 @@ class PostBranchRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('branches', 'slug')->ignore($id),
-            ],
             'logo' => [
                 empty($id) ? 'required' : 'nullable',
                 'image',

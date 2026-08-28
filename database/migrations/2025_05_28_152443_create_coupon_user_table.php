@@ -14,9 +14,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('coupon_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
-            $table->foreignIdFor(Coupon::class)->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('coupon_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('times_used')->default(1);
             $table->timestamp('used_at')->nullable();
             $table->timestamps();

@@ -8,17 +8,29 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', __('common.app_name'))</title>
+    <title>@yield('title', __('common.app_name')) · {{ __('admin/nav.brand_subtitle') }}</title>
     @include('admin.layouts.partials.common.css')
     @stack('styles')
 </head>
 
-<body class="bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
-    <main class="max-w-7xl flex justify-center items-center mx-auto h-full px-4 py-8">
+<body class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50"
+    data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+    <div class="absolute top-4 right-4 z-10">
+        @include('components.locale-switcher')
+    </div>
+
+    <main class="min-h-screen flex items-center justify-center px-4 py-10">
         @yield('content')
     </main>
-    @include('admin.layouts.partials.common.scripts')
 
+    <script>
+        window.alertLabels = {
+            success: @json(__('common.alerts.success')),
+            error: @json(__('common.alerts.error')),
+        };
+    </script>
+
+    @include('admin.layouts.partials.common.scripts')
     @stack('scripts')
 </body>
 

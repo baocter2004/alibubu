@@ -2,11 +2,14 @@
 
 namespace App\Services\Admin;
 
+use App\Const\GlobalConst;
 use App\Const\ProductConst;
 use App\Models\Product;
+use App\Models\ProductSpecification;
 use App\Models\ProductVariant;
 use App\Repositories\ProductRepository;
 use App\Services\BaseCrudService;
+use App\Traits\GeneratesSlug;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +19,8 @@ use Illuminate\Support\Str;
 
 class ProductService extends BaseCrudService
 {
+    use GeneratesSlug;
+
     protected function getRepository(): ProductRepository
     {
         if (empty($this->repository)) {
@@ -78,13 +83,35 @@ class ProductService extends BaseCrudService
 
     public function prepareConfirmData(array $validated, $id = null, ?array $oldSessionData = null): array
     {
-        $data = $validated;
+        $data = array_merge([
+            'name' => null,
+            'slug' => null,
+            'sku' => null,
+            'branch_id' => null,
+            'category_ids' => [],
+            'short_descriptions' => null,
+            'descriptions' => null,
+            'thumbnail' => null,
+            'type' => ProductConst::SINGLE,
+            'price' => null,
+            'sale_price' => null,
+            'sale_price_start_at' => null,
+            'sale_price_end_at' => null,
+            'is_featured' => false,
+            'is_trending' => false,
+            'is_active' => GlobalConst::IS_ACTIVE,
+            'variants' => [],
+            'specifications' => [],
+        ], $validated);
+
         $data['id'] = $id;
-        $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
+        $data['slug'] = $this->generateSlug($data['name'], 'products', $id);
         $data['category_ids'] = array_values(array_filter($validated['category_ids'] ?? []));
-        $data['variants'] = (int) ($validated['type'] ?? ProductConst::SINGLE) === ProductConst::VARIANT
-            ? array_values($validated['variants'] ?? [])
+        $data['variants'] = (int) $data['type'] === ProductConst::VARIANT
+            ? $this->normalizeVariants($data['variants'])
             : [];
+
+        $data['specifications'] = $this->normalizeSpecifications($data['specifications']);
 
         if (! empty($validated['thumbnail']) && $validated['thumbnail'] instanceof UploadedFile) {
             if (! empty($oldSessionData['thumbnail']) && $oldSessionData['thumbnail'] !== ($oldSessionData['persisted_thumbnail'] ?? null)) {
@@ -108,6 +135,28 @@ class ProductService extends BaseCrudService
         return $data;
     }
 
+    protected function normalizeSpecifications(array $specs): array
+    {
+        return array_values(array_filter(array_map(fn ($spec) => array_merge([
+            'id' => null,
+            'group' => null,
+            'name' => null,
+            'value' => null,
+        ], $spec), $specs), fn ($spec) => ! empty($spec['name']) && ! empty($spec['value'])));
+    }
+
+    protected function normalizeVariants(array $variants): array
+    {
+        return array_values(array_map(fn ($variant) => array_merge([
+            'id' => null,
+            'sku' => null,
+            'price' => null,
+            'sale_price' => null,
+            'is_active' => false,
+            'attribute_value_ids' => [],
+        ], $variant), $variants));
+    }
+
     public function create(array $params = []): Product
     {
         $thumbnail = Arr::get($params, 'thumbnail');
@@ -117,6 +166,7 @@ class ProductService extends BaseCrudService
                 $product = parent::create($this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
+                $this->syncSpecifications($product, $params['specifications'] ?? []);
 
                 return $product;
             });
@@ -141,6 +191,7 @@ class ProductService extends BaseCrudService
                 $product = parent::update($id, $this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
+                $this->syncSpecifications($product, $params['specifications'] ?? []);
 
                 return $product;
             });
@@ -211,6 +262,7 @@ class ProductService extends BaseCrudService
             $product->categories()->detach();
             $product->tags()->detach();
             $product->galleries()->delete();
+            $product->specifications()->delete();
             $product->variants()->delete();
 
             return parent::forceDelete($id);
@@ -237,23 +289,24 @@ class ProductService extends BaseCrudService
         $keptIds = [];
 
         foreach ($variants as $index => $variant) {
-            $attributes = [
-                'product_id' => $product->id,
-                'sku' => $variant['sku'] ?: $this->generateVariantSku($product, $index),
-                'price' => $variant['price'],
-                'sale_price' => $variant['sale_price'] ?? null,
-                'thumbnail' => '',
-                'is_active' => ! empty($variant['is_active']),
-            ];
-
             $model = ! empty($variant['id'])
                 ? $product->variants()->whereKey($variant['id'])->first()
                 : null;
 
+            $attributes = [
+                'sku' => $variant['sku'] ?: ($model?->sku ?: $this->generateVariantSku($product, $index)),
+                'price' => $variant['price'],
+                'sale_price' => $variant['sale_price'] ?? null,
+                'is_active' => ! empty($variant['is_active']),
+            ];
+
             if ($model) {
-                $model->update(Arr::except($attributes, ['product_id', 'thumbnail']));
+                $model->update($attributes);
             } else {
-                $model = ProductVariant::create($attributes);
+                $model = ProductVariant::create(array_merge($attributes, [
+                    'product_id' => $product->id,
+                    'thumbnail' => $product->thumbnail,
+                ]));
             }
 
             $model->attributeValues()->sync($variant['attribute_value_ids'] ?? []);
@@ -269,6 +322,34 @@ class ProductService extends BaseCrudService
             });
     }
 
+    protected function syncSpecifications(Product $product, array $specs): void
+    {
+        $keptIds = [];
+
+        foreach ($specs as $index => $spec) {
+            $attributes = [
+                'group' => $spec['group'] ?: null,
+                'name' => $spec['name'],
+                'value' => $spec['value'],
+                'ordinal' => $index,
+            ];
+
+            $model = ! empty($spec['id'])
+                ? $product->specifications()->whereKey($spec['id'])->first()
+                : null;
+
+            if ($model) {
+                $model->update($attributes);
+            } else {
+                $model = ProductSpecification::create(array_merge($attributes, ['product_id' => $product->id]));
+            }
+
+            $keptIds[] = $model->id;
+        }
+
+        $product->specifications()->whereNotIn('id', $keptIds)->delete();
+    }
+
     protected function generateVariantSku(Product $product, int $index): string
     {
         $base = $product->sku ?: Str::upper(Str::substr($product->slug, 0, 12));
@@ -282,7 +363,7 @@ class ProductService extends BaseCrudService
 
     protected function productAttributes(array $params): array
     {
-        $attributes = Arr::except($params, ['id', 'category_ids', 'persisted_thumbnail', 'variants']);
+        $attributes = Arr::except($params, ['id', 'category_ids', 'persisted_thumbnail', 'variants', 'specifications']);
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {

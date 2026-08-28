@@ -1,27 +1,40 @@
 import "./bootstrap";
-import $ from "jquery";
 
-window.$ = window.jQuery = $;
+let toast = null;
 
-// Alert
+function getToast() {
+    if (toast || typeof Swal === "undefined") {
+        return toast;
+    }
+
+    toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        customClass: { popup: "alibubu-toast" },
+        didOpen: (el) => {
+            el.addEventListener("mouseenter", Swal.stopTimer);
+            el.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+    });
+
+    return toast;
+}
+
+window.notify = function (icon, text) {
+    const instance = getToast();
+
+    if (!text || !instance) return;
+
+    const labels = window.alertLabels || {};
+    instance.fire({ icon, title: labels[icon] || "", text });
+};
+
 $(function () {
-    if (document.body.dataset.success) {
-        Swal.fire({
-            icon: "success",
-            title: "Thành công!",
-            text: document.body.dataset.success,
-            confirmButtonText: "OK",
-        });
-    }
-
-    if (document.body.dataset.error) {
-        Swal.fire({
-            icon: "error",
-            title: "Thất bại!",
-            text: document.body.dataset.error,
-            confirmButtonText: "OK",
-        });
-    }
+    notify("success", document.body.dataset.success);
+    notify("error", document.body.dataset.error);
 });
 
 // Mobile menu
@@ -86,4 +99,45 @@ $(document).on("click", "[data-locale-toggle]", function (e) {
 $(document).on("click", function () {
     $("[data-locale-menu]").addClass("hidden");
     $("[data-locale-toggle]").attr("aria-expanded", "false");
+});
+
+$(document).on("click", "#account-menu button", function (e) {
+    e.stopPropagation();
+    $("#account-dropdown").toggleClass("hidden");
+});
+
+$(document).on("click", function () {
+    $("#account-dropdown").addClass("hidden");
+});
+
+$(document).on("click", "#category-menu button", function (e) {
+    e.stopPropagation();
+    $("#category-dropdown").toggleClass("hidden");
+    $("#account-dropdown").addClass("hidden");
+});
+
+$(document).on("click", function () {
+    $("#category-dropdown").addClass("hidden");
+});
+
+$(function () {
+    const $header = $("header.sticky");
+
+    if (!$header.length) return;
+
+    let lastScroll = 0;
+
+    $(window).on("scroll", function () {
+        const top = $(this).scrollTop();
+
+        $header.toggleClass("shadow-md", top > 8);
+
+        if (top > 240 && top > lastScroll) {
+            $header.addClass("-translate-y-full");
+        } else {
+            $header.removeClass("-translate-y-full");
+        }
+
+        lastScroll = top;
+    });
 });

@@ -1,191 +1,87 @@
 @extends('admin.layouts.app')
 
-@section('title')
-    {{ !empty($data['id']) ? 'Xác Nhận Cập Nhật' : 'Xác Nhận Thêm Mới' }}
-@endsection
+@section('title', __('admin/user.title.confirm'))
 
 @section('content')
-    <div class="max-w-5xl m-auto">
-        <div class="mb-4">
-            <h1 class="text-2xl font-bold text-gray-800">Kiểm tra thông tin người dùng</h1>
-            <p class="text-gray-600 mt-1">Kiểm tra lại thông tin của người dùng.</p>
-        </div>
-        <form action="{{ route('admin.users.save') }}" method="POST">
-            @csrf
-            @if (!empty($data['id']))
-                <input type="hidden" name="id" value="{{ $data['id'] }}">
-            @endif
-            {{-- Thông Tin Cơ Bản --}}
-            <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                        1
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800">
-                            Thông Tin Cơ Bản
-                        </h2>
-                        <p class="text-sm text-gray-500">
-                            Kiểm tra thông tin cá nhân của người dùng
-                        </p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Họ và tên</p>
-                        <p class="text-gray-800 font-medium">{{ $data['fullname'] ?? '-' }}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500">Email</p>
-                        <p class="text-gray-800 font-medium">{{ $data['email'] ?? '-' }}</p>
-                    </div>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Số điện thoại</p>
-                    <p class="text-gray-800 font-medium">{{ $data['phone_number'] ?? '-' }}</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Mật khẩu</p>
-                        <p class="text-gray-800 font-medium">********************</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Xác nhận mật khẩu</p>
-                        <p class="text-gray-800 font-medium">********************</p>
-                    </div>
-                </div>
-
-                <div class="bg-amber-100 rounded-lg p-3 text-yellow-800 flex justify-center items-center gap-2 mt-2">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    Mật Khẩu Sẽ Được Ẩn Đi Vì Lý Do Bảo Mật
-                </div>
+    <div class="max-w-5xl mx-auto space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div class="mb-6">
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ __('admin/user.title.confirm') }}</h1>
+                <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/user.subtitle.confirm') }}</p>
             </div>
 
-            {{-- Thông Tin Cá Nhân --}}
-            <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                        2
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800">
-                            Thông Tin Cá Nhân
-                        </h2>
-                        <p class="text-sm text-gray-500">
-                            Kiểm tra thông tin bổ sung
-                        </p>
-                    </div>
-                </div>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @php
+                    $rows = [
+                        ['label' => __('admin/user.fields.fullname'), 'value' => $data['fullname'] ?? '-'],
+                        ['label' => __('admin/user.fields.email'), 'value' => $data['email'] ?? '-'],
+                        ['label' => __('admin/user.fields.phone_number'), 'value' => $data['phone_number'] ?? '-'],
+                        ['label' => __('admin/user.fields.gender'), 'value' => \App\Const\UserConst::genderLabel($data['gender'] ?? null)],
+                        ['label' => __('admin/user.fields.birthday'), 'value' => ! empty($data['birthday']) ? \Illuminate\Support\Carbon::parse($data['birthday'])->format('d/m/Y') : '-'],
+                        ['label' => __('admin/user.fields.role'), 'value' => \App\Const\UserConst::roleLabel($data['role'] ?? null)],
+                        ['label' => __('admin/user.fields.status'), 'value' => \App\Const\UserConst::statusLabel($data['status'] ?? null)],
+                        ['label' => __('admin/user.fields.bank_name'), 'value' => \App\Const\BankConst::getOptions()[$data['bank_name'] ?? ''] ?? '-'],
+                        ['label' => __('admin/user.fields.user_bank_name'), 'value' => $data['user_bank_name'] ?? '-'],
+                        ['label' => __('admin/user.fields.bank_account'), 'value' => $data['bank_account'] ?? '-'],
+                    ];
+                @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Giới tính</p>
-                        <p class="text-gray-800 font-medium">
-                            {{ \App\Const\UserConst::genderLabel($data['gender'] ?? null) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Ngày sinh</p>
-                        <p class="text-gray-800 font-medium">{{ $data['birthday'] ?? '-' }}</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-500">Vai trò</p>
-                        <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::roleLabel($data['role'] ?? null) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Trạng thái</p>
-                        <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::statusLabel($data['status'] ?? null) }}</p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Địa Chỉ Nhận Hàng --}}
-            <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                        3
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800">Địa Chỉ Nhận Hàng</h2>
-                        <p class="text-sm text-gray-500">Tối đa 5 địa chỉ (<span
-                                id="address-count">{{ count($data['user_addresses'] ?? []) }}</span>/5)</p>
-                    </div>
-                </div>
-
-                @foreach ($data['user_addresses'] ?? [[]] as $idx => $address)
-                    <div class="w-full p-6 bg-gray-50 border border-gray-200 rounded-lg relative group animate-fade-in">
-                        <p class="text-sm text-gray-500">Họ và tên người nhận</p>
-                        <p class="text-gray-800 font-medium">{{ $address['fullname'] ?? '-' }}</p>
-
-                        <p class="text-sm text-gray-500 mt-2">Số điện thoại</p>
-                        <p class="text-gray-800 font-medium">{{ $address['phone_number'] ?? '-' }}</p>
-
-                        <p class="text-sm text-gray-500 mt-2">Tỉnh/Thành phố</p>
-                        <p class="text-gray-800 font-medium">
-                            {{ $address['province'] ?? '-' }}
-                        </p>
-
-                        <p class="text-sm text-gray-500 mt-2">Phường/Xã</p>
-                        <p class="text-gray-800 font-medium">{{ $address['ward'] ?? '-' }}</p>
-
-                        <p class="text-sm text-gray-500 mt-2">Địa chỉ chi tiết</p>
-                        <p class="text-gray-800 font-medium">{{ $address['address'] ?? '-' }}</p>
-
-                        <p class="text-sm text-gray-500 mt-2">Đặt làm địa chỉ mặc định</p>
-                        @if (!empty($address['is_default']))
-                            <span class="text-green-600 font-semibold">(Mặc định)</span>
-                        @else
-                            <span class="text-gray-600 font-semibold">(Không)</span>
-                        @endif
+                @foreach ($rows as $row)
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <dt class="text-xs uppercase tracking-wide text-gray-500 mb-1">{{ $row['label'] }}</dt>
+                        <dd class="text-gray-800 font-medium break-words">{{ $row['value'] ?: '-' }}</dd>
                     </div>
                 @endforeach
-            </div>
+            </dl>
+        </div>
 
-            {{-- Thông Tin Ngân Hàng --}}
-            <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                        4
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-800">
-                            Thông Tin Ngân Hàng
-                        </h2>
-                        <p class="text-sm text-gray-500">
-                            Không bắt buộc
-                        </p>
-                    </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/user.address.section') }}</h2>
+
+            @if (empty($data['user_addresses']))
+                <p class="py-8 text-center text-sm text-gray-500">{{ __('admin/user.address.empty') }}</p>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach ($data['user_addresses'] as $address)
+                        <div
+                            class="border rounded-xl p-4 {{ ! empty($address['is_default']) ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200 bg-gray-50' }}">
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <p class="font-medium text-gray-900">{{ $address['fullname'] ?? '-' }}</p>
+                                @if (! empty($address['is_default']))
+                                    <span
+                                        class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-blue-500 text-white shrink-0">
+                                        {{ __('admin/user.address.default_badge') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600 mb-1">
+                                <i class="fa-solid fa-phone text-gray-400 mr-1.5"></i>{{ $address['phone_number'] ?? '-' }}
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <i class="fa-solid fa-location-dot text-gray-400 mr-1.5"></i>
+                                {{ collect([$address['address'] ?? null, $address['ward'] ?? null, $address['province'] ?? null])->filter()->implode(', ') ?: '-' }}
+                            </p>
+                        </div>
+                    @endforeach
                 </div>
+            @endif
+        </div>
 
-                <p class="text-sm text-gray-500">Tên ngân hàng</p>
-                <p class="text-gray-800 font-medium">{{ $data['bank_name'] ?? '-' }}</p>
+        <div class="flex flex-col sm:flex-row justify-end gap-3">
+            <a href="{{ !empty($data['id']) ? route('admin.users.edit', $data['id']) : route('admin.users.create') }}"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+                {{ __('common.actions.back') }}
+            </a>
 
-                <p class="text-sm text-gray-500 mt-2">Tên chủ tài khoản</p>
-                <p class="text-gray-800 font-medium">{{ $data['user_bank_name'] ?? '-' }}</p>
-
-                <p class="text-sm text-gray-500 mt-2">Số tài khoản</p>
-                <p class="text-gray-800 font-medium">{{ $data['bank_account'] ?? '-' }}</p>
-            </div>
-
-            {{-- Button --}}
-            <div class="w-full p-4 mt-4 bg-white rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-                <a href="{{ !empty($data['id']) ? route('admin.users.edit', $data['id']) : route('admin.users.create') }}"
-                    class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition-all duration-200">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Quay Lại
-                </a>
-
+            <form action="{{ route('admin.users.save') }}" method="POST">
+                @csrf
                 <button type="submit"
-                    class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200">
-                    {{ !empty($data['id']) ? 'Xác Nhận Cập Nhật' : 'Xác Nhận Thêm Mới' }}
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {{ __('common.actions.save') }}
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 @endsection

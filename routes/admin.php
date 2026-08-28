@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProvinceController;
@@ -20,6 +25,9 @@ Route::prefix('/admin')
             'branches' => BranchController::class,
             'categories' => CategoryController::class,
             'products' => ProductController::class,
+            'coupons' => CouponController::class,
+            'attributes' => AttributeController::class,
+            'tags' => TagController::class,
         ] as $slug => $controller) {
             Route::prefix($slug)
                 ->name($slug . '.')
@@ -38,6 +46,20 @@ Route::prefix('/admin')
                     Route::delete('/{id}', 'destroy')->name('destroy');
                 });
         }
+
+        Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/{id}/approve', 'approve')->name('approve');
+            Route::post('/{id}/reject', 'reject')->name('reject');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
+
+        Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+            Route::patch('/{id}/status', 'updateStatus')->name('update-status');
+            Route::post('/{id}/mark-paid', 'markPaid')->name('mark-paid');
+        });
 
         Route::prefix('provinces')->name('provinces.')->controller(ProvinceController::class)->group(function () {
             Route::get('/', 'index')->name('index');

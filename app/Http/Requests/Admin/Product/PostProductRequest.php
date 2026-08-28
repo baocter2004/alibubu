@@ -28,6 +28,10 @@ class PostProductRequest extends FormRequest
                 $this->input('variants', []),
                 fn ($variant) => ! empty($variant['price']) || ! empty($variant['sku']) || ! empty($variant['attribute_value_ids'])
             )),
+            'specifications' => array_values(array_filter(
+                $this->input('specifications', []),
+                fn ($spec) => ! empty($spec['name']) || ! empty($spec['value'])
+            )),
         ]);
     }
 
@@ -44,11 +48,10 @@ class PostProductRequest extends FormRequest
         return [
             'type' => ['required', Rule::in([ProductConst::SINGLE, ProductConst::VARIANT])],
             'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('products', 'slug')->ignore($id)],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($id)],
-            'branch_id' => ['required', 'integer', 'exists:branches,id'],
+            'branch_id' => ['required', 'uuid', 'exists:branches,id'],
             'category_ids' => ['required', 'array', 'min:1'],
-            'category_ids.*' => ['integer', 'exists:categories,id'],
+            'category_ids.*' => ['uuid', 'exists:categories,id'],
             'short_descriptions' => ['nullable', 'string', 'max:255'],
             'descriptions' => ['nullable', 'string', 'max:5000'],
             'thumbnail' => [$id ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
@@ -58,13 +61,19 @@ class PostProductRequest extends FormRequest
             'sale_price_end_at' => ['nullable', 'date', 'after:sale_price_start_at'],
 
             'variants' => [Rule::requiredIf($isVariable), 'array', 'max:20'],
-            'variants.*.id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'variants.*.id' => ['nullable', 'uuid', 'exists:product_variants,id'],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['required_with:variants.*', 'nullable', 'numeric', 'min:0', 'max:99999999999'],
             'variants.*.sale_price' => ['nullable', 'numeric', 'min:0', 'lt:variants.*.price'],
             'variants.*.is_active' => ['nullable', 'boolean'],
             'variants.*.attribute_value_ids' => [Rule::requiredIf($isVariable), 'array', 'min:1'],
-            'variants.*.attribute_value_ids.*' => ['integer', 'exists:attribute_values,id'],
+            'variants.*.attribute_value_ids.*' => ['uuid', 'exists:attribute_values,id'],
+
+            'specifications' => ['nullable', 'array', 'max:40'],
+            'specifications.*.id' => ['nullable', 'uuid', 'exists:product_specifications,id'],
+            'specifications.*.group' => ['nullable', 'string', 'max:100'],
+            'specifications.*.name' => ['required_with:specifications.*.value', 'nullable', 'string', 'max:120'],
+            'specifications.*.value' => ['required_with:specifications.*.name', 'nullable', 'string', 'max:255'],
             'is_featured' => ['nullable', 'boolean'],
             'is_trending' => ['nullable', 'boolean'],
             'is_active' => ['required', Rule::in(array_keys(GlobalConst::statuses()))],
@@ -80,7 +89,6 @@ class PostProductRequest extends FormRequest
     {
         return [
             'name' => __('admin/product.fields.name'),
-            'slug' => __('admin/product.fields.slug'),
             'sku' => __('admin/product.fields.sku'),
             'branch_id' => __('admin/product.fields.branch'),
             'category_ids' => __('admin/product.fields.categories'),
@@ -98,6 +106,10 @@ class PostProductRequest extends FormRequest
             'variants.*.price' => __('admin/product.fields.price'),
             'variants.*.sale_price' => __('admin/product.fields.sale_price'),
             'variants.*.attribute_value_ids' => __('admin/product.fields.attributes'),
+            'specifications' => __('admin/product.fields.specifications'),
+            'specifications.*.group' => __('admin/product.spec.group'),
+            'specifications.*.name' => __('admin/product.spec.name'),
+            'specifications.*.value' => __('admin/product.spec.value'),
         ];
     }
 

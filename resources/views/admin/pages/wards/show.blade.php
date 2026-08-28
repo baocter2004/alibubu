@@ -1,104 +1,49 @@
 @extends('admin.layouts.app')
 
-@section('title')
-    Chi tiết Phường / Xã
-@endsection
+@section('title', __('admin/address.ward.show'))
 
 @section('content')
-    <div class="max-w-5xl mx-auto">
-        <div class="mb-6">
-            <h1 class="text-2xl font-semibold text-gray-800">
-                Chi tiết Phường / Xã
-            </h1>
-            <p class="text-gray-500 mt-1">
-                Thông tin chi tiết danh sách xã trực thuộc.
-            </p>
-        </div>
-
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    1
-                </div>
-                <h2 class="text-lg font-semibold text-gray-800">
-                    Thông tin chung
-                </h2>
+    <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ $ward->name }}</h1>
+                <p class="text-sm text-gray-500 mt-0.5">{{ $ward->province?->name }}</p>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Tên</p>
-                    <p class="font-medium text-gray-800">
-                        {{ $ward->name ?? '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Code</p>
-                    <p class="font-medium text-gray-800">
-                        {{ $ward->code ?? '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Code name</p>
-                    <p class="font-medium text-gray-800">
-                        {{ $ward->codename ?? '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Loại</p>
-                    <p class="font-medium text-gray-800">
-                        {{ $ward->division_type ?? '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Trực thuộc tỉnh</p>
-                    <p class="font-medium text-gray-800">
-                        {{ $ward->province->name ?? '-' }}
-                    </p>
-                </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.wards.index') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    {{ __('common.actions.back') }}
+                </a>
+                @if ($ward->province)
+                    <a href="{{ route('admin.provinces.show', $ward->province_id) }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        <i class="fas fa-map"></i>
+                        {{ __('admin/address.ward.fields.province') }}
+                    </a>
+                @endif
             </div>
         </div>
 
-        {{-- Thời gian --}}
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    2
+        <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @php
+                $rows = [
+                    ['label' => __('common.labels.id'), 'value' => $ward->id],
+                    ['label' => __('admin/address.ward.fields.name'), 'value' => $ward->name],
+                    ['label' => __('admin/address.ward.fields.code'), 'value' => $ward->code],
+                    ['label' => __('admin/address.ward.fields.codename'), 'value' => $ward->codename],
+                    ['label' => __('admin/address.ward.fields.division_type'), 'value' => $ward->division_type],
+                    ['label' => __('admin/address.ward.fields.province'), 'value' => $ward->province?->name ?? '-'],
+                    ['label' => __('common.labels.created_at'), 'value' => $ward->created_at?->format('d/m/Y H:i')],
+                ];
+            @endphp
+
+            @foreach ($rows as $row)
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500 mb-1">{{ $row['label'] }}</dt>
+                    <dd class="text-gray-800 font-medium break-words">{{ $row['value'] }}</dd>
                 </div>
-                <h2 class="text-lg font-semibold text-gray-800">
-                    Thời gian
-                </h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Ngày tạo</p>
-                    <p class="font-medium text-gray-800">
-                        {{ optional($ward->created_at)->format('d/m/Y') ?? '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Cập nhật lần cuối</p>
-                    <p class="font-medium text-gray-800">
-                        {{ optional($ward->updated_at)->format('d/m/Y') ?? '-' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 bg-white rounded-2xl shadow">
-            <a href="{{ route('admin.wards.index') }}"
-                class="flex justify-center items-center gap-2 py-3 text-sm font-medium
-                      text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                Quay lại danh sách
-            </a>
-        </div>
-
+            @endforeach
+        </dl>
     </div>
 @endsection

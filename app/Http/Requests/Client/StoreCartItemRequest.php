@@ -23,8 +23,8 @@ class StoreCartItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-            'product_variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'product_id' => ['required', 'uuid', 'exists:products,id'],
+            'product_variant_id' => ['nullable', 'uuid', 'exists:product_variants,id'],
             'quantity' => ['nullable', 'integer', 'min:1', 'max:' . CartService::MAX_QUANTITY],
         ];
     }

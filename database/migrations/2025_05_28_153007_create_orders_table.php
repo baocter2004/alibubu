@@ -14,9 +14,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-          $table->id();
+          $table->uuid('id')->primary();
             $table->string('code', 50)->unique();
-            $table->foreignIdFor(User::class)->nullable()->constrained();
+            $table->foreignUuid('user_id')->nullable()->constrained();
             $table->string('phone_number', 20);
             $table->string('email')->nullable();
             $table->string('fullname');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->boolean('is_paid')->default(false);
             $table->boolean('is_refund')->default(0);
             $table->boolean('locked_status')->default(0);
-            $table->foreignIdFor(Coupon::class)->nullable()->constrained();
+            $table->foreignUuid('coupon_id')->nullable()->constrained();
             $table->string('coupon_code', 50)->nullable();
             $table->string('coupon_description')->nullable();
             $table->string('coupon_discount_type', 20)->nullable();

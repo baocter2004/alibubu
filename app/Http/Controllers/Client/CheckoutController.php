@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\PlaceOrderRequest;
 use App\Services\Client\CartService;
+use App\Services\Client\CouponService;
 use App\Services\Client\OrderService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,7 @@ class CheckoutController extends Controller
 {
     public function __construct(
         protected CartService $cartService,
+        protected CouponService $couponService,
         protected OrderService $orderService
     ) {}
 
@@ -25,10 +27,15 @@ class CheckoutController extends Controller
         }
 
         $items = $this->cartService->items();
+        $subtotal = $this->cartService->subtotal($items);
+        $applied = $this->couponService->current($items, $subtotal, Auth::user());
 
         return view('client.pages.checkout.index', [
             'items' => $items,
-            'subtotal' => $this->cartService->subtotal($items),
+            'subtotal' => $subtotal,
+            'coupon' => $applied['coupon'] ?? null,
+            'discount' => $applied['discount'] ?? 0.0,
+            'total' => $subtotal - ($applied['discount'] ?? 0.0),
             'defaultAddress' => Auth::user()?->userAddresses()->where('is_default', true)->first(),
         ]);
     }

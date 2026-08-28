@@ -2,6 +2,9 @@
 
 namespace App\Services\Client;
 
+use App\Const\OrderConst;
+use App\Const\PaymentConst;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Collection;
@@ -10,9 +13,12 @@ use Illuminate\Support\Str;
 
 class OrderService
 {
-    public function __construct(protected CartService $cartService) {}
+    public function __construct(
+        protected CartService $cartService,
+        protected CouponService $couponService
+    ) {}
 
-    public function place(array $params, ?int $userId = null): Order
+    public function place(array $params, int|string|null $userId = null): Order
     {
         $items = $this->cartService->items();
 
@@ -20,8 +26,13 @@ class OrderService
             throw new \RuntimeException(__('client.messages.cart_empty'));
         }
 
-        return DB::transaction(function () use ($items, $params, $userId) {
-            $order = Order::create([
+        $subtotal = $this->cartService->subtotal($items);
+        $applied = $this->couponService->current($items, $subtotal, $userId ? \App\Models\User::find($userId) : null);
+        $coupon = $applied['coupon'] ?? null;
+        $discount = (float) ($applied['discount'] ?? 0);
+
+        return DB::transaction(function () use ($items, $params, $userId, $subtotal, $coupon, $discount) {
+            $order = Order::create(array_merge([
                 'code' => $this->generateCode(),
                 'user_id' => $userId,
                 'fullname' => $params['fullname'],
@@ -29,15 +40,72 @@ class OrderService
                 'email' => $params['email'] ?? null,
                 'address' => $params['address'],
                 'note' => $params['note'] ?? null,
-                'total_amount' => $this->cartService->subtotal($items),
+                'total_amount' => max($subtotal - $discount, 0),
+                'status' => OrderConst::STATUS_PENDING,
+                'payment_method' => (int) ($params['payment_method'] ?? PaymentConst::METHOD_COD),
                 'is_paid' => false,
-            ]);
+            ], $this->couponSnapshot($coupon, $discount)));
 
             $this->createItems($order, $items);
+            $this->consumeStock($items);
+            $this->consumeCoupon($coupon, $userId);
+
             $this->cartService->clear();
+            $this->couponService->forget();
 
             return $order;
         });
+    }
+
+    protected function consumeStock(Collection $items): void
+    {
+        foreach ($items as $item) {
+            $product = $item['product'];
+            $quantity = (int) $item['quantity'];
+
+            $affected = \App\Models\Product::whereKey($product->id)
+                ->where('stock', '>=', $quantity)
+                ->update([
+                    'stock' => DB::raw('stock - ' . $quantity),
+                    'sold' => DB::raw('sold + ' . $quantity),
+                ]);
+
+            if ($affected === 0) {
+                throw new \RuntimeException(__('client.messages.out_of_stock', ['name' => $product->name]));
+            }
+        }
+    }
+
+    protected function couponSnapshot(?Coupon $coupon, float $discount): array
+    {
+        if (! $coupon) {
+            return [];
+        }
+
+        return [
+            'coupon_id' => $coupon->id,
+            'coupon_code' => $coupon->code,
+            'coupon_description' => $coupon->description,
+            'coupon_discount_type' => (string) $coupon->discount_type,
+            'coupon_discount_value' => $discount,
+            'max_discount_value' => $coupon->restriction?->max_discount_value,
+        ];
+    }
+
+    protected function consumeCoupon(?Coupon $coupon, int|string|null $userId): void
+    {
+        if (! $coupon) {
+            return;
+        }
+
+        $coupon->increment('usage_count');
+
+        if ($userId) {
+            $coupon->users()->attach($userId, [
+                'times_used' => 1,
+                'used_at' => now(),
+            ]);
+        }
     }
 
     protected function createItems(Order $order, Collection $items): void

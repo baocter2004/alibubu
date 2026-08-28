@@ -44,6 +44,7 @@ return [
         'variants' => 'Phiên bản',
         'attributes' => 'Thuộc tính',
         'variant_number' => 'Phiên bản :number',
+        'specifications' => 'Thông số kỹ thuật',
         'variants_count' => 'Phiên bản',
     ],
 
@@ -60,6 +61,20 @@ return [
         'remove' => 'Xoá phiên bản',
         'empty' => 'Chưa có phiên bản nào. Hãy thêm ít nhất một phiên bản.',
         'select_attributes' => 'Chọn giá trị thuộc tính',
+    ],
+
+    'spec' => [
+        'section' => 'Thông số kỹ thuật',
+        'description' => 'Thêm các dòng thông số hiển thị trên trang sản phẩm, ví dụ Màn hình · 6.9 inch.',
+        'add' => 'Thêm thông số',
+        'remove' => 'Xoá thông số',
+        'empty' => 'Chưa có thông số nào.',
+        'group' => 'Nhóm',
+        'group_placeholder' => 'Màn hình, Camera, Pin...',
+        'name' => 'Thuộc tính',
+        'name_placeholder' => 'Kích thước màn hình',
+        'value' => 'Giá trị',
+        'value_placeholder' => '6.9 inch',
     ],
 
     'messages' => [

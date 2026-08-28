@@ -7,18 +7,28 @@ use App\Http\Requests\Client\StoreCartItemRequest;
 use App\Http\Requests\Client\UpdateCartItemRequest;
 use App\Models\Product;
 use App\Services\Client\CartService;
+use App\Services\Client\CouponService;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function __construct(protected CartService $cartService) {}
+    public function __construct(
+        protected CartService $cartService,
+        protected CouponService $couponService
+    ) {}
 
     public function index()
     {
         $items = $this->cartService->items();
+        $subtotal = $this->cartService->subtotal($items);
+        $applied = $this->couponService->current($items, $subtotal, Auth::user());
 
         return view('client.pages.cart.index', [
             'items' => $items,
-            'subtotal' => $this->cartService->subtotal($items),
+            'subtotal' => $subtotal,
+            'coupon' => $applied['coupon'] ?? null,
+            'discount' => $applied['discount'] ?? 0.0,
+            'total' => $subtotal - ($applied['discount'] ?? 0.0),
         ]);
     }
 

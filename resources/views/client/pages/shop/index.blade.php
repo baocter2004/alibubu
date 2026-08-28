@@ -44,7 +44,7 @@
                             <label
                                 class="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-muted transition-colors">
                                 <input type="radio" name="category_id" value="{{ $category->id }}"
-                                    @checked((int) request('category_id') === $category->id) class="accent-primary">
+                                    @checked((string) request('category_id') === (string) $category->id) class="accent-primary">
                                 <span class="text-sm text-muted-foreground">{{ $category->name }}</span>
                             </label>
                         @endforeach
@@ -58,7 +58,7 @@
                         class="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                         <option value="">{{ __('client.shop.all_brands') }}</option>
                         @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}" @selected((int) request('branch_id') === $branch->id)>
+                            <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>
                                 {{ $branch->name }}
                             </option>
                         @endforeach
@@ -132,6 +132,50 @@
                 </form>
             </div>
 
+            @php
+                $activeChips = [];
+                if (request('keyword')) {
+                    $activeChips[] = ['label' => request('keyword'), 'param' => 'keyword'];
+                }
+                if (request('category_id') && $categories->firstWhere('id', request('category_id'))) {
+                    $activeChips[] = ['label' => $categories->firstWhere('id', request('category_id'))->name, 'param' => 'category_id'];
+                }
+                if (request('branch_id') && $branches->firstWhere('id', request('branch_id'))) {
+                    $activeChips[] = ['label' => $branches->firstWhere('id', request('branch_id'))->name, 'param' => 'branch_id'];
+                }
+                if (request('is_sale')) {
+                    $activeChips[] = ['label' => __('client.shop.only_sale'), 'param' => 'is_sale'];
+                }
+                if (request('min_price') || request('max_price')) {
+                    $activeChips[] = [
+                        'label' => format_price(request('min_price', 0)) . ' - ' . format_price(request('max_price', 0)),
+                        'param' => 'price',
+                    ];
+                }
+            @endphp
+
+            @if ($activeChips)
+                <div class="flex flex-wrap items-center gap-2 mb-5">
+                    @foreach ($activeChips as $chip)
+                        @php
+                            $remove = $chip['param'] === 'price'
+                                ? Arr::except(request()->query(), ['min_price', 'max_price', 'page'])
+                                : Arr::except(request()->query(), [$chip['param'], 'page']);
+                        @endphp
+                        <a href="{{ route('shop.index', $remove) }}"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors">
+                            {{ $chip['label'] }}
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    @endforeach
+
+                    <a href="{{ route('shop.index') }}"
+                        class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        {{ __('common.actions.clear_filter') }}
+                    </a>
+                </div>
+            @endif
+
             @if ($products->isEmpty())
                 <div class="bg-card border border-dashed border-border rounded-xl py-20 text-center">
                     <i class="fa-solid fa-magnifying-glass text-5xl text-muted-foreground/25 mb-4"></i>
@@ -145,7 +189,7 @@
             @else
                 <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach ($products as $product)
-                        <x-product-card :product="$product" />
+                        @include('components.product-card', ['product' => $product])
                     @endforeach
                 </div>
 

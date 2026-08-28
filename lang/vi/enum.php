@@ -26,6 +26,23 @@ return [
         ],
     ],
 
+    'order' => [
+        'status' => [
+            1 => 'Chờ xác nhận',
+            2 => 'Đã xác nhận',
+            3 => 'Đang giao',
+            4 => 'Hoàn thành',
+            5 => 'Đã huỷ',
+        ],
+    ],
+
+    'payment' => [
+        'method' => [
+            1 => 'Thanh toán khi nhận hàng (COD)',
+            2 => 'Chuyển khoản ngân hàng',
+        ],
+    ],
+
     'coupon' => [
         'discount_type' => [
             1 => 'Giảm số tiền',

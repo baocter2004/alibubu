@@ -1,150 +1,112 @@
 @extends('admin.layouts.app')
 
-@section('title')
-    Trang Danh Sách Người Dùng Bị Xóa
-@endsection
+@section('title', __('admin/user.title.trash'))
 
 @section('content')
-    <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg">
-        <form action="{{ route('admin.users.trash') }}" method="GET">
-            <div class="w-full px-4 py-2 mb-2 mt-2">
-                <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">Tìm Kiếm Người Dùng</label>
-                <input type="text" id="keyword" name="keyword" value="{{ old('keyword', request('keyword')) }}"
-                    placeholder="Tìm kiếm theo từ khóa"
-                    class="w-full border border-gray-300 rounded-md p-2 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div>
+                <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ __('admin/user.title.trash') }}</h1>
+                <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/user.subtitle.trash') }}</p>
             </div>
-            <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-2 mt-4">
-                <div class="w-full">
-                    <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Tên Người Dùng</label>
-                    <input type="text" id="fullname" name="fullname" value="{{ old('fullname', request('fullname')) }}"
-                        placeholder="Nhập tên người dùng"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="w-full">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email', request('email')) }}"
-                        placeholder="Nhập email người dùng"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="w-full">
-                    <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Số Điện Thoại</label>
-                    <input type="text" id="phone_number" name="phone_number"
-                        value="{{ old('phone_number', request('phone_number')) }}"
-                        placeholder="Nhập số điện thoại người dùng"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+            <a href="{{ route('admin.users.index') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <i class="fas fa-arrow-left"></i>
+                {{ __('common.actions.back') }}
+            </a>
+        </div>
+
+        <form action="{{ route('admin.users.trash') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="md:col-span-2">
+                <label for="keyword"
+                    class="block text-sm font-medium text-gray-700 mb-1">{{ __('common.labels.keyword') }}</label>
+                <input type="search" id="keyword" name="keyword" value="{{ request('keyword') }}"
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-2 mt-4">
-                <div class="w-full">
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Vai Trò</label>
-                    <select id="role" name="role"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Tất Cả Vai Trò</option>
-                        @foreach ($roles as $key => $value)
-                            <option value="{{ $key }}" {{ request('role') == $key ? 'selected' : '' }}>
-                                {{ $value }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+
+            <div>
+                <label for="role"
+                    class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.role') }}</label>
+                <select id="role" name="role"
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">{{ __('common.labels.all') }}</option>
+                    @foreach ($roles as $key => $value)
+                        <option value="{{ $key }}" @selected((string) request('role') === (string) $key)>{{ $value }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="w-full flex justify-end items-center px-4 py-2 mt-4">
+
+            <div class="flex items-end gap-2">
                 <button type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                    Tìm Kiếm
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-magnifying-glass"></i>
+                    {{ __('common.actions.search') }}
                 </button>
-                @if (request()->filled('keyword') ||
-                        request()->filled('fullname') ||
-                        request()->filled('email') ||
-                        request()->filled('phone_number'))
-                    <a href="{{ route('admin.users.index') }}"
-                        class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                        Xóa Bộ Lọc
-                    </a>
-                @endif
+                <a href="{{ route('admin.users.trash') }}"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-rotate-left"></i>
+                </a>
             </div>
         </form>
-    </div>
-    <div class="w-full p-4 bg-white shadow-lg">
-        <div class="w-full px-4 py-2 mb-4">
-            <h1 class="text-2xl font-semibold text-gray-900">Danh Sách Người Dùng Đã Bị Xóa</h1>
-        </div>
-        <div class="w-full overflow-x-auto rounded-2xl">
-            <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
+
+        <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-[900px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
-                        <th class="w-[5%] text-center px-4 py-3">ID</th>
-                        <th class="w-[15%] px-4 py-3">Tên Người Dùng</th>
-                        <th class="w-[10%] px-4 py-3">Sđt</th>
-                        <th class="w-[18%] px-4 py-3">Email</th>
-                        <th class="w-[10%] px-4 py-3">Vai Trò</th>
-                        <th class="w-[12%] text-center px-4 py-3">Trạng Thái</th>
-                        <th class="w-[10%] text-center px-4 py-3">Điểm Số</th>
-                        <th class="w-[10%] px-4 py-3">Ngày Tạo</th>
-                        <th class="w-[10%] text-center px-4 py-3">Hành Động</th>
+                        <th class="w-[6%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>
+                        <th class="w-[22%] px-4 py-3">{{ __('admin/user.fields.fullname') }}</th>
+                        <th class="w-[14%] px-4 py-3">{{ __('admin/user.fields.phone_number') }}</th>
+                        <th class="w-[22%] px-4 py-3">{{ __('admin/user.fields.email') }}</th>
+                        <th class="w-[12%] px-4 py-3">{{ __('admin/user.fields.role') }}</th>
+                        <th class="w-[14%] px-4 py-3">{{ __('common.labels.deleted_at') }}</th>
+                        <th class="w-[10%] text-center px-4 py-3">{{ __('common.labels.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($users as $user)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-100">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="text-center px-4 py-3">{{ $user->id }}</td>
-                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->fullname }}
-                            </td>
-                            <td class="px-4 py-3">{{ $user->phone_number }}</td>
-                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">{{ $user->email }}</td>
-                            <td class="px-4 py-3">{{ $roles[$user->role] ?? 'Unknown' }}</td>
-                            <td class="px-4 py-3 text-center">
-                                @if ($user->status === \App\Const\UserConst::STATUS_ACTIVE)
-                                    <span
-                                        class="px-2 py-1 text-xs font-semibold text-green-600 bg-green-200 rounded-full">Hoạt
-                                        động</span>
-                                @elseif ($user->status === \App\Const\UserConst::STATUS_INACTIVE)
-                                    <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-200 rounded-full">Không
-                                        hoạt động</span>
-                                @else
-                                    <span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full">Đã
-                                        Khóa</span>
-                                @endif
-                            </td>
-                            <td class="text-center px-4 py-3">{{ $user->loyalty_points ?? 0 }}</td>
-                            <td class="px-4 py-3">{{ $user->created_at->format('d/m/Y') }}</td>
-                            <td class="items-center text-center px-4 py-3">
-                                <div class="flex justify-center gap-2 ">
-                                    <form action="{{ route('admin.users.restore', $user->id) }}" method="POST">
+                            <td class="px-4 py-3 truncate">{{ $user->fullname }}</td>
+                            <td class="px-4 py-3">{{ $user->phone_number ?: '-' }}</td>
+                            <td class="px-4 py-3 truncate">{{ $user->email }}</td>
+                            <td class="px-4 py-3">{{ \App\Const\UserConst::roleLabel($user->role) }}</td>
+                            <td class="px-4 py-3">{{ $user->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex justify-center gap-3">
+                                    <form action="{{ route('admin.users.restore', $user->id) }}" method="POST"
+                                        data-confirm="{{ __('common.confirm.restore_text') }}"
+                                        data-confirm-title="{{ __('common.confirm.restore_title') }}">
                                         @csrf
-                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Khôi phục">
-
-                                            <i class="fas fa-undo"></i>
+                                        <button type="submit" class="text-green-600 hover:text-green-800"
+                                            title="{{ __('common.actions.restore') }}">
+                                            <i class="fas fa-rotate-left"></i>
                                         </button>
                                     </form>
-
-                                    <form action="{{ route('admin.users.force-destroy', $user->id) }}" method="POST">
+                                    <form action="{{ route('admin.users.force-destroy', $user->id) }}" method="POST"
+                                        data-confirm="{{ __('common.confirm.force_delete_text') }}"
+                                        data-confirm-title="{{ __('common.confirm.force_delete_title') }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa vĩnh viễn"
-                                            onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này?')">
-
-                                            <i class="fas fa-trash"></i>
+                                        <button type="submit" class="text-red-500 hover:text-red-700"
+                                            title="{{ __('common.actions.force_delete') }}">
+                                            <i class="fas fa-trash-can"></i>
                                         </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
-                        <tr class="w-full h-40 text-center text-gray-500">
-                            <td colspan="9" class="px-4 py-3">
-                                Không có người dùng nào.
+                        <tr>
+                            <td colspan="7" class="px-4 py-16 text-center text-gray-500">
+                                <i class="fas fa-trash text-4xl text-gray-300 block mb-3"></i>
+                                <p class="font-medium text-gray-700">{{ __('common.empty.title') }}</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            @include('components.pagination', ['paginator' => $users])
         </div>
+
+        @include('components.pagination', ['paginator' => $users->withQueryString()])
     </div>
 @endsection

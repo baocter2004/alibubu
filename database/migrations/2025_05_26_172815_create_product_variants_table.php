@@ -13,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_variants', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Product::class)->constrained()->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('product_id')->constrained()->onDelete('cascade');
             $table->string('sku')->unique()->nullable();
             $table->decimal('price', 11, 2);
             $table->decimal('sale_price', 11, 2)->nullable();

@@ -13,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_galleries', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Product::class)->constrained();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('product_id')->constrained();
             $table->string('image')->nullable();
             $table->timestamps();
         });

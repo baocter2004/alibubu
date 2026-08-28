@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attribute_value_product_variant', function (Blueprint $table) {
-            $table->foreignIdFor(ProductVariant::class)->constrained()->onDelete('cascade');
-            $table->foreignIdFor(AttributeValue::class)->constrained()->onDelete('cascade');
+            $table->foreignUuid('product_variant_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('attribute_value_id')->constrained()->onDelete('cascade');
 
             $table->primary(['product_variant_id', 'attribute_value_id']);
         });

@@ -13,6 +13,9 @@ return [
     'subtitle' => [
         'index' => 'Quản lý các thương hiệu cung cấp sản phẩm.',
         'trash' => 'Khôi phục hoặc xoá vĩnh viễn thương hiệu đã xoá.',
+        'create' => 'Điền đầy đủ thông tin để tạo thương hiệu mới.',
+        'edit' => 'Cập nhật thông tin cho thương hiệu này.',
+        'show' => 'Thông tin chi tiết của thương hiệu.',
         'confirm' => 'Vui lòng kiểm tra lại thông tin trước khi lưu.',
     ],
 

@@ -13,6 +13,9 @@ return [
     'subtitle' => [
         'index' => 'Manage the brands that supply your products.',
         'trash' => 'Restore or permanently remove deleted brands.',
+        'create' => 'Fill in the details to create a new brand.',
+        'edit' => 'Update the details of this brand.',
+        'show' => 'Full details for this brand.',
         'confirm' => 'Please review the information before saving.',
     ],
 

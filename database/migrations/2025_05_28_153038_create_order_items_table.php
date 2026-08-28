@@ -15,10 +15,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('order_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Order::class)->constrained();
-            $table->foreignIdFor(model: Product::class)->nullable()->constrained();
-            $table->foreignIdFor(ProductVariant::class)->nullable()->constrained();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('order_id')->constrained();
+            $table->foreignUuid('product_id')->nullable()->constrained();
+            $table->foreignUuid('product_variant_id')->nullable()->constrained();
             $table->string('name')->nullable();
             $table->decimal('price', 11, 2)->nullable();
             $table->decimal('old_price', 11, 2)->nullable();

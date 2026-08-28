@@ -27,9 +27,8 @@ class PostCategoryRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($id)],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($id)],
             'icon' => ['nullable', 'string', 'max:100'],
-            'parent_id' => ['nullable', 'integer', 'exists:categories,id', Rule::notIn(array_filter([$id]))],
+            'parent_id' => ['nullable', 'uuid', 'exists:categories,id', Rule::notIn(array_filter([$id]))],
             'ordinal' => ['nullable', 'integer', 'min:0', 'max:9999'],
             'is_active' => ['required', Rule::in(array_keys(GlobalConst::statuses()))],
         ];
@@ -44,7 +43,6 @@ class PostCategoryRequest extends FormRequest
     {
         return [
             'name' => __('admin/category.fields.name'),
-            'slug' => __('admin/category.fields.slug'),
             'icon' => __('admin/category.fields.icon'),
             'parent_id' => __('admin/category.fields.parent'),
             'ordinal' => __('admin/category.fields.ordinal'),

@@ -13,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attribute_values', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Attribute::class)->constrained();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('attribute_id')->constrained();
             $table->string('value')->unique();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

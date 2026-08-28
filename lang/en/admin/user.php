@@ -13,7 +13,34 @@ return [
     'subtitle' => [
         'index' => 'Manage every account in the system.',
         'trash' => 'Restore or permanently remove deleted accounts.',
+        'create' => 'Fill in the details to create a new account.',
+        'edit' => 'Update the details of this account.',
+        'show' => 'Full details for this account.',
         'confirm' => 'Please review the information before saving.',
+    ],
+
+    'sections' => [
+        'basic' => 'Account information',
+        'basic_hint' => 'Sign-in credentials and contact details.',
+        'personal' => 'Personal information',
+        'personal_hint' => 'Additional profile details.',
+        'address' => 'Delivery addresses',
+        'address_hint' => 'Up to :max addresses (:count/:max).',
+        'bank' => 'Bank information',
+        'bank_hint' => 'Optional payout details.',
+    ],
+
+    'hints' => [
+        'password_optional' => 'Leave both password fields empty to keep the current password.',
+        'default_address' => 'With more than one address, mark one as the default delivery address.',
+        'loading' => 'Loading...',
+        'load_failed' => 'Could not load data.',
+    ],
+
+    'buttons' => [
+        'create' => 'Create user',
+        'update' => 'Update user',
+        'back_to_list' => 'Back to list',
     ],
 
     'fields' => [
@@ -37,7 +64,7 @@ return [
 
     'address' => [
         'section' => 'Delivery addresses',
-        'title' => 'Address :number',
+        'title' => 'Address ',
         'recipient' => 'Recipient name',
         'phone_number' => 'Phone number',
         'province' => 'Province / City',

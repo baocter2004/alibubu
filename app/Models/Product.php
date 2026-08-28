@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Const\ProductConst;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +24,10 @@ class Product extends Model
         'name',
         'slug',
         'views',
+        'rating',
+        'reviews_count',
+        'stock',
+        'sold',
         'short_descriptions',
         'descriptions',
         'thumbnail',
@@ -47,6 +52,10 @@ class Product extends Model
     {
         return [
             'views' => 'integer',
+            'rating' => 'decimal:2',
+            'reviews_count' => 'integer',
+            'stock' => 'integer',
+            'sold' => 'integer',
             'type' => 'integer',
             'price' => 'decimal:2',
             'sale_price' => 'decimal:2',
@@ -83,6 +92,21 @@ class Product extends Model
     public function galleries(): HasMany
     {
         return $this->hasMany(ProductGallery::class);
+    }
+
+    public function specifications(): HasMany
+    {
+        return $this->hasMany(ProductSpecification::class)->orderBy('ordinal');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->reviews()->where('is_approved', true)->latest('id');
     }
 
     public function accessories(): BelongsToMany
@@ -125,6 +149,24 @@ class Product extends Model
         }
 
         return (int) round((($base - $effective) / $base) * 100);
+    }
+
+    public function refreshRating(): void
+    {
+        $stats = $this->reviews()
+            ->where('is_approved', true)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        $this->forceFill([
+            'rating' => round((float) ($stats->avg_rating ?? 0), 2),
+            'reviews_count' => (int) ($stats->total ?? 0),
+        ])->saveQuietly();
+    }
+
+    public function inStock(): bool
+    {
+        return $this->stock > 0;
     }
 
     public function onSale(): bool

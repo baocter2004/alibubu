@@ -24,8 +24,8 @@ class GetProductRequest extends FormRequest
     {
         return [
             'keyword' => ['nullable', 'string', 'max:255'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'branch_id' => ['nullable', 'integer', 'exists:branches,id'],
+            'category_id' => ['nullable', 'uuid', 'exists:categories,id'],
+            'branch_id' => ['nullable', 'uuid', 'exists:branches,id'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0', 'gte:min_price'],
             'is_sale' => ['nullable', 'boolean'],

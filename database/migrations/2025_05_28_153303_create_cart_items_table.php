@@ -14,9 +14,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_items', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(Product::class)->nullable()->constrained();
-            $table->foreignIdFor(ProductVariant::class)->nullable()->constrained();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('product_id')->nullable()->constrained();
+            $table->foreignUuid('product_variant_id')->nullable()->constrained();
             $table->unsignedInteger('quantity');
             $table->timestamps();
         });

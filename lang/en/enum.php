@@ -26,6 +26,23 @@ return [
         ],
     ],
 
+    'order' => [
+        'status' => [
+            1 => 'Pending',
+            2 => 'Confirmed',
+            3 => 'Shipping',
+            4 => 'Completed',
+            5 => 'Cancelled',
+        ],
+    ],
+
+    'payment' => [
+        'method' => [
+            1 => 'Cash on delivery (COD)',
+            2 => 'Bank transfer',
+        ],
+    ],
+
     'coupon' => [
         'discount_type' => [
             1 => 'Fixed amount',

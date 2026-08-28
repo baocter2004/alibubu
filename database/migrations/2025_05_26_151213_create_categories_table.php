@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('parent_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->string('icon')->nullable();
             $table->string('name')->unique();
             $table->string('slug')->unique();

@@ -9,94 +9,84 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductGallery;
+use App\Models\ProductSpecification;
 use App\Models\ProductVariant;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CatalogSeeder extends Seeder
 {
+    protected array $categoryIcons = [
+        'Điện thoại' => 'fa-solid fa-mobile-screen-button',
+        'Laptop' => 'fa-solid fa-laptop',
+        'Máy tính bảng' => 'fa-solid fa-tablet-screen-button',
+        'Phụ kiện' => 'fa-solid fa-plug',
+        'Đồng hồ thông minh' => 'fa-solid fa-stopwatch',
+    ];
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $branches = $this->seedBranches();
-        $categories = $this->seedCategories();
-        $tags = $this->seedTags();
+        $items = require database_path('seeders/data/products.php');
+
+        $branches = $this->seedBranches($items);
+        $categories = $this->seedCategories($items);
+        $tags = $this->seedTags($items);
         $attributeValues = $this->seedAttributes();
 
-        foreach ($this->products() as $index => $item) {
-            $branch = $branches[$item['branch']];
-            $category = $categories[$item['category']];
-
+        foreach ($items as $index => $item) {
             $product = Product::updateOrCreate(
-                ['slug' => Str::slug($item['name'])],
+                ['slug' => Str::slug(Str::ascii($item['name']))],
                 [
-                    'branch_id' => $branch->id,
+                    'branch_id' => $branches[$item['brand']]->id,
                     'name' => $item['name'],
-                    'views' => random_int(50, 4000),
-                    'short_descriptions' => $item['short'],
+                    'views' => random_int(80, 6500),
+                    'rating' => $item['rating'] ?? 0,
+                    'stock' => $item['stock'] ?? 0,
+                    'sold' => random_int(5, 480),
+                    'short_descriptions' => Str::limit($item['short'], 250),
                     'descriptions' => $item['description'],
-                    'thumbnail' => null,
-                    'type' => $item['variants'] ? ProductConst::VARIANT : ProductConst::SINGLE,
-                    'sku' => 'ALB-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
+                    'thumbnail' => $this->storeImage($item['thumbnail']),
+                    'type' => $item['has_variants'] ? ProductConst::VARIANT : ProductConst::SINGLE,
+                    'sku' => $item['sku'],
                     'price' => $item['price'],
                     'sale_price' => $item['sale_price'],
-                    'sale_price_start_at' => $item['sale_price'] ? now()->subDays(3) : null,
-                    'sale_price_end_at' => $item['sale_price'] ? now()->addDays(20) : null,
+                    'sale_price_start_at' => $item['sale_price'] ? now()->subDays(5) : null,
+                    'sale_price_end_at' => $item['sale_price'] ? now()->addDays(25) : null,
                     'is_sale' => (bool) $item['sale_price'],
-                    'is_featured' => $item['featured'],
-                    'is_trending' => $item['trending'],
+                    'is_featured' => $index % 4 === 0,
+                    'is_trending' => ($item['rating'] ?? 0) >= 4,
                     'is_active' => true,
                 ]
             );
 
-            $product->categories()->sync([$category->id]);
+            $product->categories()->sync([$categories[$item['category']]->id]);
             $product->tags()->sync(collect($item['tags'])->map(fn ($tag) => $tags[$tag]->id)->all());
 
-            if ($product->galleries()->doesntExist()) {
-                foreach (range(1, 3) as $position) {
-                    ProductGallery::create([
-                        'product_id' => $product->id,
-                        'image' => null,
-                    ]);
-                }
-            }
+            $this->seedGallery($product, $item['gallery']);
+            $this->seedSpecifications($product, $item);
 
-            if (! $item['variants']) {
-                continue;
-            }
-
-            foreach ($item['variants'] as $position => $variantName) {
-                $variant = ProductVariant::updateOrCreate(
-                    ['sku' => $product->sku . '-V' . ($position + 1)],
-                    [
-                        'product_id' => $product->id,
-                        'price' => $item['price'] + ($position * 500000),
-                        'sale_price' => $item['sale_price'] ? $item['sale_price'] + ($position * 500000) : null,
-                        'thumbnail' => '',
-                        'is_active' => true,
-                    ]
-                );
-
-                if (isset($attributeValues[$variantName])) {
-                    $variant->attributeValues()->sync([$attributeValues[$variantName]->id]);
-                }
+            if ($item['has_variants']) {
+                $this->seedVariants($product->load('galleries'), $item, $attributeValues);
             }
         }
     }
 
-    protected function seedBranches(): array
+    protected function seedBranches(array $items): array
     {
         $branches = [];
 
-        foreach (['Apple', 'Samsung', 'Xiaomi', 'Sony', 'Asus'] as $name) {
+        foreach (collect($items)->pluck('brand')->unique() as $name) {
             $branches[$name] = Branch::updateOrCreate(
-                ['slug' => Str::slug($name)],
+                ['slug' => Str::slug(Str::ascii($name))],
                 [
                     'name' => $name,
-                    'logo' => '',
+                    'logo' => null,
                     'is_active' => true,
                 ]
             );
@@ -105,26 +95,17 @@ class CatalogSeeder extends Seeder
         return $branches;
     }
 
-    protected function seedCategories(): array
+    protected function seedCategories(array $items): array
     {
         $categories = [];
-
-        $tree = [
-            'Điện thoại' => 'fa-solid fa-mobile-screen',
-            'Laptop' => 'fa-solid fa-laptop',
-            'Máy tính bảng' => 'fa-solid fa-tablet-screen-button',
-            'Âm thanh' => 'fa-solid fa-headphones',
-            'Phụ kiện' => 'fa-solid fa-plug',
-        ];
-
         $ordinal = 0;
 
-        foreach ($tree as $name => $icon) {
+        foreach (collect($items)->pluck('category')->unique() as $name) {
             $categories[$name] = Category::updateOrCreate(
-                ['slug' => Str::slug($name)],
+                ['slug' => Str::slug(Str::ascii($name))],
                 [
                     'name' => $name,
-                    'icon' => $icon,
+                    'icon' => $this->categoryIcons[$name] ?? 'fa-solid fa-tag',
                     'ordinal' => $ordinal++,
                     'is_active' => true,
                 ]
@@ -134,14 +115,14 @@ class CatalogSeeder extends Seeder
         return $categories;
     }
 
-    protected function seedTags(): array
+    protected function seedTags(array $items): array
     {
         $tags = [];
 
-        foreach (['Bán chạy', 'Mới về', 'Flash Sale', 'Trả góp 0%'] as $name) {
+        foreach (collect($items)->pluck('tags')->flatten()->unique() as $name) {
             $tags[$name] = Tag::updateOrCreate(
-                ['slug' => Str::slug($name)],
-                ['name' => $name]
+                ['slug' => Str::slug(Str::ascii($name))],
+                ['name' => Str::title($name)]
             );
         }
 
@@ -153,26 +134,20 @@ class CatalogSeeder extends Seeder
         $values = [];
 
         $attributes = [
-            'Dung lượng' => ['128GB', '256GB', '512GB'],
-            'Màu sắc' => ['Đen', 'Trắng', 'Xanh dương'],
+            'Dung lượng' => ['128GB', '256GB', '512GB', '1TB'],
+            'Màu sắc' => ['Đen', 'Trắng', 'Xanh dương', 'Vàng đồng'],
         ];
 
         foreach ($attributes as $name => $options) {
             $attribute = Attribute::updateOrCreate(
-                ['slug' => Str::slug($name)],
-                [
-                    'name' => $name,
-                    'is_active' => true,
-                ]
+                ['slug' => Str::slug(Str::ascii($name))],
+                ['name' => $name, 'is_active' => true]
             );
 
             foreach ($options as $option) {
                 $values[$option] = AttributeValue::updateOrCreate(
                     ['value' => $option],
-                    [
-                        'attribute_id' => $attribute->id,
-                        'is_active' => true,
-                    ]
+                    ['attribute_id' => $attribute->id, 'is_active' => true]
                 );
             }
         }
@@ -180,165 +155,125 @@ class CatalogSeeder extends Seeder
         return $values;
     }
 
-    protected function products(): array
+    protected function seedGallery(Product $product, array $gallery): void
     {
-        return [
-            [
-                'name' => 'iPhone 16 Pro Max',
-                'branch' => 'Apple',
-                'category' => 'Điện thoại',
-                'tags' => ['Bán chạy', 'Trả góp 0%'],
-                'price' => 34990000,
-                'sale_price' => 31990000,
-                'featured' => true,
-                'trending' => true,
-                'short' => 'Chip A18 Pro, khung titan, camera 48MP.',
-                'description' => 'iPhone 16 Pro Max sở hữu khung titan siêu nhẹ, màn hình Super Retina XDR 6.9 inch và chip A18 Pro cho hiệu năng vượt trội. Hệ thống camera 48MP nâng cấp khả năng quay video 4K 120fps.',
-                'variants' => ['256GB', '512GB'],
-            ],
-            [
-                'name' => 'Samsung Galaxy S25 Ultra',
-                'branch' => 'Samsung',
-                'category' => 'Điện thoại',
-                'tags' => ['Bán chạy', 'Mới về'],
-                'price' => 33990000,
-                'sale_price' => 29990000,
-                'featured' => true,
-                'trending' => true,
-                'short' => 'Bút S Pen, camera 200MP, màn hình 6.9 inch.',
-                'description' => 'Galaxy S25 Ultra là flagship mạnh mẽ nhất của Samsung với camera 200MP, bút S Pen tích hợp và màn hình Dynamic AMOLED 2X 120Hz.',
-                'variants' => ['256GB', '512GB'],
-            ],
-            [
-                'name' => 'Xiaomi 15 Pro',
-                'branch' => 'Xiaomi',
-                'category' => 'Điện thoại',
-                'tags' => ['Flash Sale'],
-                'price' => 22990000,
-                'sale_price' => 19990000,
-                'featured' => false,
-                'trending' => true,
-                'short' => 'Snapdragon 8 Elite, sạc nhanh 90W.',
-                'description' => 'Xiaomi 15 Pro trang bị chip Snapdragon 8 Elite, camera Leica và công nghệ sạc nhanh HyperCharge 90W.',
-                'variants' => ['256GB', '512GB'],
-            ],
-            [
-                'name' => 'MacBook Air M4 13 inch',
-                'branch' => 'Apple',
-                'category' => 'Laptop',
-                'tags' => ['Bán chạy', 'Trả góp 0%'],
-                'price' => 27990000,
-                'sale_price' => 25490000,
-                'featured' => true,
-                'trending' => false,
-                'short' => 'Chip M4, pin 18 giờ, nặng 1.24kg.',
-                'description' => 'MacBook Air M4 mỏng nhẹ với thời lượng pin lên tới 18 giờ, màn hình Liquid Retina và hiệu năng ổn định cho công việc hằng ngày.',
-                'variants' => ['256GB', '512GB'],
-            ],
-            [
-                'name' => 'Asus ROG Zephyrus G16',
-                'branch' => 'Asus',
-                'category' => 'Laptop',
-                'tags' => ['Mới về'],
-                'price' => 52990000,
-                'sale_price' => null,
-                'featured' => false,
-                'trending' => false,
-                'short' => 'RTX 5070, màn OLED 240Hz.',
-                'description' => 'Laptop gaming cao cấp với card RTX 5070, màn hình OLED 240Hz và hệ thống tản nhiệt buồng hơi.',
-                'variants' => null,
-            ],
-            [
-                'name' => 'iPad Air M3 11 inch',
-                'branch' => 'Apple',
-                'category' => 'Máy tính bảng',
-                'tags' => ['Bán chạy'],
-                'price' => 16990000,
-                'sale_price' => 15490000,
-                'featured' => true,
-                'trending' => false,
-                'short' => 'Chip M3, hỗ trợ Apple Pencil Pro.',
-                'description' => 'iPad Air M3 cân bằng giữa hiệu năng và tính di động, hỗ trợ Apple Pencil Pro và Magic Keyboard.',
-                'variants' => ['128GB', '256GB'],
-            ],
-            [
-                'name' => 'Samsung Galaxy Tab S10',
-                'branch' => 'Samsung',
-                'category' => 'Máy tính bảng',
-                'tags' => ['Mới về'],
-                'price' => 18990000,
-                'sale_price' => null,
-                'featured' => false,
-                'trending' => false,
-                'short' => 'Màn AMOLED 11 inch, kèm S Pen.',
-                'description' => 'Galaxy Tab S10 với màn hình AMOLED 11 inch, loa AKG bốn chiều và bút S Pen đi kèm.',
-                'variants' => null,
-            ],
-            [
-                'name' => 'Sony WH-1000XM6',
-                'branch' => 'Sony',
-                'category' => 'Âm thanh',
-                'tags' => ['Bán chạy', 'Flash Sale'],
-                'price' => 9490000,
-                'sale_price' => 7990000,
-                'featured' => true,
-                'trending' => true,
-                'short' => 'Chống ồn chủ động, pin 40 giờ.',
-                'description' => 'Tai nghe chụp tai Sony WH-1000XM6 với khả năng chống ồn hàng đầu, pin 40 giờ và chất âm Hi-Res.',
-                'variants' => ['Đen', 'Trắng'],
-            ],
-            [
-                'name' => 'AirPods Pro 3',
-                'branch' => 'Apple',
-                'category' => 'Âm thanh',
-                'tags' => ['Bán chạy'],
-                'price' => 6290000,
-                'sale_price' => 5590000,
-                'featured' => false,
-                'trending' => true,
-                'short' => 'Chống ồn thích ứng, sạc USB-C.',
-                'description' => 'AirPods Pro 3 nâng cấp khả năng chống ồn thích ứng, âm thanh không gian và hộp sạc USB-C.',
-                'variants' => null,
-            ],
-            [
-                'name' => 'Sạc nhanh Anker 65W GaN',
-                'branch' => 'Xiaomi',
-                'category' => 'Phụ kiện',
-                'tags' => ['Flash Sale'],
-                'price' => 890000,
-                'sale_price' => 690000,
-                'featured' => false,
-                'trending' => false,
-                'short' => 'Ba cổng, công nghệ GaN nhỏ gọn.',
-                'description' => 'Củ sạc GaN 65W ba cổng, sạc đồng thời laptop và điện thoại, kích thước nhỏ gọn tiện mang theo.',
-                'variants' => null,
-            ],
-            [
-                'name' => 'Ốp lưng MagSafe trong suốt',
-                'branch' => 'Apple',
-                'category' => 'Phụ kiện',
-                'tags' => ['Mới về'],
-                'price' => 1290000,
-                'sale_price' => null,
-                'featured' => false,
-                'trending' => false,
-                'short' => 'Chống ố vàng, tương thích MagSafe.',
-                'description' => 'Ốp lưng trong suốt tích hợp nam châm MagSafe, chống ố vàng và bảo vệ viền camera.',
-                'variants' => null,
-            ],
-            [
-                'name' => 'Chuột Logitech MX Master 4',
-                'branch' => 'Asus',
-                'category' => 'Phụ kiện',
-                'tags' => ['Bán chạy'],
-                'price' => 2790000,
-                'sale_price' => 2390000,
-                'featured' => false,
-                'trending' => false,
-                'short' => 'Cuộn MagSpeed, kết nối 3 thiết bị.',
-                'description' => 'Chuột không dây cao cấp với con lăn MagSpeed, cảm biến 8000 DPI và khả năng kết nối cùng lúc ba thiết bị.',
-                'variants' => null,
-            ],
+        if ($product->galleries()->exists()) {
+            return;
+        }
+
+        foreach ($gallery as $image) {
+            $stored = $this->storeImage($image);
+
+            if ($stored) {
+                ProductGallery::create(['product_id' => $product->id, 'image' => $stored]);
+            }
+        }
+    }
+
+    protected function seedSpecifications(Product $product, array $item): void
+    {
+        if ($product->specifications()->exists()) {
+            return;
+        }
+
+        $specs = [
+            ['group' => 'Tổng quan', 'name' => 'Thương hiệu', 'value' => $item['brand']],
+            ['group' => 'Tổng quan', 'name' => 'Danh mục', 'value' => $item['category']],
+            ['group' => 'Tổng quan', 'name' => 'Mã sản phẩm', 'value' => $item['sku'] ?? '-'],
+            ['group' => 'Bảo hành', 'name' => 'Chính sách', 'value' => $item['short']],
+            ['group' => 'Kho hàng', 'name' => 'Tồn kho', 'value' => (string) ($item['stock'] ?? 0)],
         ];
+
+        foreach ($specs as $ordinal => $spec) {
+            ProductSpecification::create(array_merge($spec, [
+                'product_id' => $product->id,
+                'ordinal' => $ordinal,
+            ]));
+        }
+    }
+
+    protected function seedVariants(Product $product, array $item, array $attributeValues): void
+    {
+        $matrix = $this->variantMatrix($item['category']);
+        $gallery = $product->galleries->pluck('image')->values();
+        $keptIds = [];
+
+        foreach ($matrix as $position => $combo) {
+            $price = (int) ($item['price'] + $combo['extra']);
+            $sale = $item['sale_price'] ? (int) ($item['sale_price'] + $combo['extra']) : null;
+
+            $variant = ProductVariant::updateOrCreate(
+                ['sku' => $product->sku . '-' . $combo['code']],
+                [
+                    'product_id' => $product->id,
+                    'price' => $price,
+                    'sale_price' => $sale,
+                    'thumbnail' => $gallery[$position % max($gallery->count(), 1)] ?? $product->thumbnail,
+                    'is_active' => true,
+                ]
+            );
+
+            $variant->attributeValues()->sync(
+                collect($combo['values'])
+                    ->map(fn ($value) => $attributeValues[$value]->id ?? null)
+                    ->filter()
+                    ->values()
+                    ->all()
+            );
+
+            $keptIds[] = $variant->id;
+        }
+
+        $product->variants()->whereNotIn('id', $keptIds)->delete();
+
+        $prices = collect($matrix)->map(fn ($combo) => (int) ($item['price'] + $combo['extra']));
+
+        $product->update([
+            'price' => $prices->min(),
+            'sale_price' => $item['sale_price'] ? (int) ($item['sale_price'] + collect($matrix)->min('extra')) : null,
+        ]);
+    }
+
+    protected function variantMatrix(string $category): array
+    {
+        $storages = $category === 'Laptop'
+            ? ['256GB', '512GB', '1TB']
+            : ['128GB', '256GB', '512GB'];
+
+        $colors = ['Đen', 'Trắng', 'Xanh dương'];
+        $matrix = [];
+
+        foreach ($storages as $i => $storage) {
+            foreach (array_slice($colors, 0, 2) as $j => $color) {
+                $matrix[] = [
+                    'code' => 'V' . ($i + 1) . ($j + 1),
+                    'values' => [$storage, $color],
+                    'extra' => ($i * 3000000) + ($j * 500000),
+                ];
+            }
+        }
+
+        return $matrix;
+    }
+
+    protected function storeImage(?string $file): ?string
+    {
+        if (! $file) {
+            return null;
+        }
+
+        $source = base_path('images/products/' . $file);
+
+        if (! File::exists($source)) {
+            return null;
+        }
+
+        $target = 'products/' . $file;
+
+        if (! Storage::disk('public')->exists($target)) {
+            Storage::disk('public')->put($target, File::get($source));
+        }
+
+        return $target;
     }
 }

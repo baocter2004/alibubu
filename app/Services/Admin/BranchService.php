@@ -6,6 +6,7 @@ use App\Const\GlobalConst;
 use App\Models\Branch;
 use App\Repositories\BranchRepository;
 use App\Services\BaseCrudService;
+use App\Traits\GeneratesSlug;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,8 @@ use Illuminate\Support\Str;
 
 class BranchService extends BaseCrudService
 {
+    use GeneratesSlug;
+
     protected function getRepository(): BranchRepository
     {
         if (empty($this->repository)) {
@@ -66,9 +69,15 @@ class BranchService extends BaseCrudService
 
     public function prepareConfirmData(array $validated, $id = null, ?array $oldSessionData = null): array
     {
-        $data = $validated;
+        $data = array_merge([
+            'name' => null,
+            'slug' => null,
+            'logo' => null,
+            'is_active' => GlobalConst::IS_ACTIVE,
+        ], $validated);
+
         $data['id'] = $id;
-        $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
+        $data['slug'] = $this->generateSlug($data['name'], 'branches', $id);
 
         if (! empty($validated['logo']) && $validated['logo'] instanceof UploadedFile) {
             if (! empty($oldSessionData['logo']) && $oldSessionData['logo'] !== ($oldSessionData['persisted_logo'] ?? null)) {

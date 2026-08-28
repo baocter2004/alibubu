@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class SyncVietnamAddress extends Command
 {
@@ -33,6 +34,7 @@ class SyncVietnamAddress extends Command
                 DB::table('provinces')->updateOrInsert(
                     ['code' => $provinceData['code']],
                     [
+                        'id' => DB::table('provinces')->where('code', $provinceData['code'])->value('id') ?? (string) Str::uuid7(),
                         'name' => $provinceData['name'],
                         'codename' => $provinceData['codename'],
                         'division_type' => $provinceData['division_type'],
@@ -50,6 +52,7 @@ class SyncVietnamAddress extends Command
 
                 foreach ($provinceData['wards'] as $ward) {
                     $wardsInsert[] = [
+                        'id' => DB::table('wards')->where('code', $ward['code'])->value('id') ?? (string) Str::uuid7(),
                         'code' => $ward['code'],
                         'name' => $ward['name'],
                         'codename' => $ward['codename'],

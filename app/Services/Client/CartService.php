@@ -15,13 +15,13 @@ class CartService
     public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): void
     {
         $items = $this->rawItems();
-        $key = $this->makeKey($product->id, $variant?->id);
+        $key = $this->makeKey((string) $product->id, $variant?->id ? (string) $variant->id : null);
         $current = $items[$key]['quantity'] ?? 0;
 
         $items[$key] = [
             'product_id' => $product->id,
             'product_variant_id' => $variant?->id,
-            'quantity' => $this->clamp($current + $quantity),
+            'quantity' => $this->clamp($current + $quantity, $product->stock),
         ];
 
         $this->persist($items);
@@ -38,7 +38,8 @@ class CartService
         if ($quantity < 1) {
             unset($items[$key]);
         } else {
-            $items[$key]['quantity'] = $this->clamp($quantity);
+            $stock = Product::whereKey($items[$key]['product_id'])->value('stock');
+            $items[$key]['quantity'] = $this->clamp($quantity, $stock);
         }
 
         $this->persist($items);
@@ -88,14 +89,15 @@ class CartService
                 }
 
                 $price = $variant ? $variant->effective_price : (float) $product->effective_price;
+                $quantity = $this->clamp($item['quantity'], $product->stock);
 
                 return [
                     'key' => $key,
                     'product' => $product,
                     'variant' => $variant,
-                    'quantity' => $item['quantity'],
+                    'quantity' => $quantity,
                     'price' => $price,
-                    'subtotal' => $price * $item['quantity'],
+                    'subtotal' => $price * $quantity,
                 ];
             })
             ->filter()
@@ -133,13 +135,19 @@ class CartService
         session()->put(self::SESSION_KEY, $items);
     }
 
-    protected function makeKey(int $productId, ?int $variantId): string
+    protected function makeKey(string $productId, ?string $variantId): string
     {
-        return $productId . ':' . ($variantId ?? 0);
+        return $productId . '|' . ($variantId ?? '');
     }
 
-    protected function clamp(int $quantity): int
+    protected function clamp(int $quantity, ?int $stock = null): int
     {
-        return max(1, min($quantity, self::MAX_QUANTITY));
+        $ceiling = self::MAX_QUANTITY;
+
+        if ($stock !== null && $stock > 0) {
+            $ceiling = min($ceiling, $stock);
+        }
+
+        return max(1, min($quantity, $ceiling));
     }
 }

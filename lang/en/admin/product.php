@@ -44,6 +44,7 @@ return [
         'variants' => 'Variants',
         'attributes' => 'Attributes',
         'variant_number' => 'Variant :number',
+        'specifications' => 'Specifications',
         'variants_count' => 'Variants',
     ],
 
@@ -60,6 +61,20 @@ return [
         'remove' => 'Remove variant',
         'empty' => 'No variants yet. Add at least one.',
         'select_attributes' => 'Select attribute values',
+    ],
+
+    'spec' => [
+        'section' => 'Technical specifications',
+        'description' => 'Add the spec rows shown on the product page, e.g. Screen · 6.9 inch.',
+        'add' => 'Add specification',
+        'remove' => 'Remove specification',
+        'empty' => 'No specification yet.',
+        'group' => 'Group',
+        'group_placeholder' => 'Display, Camera, Battery...',
+        'name' => 'Attribute',
+        'name_placeholder' => 'Screen size',
+        'value' => 'Value',
+        'value_placeholder' => '6.9 inch',
     ],
 
     'messages' => [

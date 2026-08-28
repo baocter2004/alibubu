@@ -73,7 +73,7 @@
 
     <div class="w-full bg-white rounded-lg shadow-lg p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[960px] w-full table-fixed">
+            <table class="min-w-[960px] w-full table-fixed admin-table">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[6%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>
@@ -88,7 +88,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($categories as $category)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
+                        <tr class="text-sm text-gray-700 transition-colors">
                             <td class="text-center px-4 py-3">{{ $category->id }}</td>
                             <td class="px-4 py-3">
                                 <span class="flex items-center gap-2 truncate">

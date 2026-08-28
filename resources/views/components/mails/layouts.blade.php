@@ -16,7 +16,7 @@
                     <tr>
                         <td style="text-align:center; padding-bottom:20px;">
                             <h2 style="margin:0; color:#111;">
-                                Alibubu - @yield('title', 'Notification')
+                                {{ __('common.app_name') }} - @yield('title')
                             </h2>
                         </td>
                     </tr>

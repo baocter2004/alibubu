@@ -1,189 +1,113 @@
 @extends('admin.layouts.app')
 
-@section('title')
-    Trang chi tiết người dùng
-@endsection
+@section('title', __('admin/user.title.show'))
 
 @section('content')
-    <div class="max-w-5xl m-auto">
-        <div class="mb-4">
-            <h1 class="text-2xl font-bold text-gray-800">Kiểm tra thông tin người dùng</h1>
-            <p class="text-gray-600 mt-1">Kiểm tra lại thông tin của người dùng.</p>
-        </div>
-
-        {{-- Thông Tin Cơ Bản --}}
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    1
-                </div>
+    <div class="w-full mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div class="flex items-center gap-4">
+                <span
+                    class="w-14 h-14 shrink-0 rounded-full bg-blue-100 text-blue-600 text-xl font-bold flex items-center justify-center">
+                    {{ Str::upper(Str::substr($user->fullname, 0, 1)) }}
+                </span>
                 <div>
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Thông Tin Cơ Bản
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Kiểm tra thông tin cá nhân của người dùng
-                    </p>
+                    <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ $user->fullname }}</h1>
+                    <p class="text-sm text-gray-500">{{ $user->email }}</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Họ và tên</p>
-                    <p class="text-gray-800 font-medium">{{ $user->fullname ?? '-' }}</p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Email</p>
-                    <p class="text-gray-800 font-medium">{{ $user->email ?? '-' }}</p>
-                </div>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-500">Số điện thoại</p>
-                <p class="text-gray-800 font-medium">{{ $user->phone_number ?? '-' }}</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Mật khẩu</p>
-                    <p class="text-gray-800 font-medium">********************</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500">Xác nhận mật khẩu</p>
-                    <p class="text-gray-800 font-medium">********************</p>
-                </div>
-            </div>
-
-            <div class="bg-amber-100 rounded-lg p-3 text-yellow-800 flex justify-center items-center gap-2 mt-2">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Mật Khẩu Sẽ Được Ẩn Đi Vì Lý Do Bảo Mật
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.users.index') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left"></i>
+                    {{ __('common.actions.back') }}
+                </a>
+                <a href="{{ route('admin.users.edit', $user->id) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition-colors">
+                    <i class="fas fa-edit"></i>
+                    {{ __('common.actions.edit') }}
+                </a>
             </div>
         </div>
 
-        {{-- Thông Tin Cá Nhân --}}
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    2
-                </div>
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Thông Tin Cá Nhân
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Kiểm tra thông tin bổ sung
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Giới tính</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::genderLabel($user->gender) }}
-                    </p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500">Ngày sinh</p>
-                    <p class="text-gray-800 font-medium">{{ $user->birthday ?? '-' }}</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-500">Vai trò</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::roleLabel($user->role) }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500">Trạng thái</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::statusLabel($user->status) }}</p>
-                </div>
-            </div>
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+            <span
+                class="px-3 py-1.5 text-xs font-semibold rounded-full {{ \App\Const\UserConst::statusBadgeClass($user->status) }}">
+                {{ \App\Const\UserConst::statusLabel($user->status) }}
+            </span>
+            <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-600">
+                {{ \App\Const\UserConst::roleLabel($user->role) }}
+            </span>
+            <span
+                class="px-3 py-1.5 text-xs font-semibold rounded-full {{ $user->email_verified_at ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600' }}">
+                <i class="fa-solid {{ $user->email_verified_at ? 'fa-circle-check' : 'fa-circle-xmark' }} mr-1"></i>
+                {{ __('admin/user.fields.email_verified_at') }}
+            </span>
         </div>
 
-        {{-- Địa Chỉ Nhận Hàng --}}
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    3
-                </div>
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-800">Địa Chỉ Nhận Hàng</h2>
-                    <p class="text-sm text-gray-500">Tối đa 5 địa chỉ (<span id="address-count">0</span>/5)</p>
-                </div>
-            </div>
-            @foreach ($user->userAddresses ?? [] as $idx => $address)
-                <div class="w-full p-6 bg-gray-50 border border-gray-200 rounded-lg relative group animate-fade-in">
-                    <p class="text-sm text-gray-500">Họ và tên người nhận</p>
-                    <p class="text-gray-800 font-medium">{{ $address->fullname ?? '-' }}</p>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @php
+                $rows = [
+                    ['label' => __('common.labels.id'), 'value' => $user->id],
+                    ['label' => __('admin/user.fields.fullname'), 'value' => $user->fullname],
+                    ['label' => __('admin/user.fields.email'), 'value' => $user->email],
+                    ['label' => __('admin/user.fields.phone_number'), 'value' => $user->phone_number ?: '-'],
+                    ['label' => __('admin/user.fields.gender'), 'value' => \App\Const\UserConst::genderLabel($user->gender)],
+                    ['label' => __('admin/user.fields.birthday'), 'value' => $user->birthday?->format('d/m/Y') ?? '-'],
+                    ['label' => __('admin/user.fields.loyalty_points'), 'value' => number_format($user->loyalty_points ?? 0)],
+                    ['label' => __('admin/user.fields.bank_name'), 'value' => \App\Const\BankConst::getOptions()[$user->bank_name] ?? '-'],
+                    ['label' => __('admin/user.fields.user_bank_name'), 'value' => $user->user_bank_name ?: '-'],
+                    ['label' => __('admin/user.fields.bank_account'), 'value' => $user->bank_account ?: '-'],
+                    ['label' => __('common.labels.created_at'), 'value' => $user->created_at?->format('d/m/Y H:i')],
+                    ['label' => __('common.labels.updated_at'), 'value' => $user->updated_at?->format('d/m/Y H:i')],
+                ];
+            @endphp
 
-                    <p class="text-sm text-gray-500 mt-2">Số điện thoại</p>
-                    <p class="text-gray-800 font-medium">{{ $address->phone_number ?? '-' }}</p>
-
-                    <p class="text-sm text-gray-500 mt-2">Tỉnh/Thành phố</p>
-                    <p class="text-gray-800 font-medium">
-                        {{ $address->province ?? '-' }}
-                    </p>
-
-                    <p class="text-sm text-gray-500 mt-2">Phường/Xã</p>
-                    <p class="text-gray-800 font-medium">{{ $address->ward ?? '-' }}</p>
-
-                    <p class="text-sm text-gray-500 mt-2">Địa chỉ chi tiết</p>
-                    <p class="text-gray-800 font-medium">{{ $address->address ?? '-' }}</p>
-
-                    <p class="text-sm text-gray-500 mt-2">Đặt làm địa chỉ mặc định</p>
-                    <p
-                        class="text-gray-800 font-medium px-2 py-1 rounded-lg inline-block {{ $address->is_default ? 'bg-blue-200' : 'bg-gray-50' }}">
-                        {{ !empty($address->is_default) ? 'Có' : 'Không' }}
-                    </p>
+            @foreach ($rows as $row)
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <dt class="text-xs uppercase tracking-wide text-gray-500 mb-1">{{ $row['label'] }}</dt>
+                    <dd class="text-gray-800 font-medium break-words">{{ $row['value'] }}</dd>
                 </div>
             @endforeach
-        </div>
+        </dl>
 
-        {{-- Thông Tin Ngân Hàng --}}
-        <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                    4
-                </div>
-                <div>
-                    <h2 class="text-lg font-semibold text-gray-800">
-                        Thông Tin Ngân Hàng
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Không bắt buộc
-                    </p>
-                </div>
+        @if ($user->reason_lock)
+            <div class="mt-5 p-4 bg-red-50 border border-red-100 rounded-lg">
+                <p class="text-xs uppercase tracking-wide text-red-500 mb-1">
+                    {{ __('admin/user.fields.reason_lock') }}</p>
+                <p class="text-sm text-red-700">{{ $user->reason_lock }}</p>
             </div>
+        @endif
+    </div>
 
-            <p class="text-sm text-gray-500">Tên ngân hàng</p>
-            <p class="text-gray-800 font-medium">{{ $user->bank_name ?? '-' }}</p>
+    <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/user.address.section') }}</h2>
 
-            <p class="text-sm text-gray-500 mt-2">Tên chủ tài khoản</p>
-            <p class="text-gray-800 font-medium">{{ $user->user_bank_name ?? '-' }}</p>
-
-            <p class="text-sm text-gray-500 mt-2">Số tài khoản</p>
-            <p class="text-gray-800 font-medium">{{ $user->bank_account ?? '-' }}</p>
-        </div>
-
-        <div class="w-full p-4 mt-4 bg-white rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-
-            <!-- Back -->
-            <a href="{{ route('admin.users.index') }}"
-                class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
-
-                <i class="fa-solid fa-arrow-left"></i>
-                Quay Lại Danh Sách
-            </a>
-
-            <!-- Submit -->
-            <a href="{{ route('admin.users.edit', $user->id) }}"
-                class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                <i class="fa-solid fa-edit"></i>
-                Chỉnh Sửa Người Dùng
-            </a>
-
-        </div>
+        @if ($user->userAddresses->isEmpty())
+            <p class="py-10 text-center text-sm text-gray-500">{{ __('admin/user.address.empty') }}</p>
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach ($user->userAddresses as $address)
+                    <div
+                        class="border rounded-xl p-4 {{ $address->is_default ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200 bg-gray-50' }}">
+                        <div class="flex items-start justify-between gap-3 mb-2">
+                            <p class="font-medium text-gray-900">{{ $address->fullname }}</p>
+                            @if ($address->is_default)
+                                <span
+                                    class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-blue-500 text-white shrink-0">
+                                    {{ __('admin/user.address.default_badge') }}
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">
+                            <i class="fa-solid fa-phone text-gray-400 mr-1.5"></i>{{ $address->phone_number }}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fa-solid fa-location-dot text-gray-400 mr-1.5"></i>{{ $address->full_address }}
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 @endsection
