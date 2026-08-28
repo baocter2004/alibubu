@@ -86,7 +86,8 @@ class PostUserRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route()->id;
+        $id = $this->route('id');
+
         return [
             'fullname' => 'required|string|max:255',
             'email' => [
@@ -104,10 +105,10 @@ class PostUserRequest extends FormRequest
             ],
             'password' => 'nullable|min:8|confirmed',
             'avatar'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status'   => ['required', Rule::in(array_keys(UserConst::STATUS))],
-            'gender'   => ['nullable', Rule::in(array_keys(UserConst::GENDER))],
+            'status'   => ['required', Rule::in(array_keys(UserConst::statuses()))],
+            'gender'   => ['nullable', Rule::in(array_keys(UserConst::genders()))],
             'birthday' => 'nullable|date',
-            'role'     => ['required', Rule::in(array_keys(UserConst::ROLE))],
+            'role'     => ['required', Rule::in(array_keys(UserConst::roles()))],
 
             'bank_name' => [
                 'nullable',
@@ -118,6 +119,7 @@ class PostUserRequest extends FormRequest
 
             'user_addresses' => 'array|max:5',
 
+            'user_addresses.*.id'           => 'nullable|integer|exists:user_addresses,id',
             'user_addresses.*.fullname'     => 'nullable|string|max:255',
             'user_addresses.*.phone_number' => 'nullable|string|max:20',
             'user_addresses.*.province_id'  => 'nullable|exists:provinces,id',

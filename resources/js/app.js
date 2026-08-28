@@ -74,3 +74,16 @@ if (firstInvalid) {
 
     $(firstInvalid).focus();
 }
+
+$(document).on("click", "[data-locale-toggle]", function (e) {
+    e.stopPropagation();
+    const $menu = $(this).siblings("[data-locale-menu]");
+    $("[data-locale-menu]").not($menu).addClass("hidden");
+    $menu.toggleClass("hidden");
+    $(this).attr("aria-expanded", !$menu.hasClass("hidden"));
+});
+
+$(document).on("click", function () {
+    $("[data-locale-menu]").addClass("hidden");
+    $("[data-locale-toggle]").attr("aria-expanded", "false");
+});

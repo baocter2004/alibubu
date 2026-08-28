@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AuthRegisterRequest extends FormRequest
 {
@@ -24,12 +25,22 @@ class AuthRegisterRequest extends FormRequest
     {
         return [
             'fullname' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')
-            ],
-            'password' => ['required', 'string', 'confirmed', 'min:6']
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'fullname' => 'họ và tên',
+            'email' => 'email',
+            'password' => 'mật khẩu',
         ];
     }
 }

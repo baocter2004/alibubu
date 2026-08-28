@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Group\GetWardRequest;
-use App\Repositories\WardService;
+use App\Services\WardService;
 
 class WardController extends Controller
 {
@@ -12,7 +12,14 @@ class WardController extends Controller
 
     public function index(GetWardRequest $getWardRequest)
     {
-        $wards = $this->wardService->search($getWardRequest->validated());
-        return view('admin.pages.wards.index');
+        $wards = $this->wardService->search(array_merge($getWardRequest->validated(), ['relates' => ['province'], 'relates_count' => ['userAddresses']]));
+        return view('admin.pages.wards.index', compact('wards'));
+    }
+
+    public function show(int|string $id)
+    {
+        $ward = $this->wardService->filter(['relates' => ['province']])->find($id);
+
+        return view('admin.pages.wards.show', compact('ward'));
     }
 }

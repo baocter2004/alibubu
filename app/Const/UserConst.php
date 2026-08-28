@@ -8,55 +8,51 @@ class UserConst
     const ROLE_EMPLOYEE = 2;
     const ROLE_ADMIN = 3;
 
-
-    const ROLE = [
-        self::ROLE_USER => 'Người Dùng',
-        self::ROLE_EMPLOYEE => 'Nhân Viên',
-        self::ROLE_ADMIN => 'Quản Trị Viên'
-    ];
-
     const MALE = 1;
     const FEMALE = 2;
     const OTHER = 3;
-
-    const GENDER = [
-        1 => 'Nam',
-        2 => 'Nữ',
-        3 => 'Khác'
-    ];
-
-    const NOT_SELECTED = 0;
-    const YES = 1;
-    const NOT = 2;
-
-    const YES_NO_OPTIONS = [
-        self::NOT_SELECTED => 'chưa chọn',
-        self::YES => 'có',
-        self::NOT => 'không',
-    ];
-
-    const YES_NO_ONLY = [
-        self::YES => 'có',
-        self::NOT => 'không',
-    ];
-
-    const FULL_TIME = 1;
-    const PART_TIME = 2;
-    const BOARD_MEMBER = 3;
-
-    const EMPLOYEE_TYPES = [
-        self::FULL_TIME => 'fulltime',
-        self::PART_TIME => 'parttime',
-        self::BOARD_MEMBER => 'board Member'
-    ];
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
     const STATUS_LOCKED = 3;
 
-    const STATUS = [
-        self::STATUS_ACTIVE => 'Hoạt Động',
-        self::STATUS_INACTIVE => 'Không Hoạt Động',
-        self::STATUS_LOCKED => 'Đã Khóa'
-    ];
+    public static function roles(): array
+    {
+        return __('enum.user.role');
+    }
+
+    public static function statuses(): array
+    {
+        return __('enum.user.status');
+    }
+
+    public static function genders(): array
+    {
+        return __('enum.user.gender');
+    }
+
+    public static function roleLabel(?int $role): string
+    {
+        return self::roles()[$role] ?? '-';
+    }
+
+    public static function statusLabel(?int $status): string
+    {
+        return self::statuses()[$status] ?? '-';
+    }
+
+    public static function genderLabel(?int $gender): string
+    {
+        return self::genders()[$gender] ?? '-';
+    }
+
+    public static function statusBadgeClass(?int $status): string
+    {
+        return match ($status) {
+            self::STATUS_ACTIVE => 'text-green-600 bg-green-100',
+            self::STATUS_INACTIVE => 'text-amber-600 bg-amber-100',
+            self::STATUS_LOCKED => 'text-red-600 bg-red-100',
+            default => 'text-gray-600 bg-gray-100',
+        };
+    }
 }

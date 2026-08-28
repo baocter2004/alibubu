@@ -3,7 +3,6 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class AuthLoginRequest extends FormRequest
 {
@@ -23,13 +22,22 @@ class AuthLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => [
-                'required',
-                'email',
-                Rule::exists('users', 'email'),
-            ],
-            'password' => ['required', 'string', 'min:6'],
-            'remember' => ['nullable', 'boolean']
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required', 'string'],
+            'remember' => ['nullable', 'boolean'],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'email' => 'email',
+            'password' => 'mật khẩu',
         ];
     }
 }

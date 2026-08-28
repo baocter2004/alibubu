@@ -8,9 +8,10 @@
     <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg">
         <form action="{{ route('admin.provinces.index') }}" method="GET">
             <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-2 mt-4">
-                <div class="w-full>
-                <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">
-                    Tìm Kiếm Thành Phố / Tỉnh</label>
+                <div class="w-full">
+                    <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tìm Kiếm Thành Phố / Tỉnh
+                    </label>
                     <input type="text" id="keyword" name="keyword" value="{{ old('keyword', request('keyword')) }}"
                         placeholder="Tìm kiếm theo từ khóa"
                         class="w-full border border-gray-300 rounded-md p-2 
@@ -39,7 +40,7 @@
                     class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                     Tìm Kiếm
                 </button>
-                @if (request()->filled('keyword') || request()->filled('name'))
+                @if (request()->filled('keyword') || request()->filled('name') || request()->filled('division_type'))
                     <a href="{{ route('admin.provinces.index') }}"
                         class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
                         Xóa Bộ Lọc

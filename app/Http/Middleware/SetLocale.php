@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Const\UserConst;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckAdminLogin
+class SetLocale
 {
     /**
      * Handle an incoming request.
@@ -17,11 +16,12 @@ class CheckAdminLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        if ($user->role === UserConst::ROLE_ADMIN) {
-            return $next($request);
+        $locale = $request->session()->get('locale');
+
+        if (in_array($locale, config('app.supported_locales', []), true)) {
+            App::setLocale($locale);
         }
 
-        return redirect()->route('auth.admin.showFormLogin')->with('error','Không Có Quyền Truy Cập !');
+        return $next($request);
     }
 }

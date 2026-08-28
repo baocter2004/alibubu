@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\Constants\GlobalConstant;
+use App\Const\GlobalConst;
 use App\Repositories\BaseRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
@@ -38,7 +39,7 @@ abstract class BaseService
         return $this->filter($params)->get();
     }
 
-    public function paginate(array $params = [], $limit = 10): LengthAwarePaginator
+    public function paginate(array $params = [], $limit = GlobalConst::LIMIT): LengthAwarePaginator
     {
         if (!empty($params['limit'])) {
             $limit = $params['limit'];
@@ -83,6 +84,10 @@ abstract class BaseService
 
         $item = $this->getRepository()->update($id, $params);
 
+        if (! $item) {
+            throw (new ModelNotFoundException)->setModel($this->getRepository()->getModel()::class, [$id]);
+        }
+
         return $item;
     }
 
@@ -94,6 +99,16 @@ abstract class BaseService
     public function deleteAll(array $ids)
     {
         return $this->getRepository()->deleteAll($ids);
+    }
+
+    public function restore($id)
+    {
+        return $this->getRepository()->restore($id);
+    }
+
+    public function forceDelete($id)
+    {
+        return $this->getRepository()->forceDelete($id);
     }
 
     protected function hashPassword($params)

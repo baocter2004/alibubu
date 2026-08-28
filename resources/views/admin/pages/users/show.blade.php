@@ -80,7 +80,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Giới tính</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::GENDER[$user->gender ?? ''] ?? '-' }}
+                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::genderLabel($user->gender) }}
                     </p>
                 </div>
                 <div>
@@ -92,11 +92,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Vai trò</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::ROLE[$user->role] ?? '-' }}</p>
+                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::roleLabel($user->role) }}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Trạng thái</p>
-                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::STATUS[$user->status] ?? '-' }}</p>
+                    <p class="text-gray-800 font-medium">{{ \App\Const\UserConst::statusLabel($user->status) }}</p>
                 </div>
             </div>
         </div>

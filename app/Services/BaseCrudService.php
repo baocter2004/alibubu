@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Const\GlobalConst;
 use App\Services\BaseService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 abstract class BaseCrudService extends BaseService
 {
-    public function search(array $params = [], $limit = 10): LengthAwarePaginator
+    public function search(array $params = [], $limit = GlobalConst::LIMIT): LengthAwarePaginator
     {
         return $this->paginate($params, $limit);
     }
@@ -18,7 +19,7 @@ abstract class BaseCrudService extends BaseService
         return $this->get($params);
     }
 
-    public function searchTrashed(array $params = [], $limit = 10): LengthAwarePaginator
+    public function searchTrashed(array $params = [], $limit = GlobalConst::LIMIT): LengthAwarePaginator
     {
         return $this->getRepository()->getListTrashed($params, $limit);
     }

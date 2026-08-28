@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseCrudService
 {
-    public function __construct(protected UserAddressRepository $userAddressRepository) {}
+    public function __construct(protected UserAddressRepository $userAddressRepository)
+    {
+        parent::__construct();
+    }
 
     protected function getRepository(): UserRepository
     {
@@ -78,148 +81,167 @@ class UserService extends BaseCrudService
     public function create(array $params = []): User
     {
         try {
-            DB::beginTransaction();
-            $userData = $params;
-            unset($userData['user_addresses']);
-            $user = parent::create($userData);
+            return DB::transaction(function () use ($params) {
+                $user = parent::create(Arr::except($params, ['user_addresses', 'id']));
+                $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);
 
-            if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
-                $provinceIds = array_filter(array_column($params['user_addresses'], 'province_id'));
-                $wardIds = array_filter(array_column($params['user_addresses'], 'ward_id'));
-
-                $provinces = Province::whereIn('id', $provinceIds)->get()->keyBy('id');
-                $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
-
-                $addresses = [];
-                $now = now();
-
-                foreach ($params['user_addresses'] as $addressData) {
-                    $addressData['user_id'] = $user->id;
-
-                    if (!empty($addressData['province_id']) && isset($provinces[$addressData['province_id']])) {
-                        $addressData['province'] = $provinces[$addressData['province_id']]->name;
-                    }
-
-                    if (!empty($addressData['ward_id']) && isset($wards[$addressData['ward_id']])) {
-                        $addressData['ward'] = $wards[$addressData['ward_id']]->name;
-                    }
-
-                    $addressData['created_at'] = $now;
-                    $addressData['updated_at'] = $now;
-
-                    $addresses[] = $addressData;
+                if ($addresses !== []) {
+                    $this->userAddressRepository->insert(
+                        array_map(fn ($address) => Arr::except($address, ['id']), $addresses)
+                    );
                 }
 
-                $this->userAddressRepository->insert($addresses);
-            }
+                return $user;
+            });
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'params' => $params]);
 
-            DB::commit();
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
-            DB::rollBack();
-            throw $e;
+            throw $th;
         }
     }
 
     public function update(int|string $id, array $params = []): User
     {
         try {
-            DB::beginTransaction();
-            $userData = $params;
-            unset($userData['user_addresses']);
-            $user = parent::update($id, $userData);
+            return DB::transaction(function () use ($id, $params) {
+                $user = parent::update($id, Arr::except($params, ['user_addresses', 'id']));
+                $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);
 
-            if (!empty($params['user_addresses']) && is_array($params['user_addresses'])) {
-
-                $provinceIds = array_filter(array_column($params['user_addresses'], 'province_id'));
-                $wardIds = array_filter(array_column($params['user_addresses'], 'ward_id'));
-
-                $provinces = Province::whereIn('id', $provinceIds)->get()->keyBy('id');
-                $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
-
-                $currentAddresses = $user->userAddresses()->get()->keyBy('id');
-
+                $currentIds = $user->userAddresses()->pluck('id')->all();
                 $keptIds = [];
+                $toInsert = [];
 
-                foreach ($params['user_addresses'] as $addressData) {
+                foreach ($addresses as $address) {
+                    if (! empty($address['id']) && in_array((int) $address['id'], $currentIds, true)) {
+                        $keptIds[] = (int) $address['id'];
+                        $user->userAddresses()
+                            ->whereKey($address['id'])
+                            ->update(Arr::except($address, ['id', 'user_id', 'created_at']));
 
-                    if (!empty($addressData['province_id']) && isset($provinces[$addressData['province_id']])) {
-                        $addressData['province'] = $provinces[$addressData['province_id']]->name;
+                        continue;
                     }
 
-                    if (!empty($addressData['ward_id']) && isset($wards[$addressData['ward_id']])) {
-                        $addressData['ward'] = $wards[$addressData['ward_id']]->name;
-                    }
-
-                    if (!empty($addressData['id']) && isset($currentAddresses[$addressData['id']])) {
-
-                        $address = $currentAddresses[$addressData['id']];
-                        $address->update($addressData);
-
-                        $keptIds[] = $address->id;
-                    } else {
-                        $address = $user->userAddresses()->create($addressData);
-                        $keptIds[] = $address->id;
-                    }
+                    $toInsert[] = Arr::except($address, ['id']);
                 }
 
-                // DELETE cái bị remove
-                $user->userAddresses()
-                    ->whereNotIn('id', $keptIds)
-                    ->delete();
-            }
+                if ($toInsert !== []) {
+                    $this->userAddressRepository->insert($toInsert);
+                }
 
-            DB::commit();
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage(), ['params' => $params]);
-            DB::rollBack();
-            throw $e;
+                $idsToDelete = array_diff($currentIds, $keptIds);
+
+                if ($idsToDelete !== []) {
+                    $user->userAddresses()->whereIn('id', $idsToDelete)->delete();
+                }
+
+                return $user->refresh();
+            });
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id, 'params' => $params]);
+
+            throw $th;
         }
     }
 
-    public function delete($id): bool
+    protected function normalizeAddresses(mixed $addresses, int $userId): array
+    {
+        if (! is_array($addresses) || $addresses === []) {
+            return [];
+        }
+
+        $provinces = Province::whereIn('id', array_filter(array_column($addresses, 'province_id')))
+            ->pluck('name', 'id');
+        $wards = Ward::whereIn('id', array_filter(array_column($addresses, 'ward_id')))
+            ->pluck('name', 'id');
+
+        $now = now();
+        $normalized = [];
+
+        foreach ($addresses as $address) {
+            if (empty($address['address']) && empty($address['fullname'])) {
+                continue;
+            }
+
+            $normalized[] = [
+                'id' => $address['id'] ?? null,
+                'user_id' => $userId,
+                'province_id' => $address['province_id'] ?? null,
+                'ward_id' => $address['ward_id'] ?? null,
+                'province' => $provinces[$address['province_id'] ?? null] ?? null,
+                'ward' => $wards[$address['ward_id'] ?? null] ?? null,
+                'address' => $address['address'] ?? null,
+                'phone_number' => $address['phone_number'] ?? null,
+                'fullname' => $address['fullname'] ?? null,
+                'is_default' => ! empty($address['is_default']),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        return $normalized;
+    }
+
+    public function delete($id)
     {
         try {
             $user = $this->find($id);
-            $user->update(['status' => UserConst::STATUS_INACTIVE]);
-            $user = parent::delete($id);
 
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
-        }
-    }
-
-    public function restore(int|string $id): bool
-    {
-        try {
-            $user = $this->getRepository()->restore($id);
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Error restoring user: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
-        }
-    }
-
-    public function forceDelete(int|string $id): bool
-    {
-        try {
-            DB::beginTransaction();
-            $user = parent::delete($id);
-
-            if ($user) {
-                $this->userAddressRepository->filter(['user_id' => $id])->delete();
+            if (! $user) {
+                return [
+                    'status' => false,
+                    'message' => __('admin/user.messages.not_found'),
+                ];
             }
 
-            DB::commit();
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Error deleting user: ' . $e->getMessage(), ['id' => $id]);
-            DB::rollBack();
-            throw $e;
+            DB::transaction(function () use ($user, $id) {
+                $user->update(['status' => UserConst::STATUS_INACTIVE]);
+                parent::delete($id);
+            });
+
+            return [
+                'status' => true,
+                'message' => __('admin/user.messages.deleted'),
+            ];
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $restored = $this->getRepository()->restore($id);
+
+            $this->find($id)?->update(['status' => UserConst::STATUS_ACTIVE]);
+
+            return $restored;
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $user = $this->getRepository()->findWithTrashed($id);
+
+            if (! $user) {
+                return false;
+            }
+
+            return DB::transaction(function () use ($user, $id) {
+                $user->userAddresses()->delete();
+
+                return parent::forceDelete($id);
+            });
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
         }
     }
 
@@ -227,14 +249,23 @@ class UserService extends BaseCrudService
     {
         $addresses = collect($addresses);
 
-        $provinces = Province::select('id', 'name')->get()->keyBy('id');
+        // Only load provinces/wards that are actually referenced — avoid full-table scan
+        $provinceIds = $addresses->pluck('province_id')->filter()->unique();
+        $wardIds     = $addresses->pluck('ward_id')->filter()->unique();
 
-        $wardIds = $addresses->pluck('ward_id')->filter();
-        $wards = Ward::whereIn('id', $wardIds)->get()->keyBy('id');
+        $provinces = Province::select('id', 'name')
+            ->whereIn('id', $provinceIds)
+            ->get()
+            ->keyBy('id');
+
+        $wards = Ward::select('id', 'name')
+            ->whereIn('id', $wardIds)
+            ->get()
+            ->keyBy('id');
 
         return $addresses->map(function ($addr) use ($provinces, $wards) {
             $provinceId = $addr['province_id'] ?? null;
-            $wardId = $addr['ward_id'] ?? null;
+            $wardId     = $addr['ward_id'] ?? null;
 
             $addr['province'] = $provinceId && isset($provinces[$provinceId])
                 ? $provinces[$provinceId]->name

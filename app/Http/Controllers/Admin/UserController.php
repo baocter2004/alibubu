@@ -17,8 +17,8 @@ class UserController extends Controller
     {
         session()->forget('user_data');
         $users = $this->userService->search($request->validated());
-        $statuses = UserConst::STATUS;
-        $roles = UserConst::ROLE;
+        $statuses = UserConst::statuses();
+        $roles = UserConst::roles();
 
         return view('admin.pages.users.index', compact('users', 'statuses', 'roles'));
     }
@@ -26,8 +26,8 @@ class UserController extends Controller
     public function trash(GetUserRequest $request)
     {
         $users = $this->userService->searchTrashed($request->validated());
-        $statuses = UserConst::STATUS;
-        $roles = UserConst::ROLE;
+        $statuses = UserConst::statuses();
+        $roles = UserConst::roles();
 
         return view('admin.pages.users.trash', compact('users', 'statuses', 'roles'));
     }
@@ -83,14 +83,12 @@ class UserController extends Controller
             return redirect()->route('admin.users.create');
         }
 
-        if (!empty($data['id'])) {
-            // update
+        if (! empty($data['id'])) {
             $this->userService->update($data['id'], $data);
-            $message = 'User updated successfully.';
+            $message = __('admin/user.messages.updated');
         } else {
-            // create
             $this->userService->create($data);
-            $message = 'User created successfully.';
+            $message = __('admin/user.messages.created');
         }
 
         session()->forget('user_data');
@@ -110,22 +108,34 @@ class UserController extends Controller
 
     public function destroy(int|string $id)
     {
-        $this->userService->delete($id);
+        $result = $this->userService->delete($id);
 
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+        if (! $result['status']) {
+            return redirect()->route('admin.users.index')->with('error', $result['message']);
+        }
+
+        return redirect()->route('admin.users.index')->with('success', $result['message']);
     }
 
     public function forceDestroy(int|string $id)
     {
-        $this->userService->forceDelete($id);
+        if (! $this->userService->forceDelete($id)) {
+            return redirect()
+                ->route('admin.users.trash')
+                ->with('error', __('admin/user.messages.not_found'));
+        }
 
-        return redirect()->route('admin.users.index')->with('success', 'User permanently deleted successfully.');
+        return redirect()
+            ->route('admin.users.trash')
+            ->with('success', __('admin/user.messages.force_deleted'));
     }
 
     public function restore(int|string $id)
     {
         $this->userService->restore($id);
 
-        return redirect()->route('admin.users.index')->with('success', 'User restored successfully.');
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', __('admin/user.messages.restored'));
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use App\Const\UserConst;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -74,9 +74,24 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->email;
     }
 
+    public function isLocked(): bool
+    {
+        return (int) $this->status === UserConst::STATUS_LOCKED;
+    }
+
     // Relations
-    public function userAddresses()
+    public function userAddresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);
+    }
+
+    public function defaultAddress(): HasMany
+    {
+        return $this->userAddresses()->where('is_default', true);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserAddress extends Model
 {
@@ -14,10 +15,8 @@ class UserAddress extends Model
     protected $fillable = [
         'user_id',
         'province_id',
-        'district_id',
         'ward_id',
         'province',
-        'district',
         'ward',
         'address',
         'phone_number',
@@ -33,23 +32,30 @@ class UserAddress extends Model
     protected function casts(): array
     {
         return [
-            'is_default' => 'integer'
+            'is_default' => 'boolean',
         ];
     }
 
     // Relations
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function provinceRel()
+    public function provinceRel(): BelongsTo
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(Province::class, 'province_id');
     }
 
-    public function wardRel()
+    public function wardRel(): BelongsTo
     {
-        return $this->belongsTo(Ward::class);
+        return $this->belongsTo(Ward::class, 'ward_id');
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        return collect([$this->address, $this->ward, $this->province])
+            ->filter()
+            ->implode(', ');
     }
 }

@@ -6,7 +6,7 @@ use App\Models\User;
 
 class UserRepository extends BaseRepository
 {
-    protected function getModel(): User
+    public function getModel(): User
     {
         if (empty($this->model)) {
             $this->model = app()->make(User::class);

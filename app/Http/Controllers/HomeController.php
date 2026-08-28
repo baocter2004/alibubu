@@ -2,31 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Services\Client\ProductService;
 
 class HomeController extends Controller
 {
+    public function __construct(protected ProductService $productService) {}
+
     public function index()
     {
-        return view('client.pages.index');
+        return view('client.pages.index', [
+            'categories' => Category::query()
+                ->where('is_active', true)
+                ->whereNull('parent_id')
+                ->orderBy('ordinal')
+                ->withCount('products')
+                ->get(),
+            'featuredProducts' => $this->productService->highlights('is_featured', 8),
+            'trendingProducts' => $this->productService->highlights('is_trending', 4),
+        ]);
     }
 
-    public function shops()
+    public function about()
     {
-        return view('client.shop');
+        return view('client.pages.about');
     }
 
-    public function shopDetail()
+    public function thankYou()
     {
-        return view('client.shop-detail');
-    }
-
-    public function cart()
-    {
-        return view("client.cart");
-    }
-    public function checkout()
-    {
-        return view("client.checkout");
+        return view('client.pages.thank-you', [
+            'orderCode' => session('order_code'),
+        ]);
     }
 }

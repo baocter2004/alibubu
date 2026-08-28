@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
+use App\Repositories\WardRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
 
 class WardService extends BaseCrudService
 {
-    public function getRepository(): WardRepository
+    protected function getRepository(): WardRepository
     {
         if(empty($this->repository)) {
             $this->repository = app()->make(WardRepository::class);
