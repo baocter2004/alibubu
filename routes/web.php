@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\ClientAuthController;
+use App\Http\Controllers\Common\LocaleController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/locale/{locale}', LocaleController::class)->name('locale.switch');
 
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify/{id}/{hash}', [ClientAuthController::class, 'verifyEmail'])

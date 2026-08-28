@@ -119,6 +119,7 @@ class PostUserRequest extends FormRequest
 
             'user_addresses' => 'array|max:5',
 
+            'user_addresses.*.id'           => 'nullable|integer|exists:user_addresses,id',
             'user_addresses.*.fullname'     => 'nullable|string|max:255',
             'user_addresses.*.phone_number' => 'nullable|string|max:20',
             'user_addresses.*.province_id'  => 'nullable|exists:provinces,id',

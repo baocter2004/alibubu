@@ -28,7 +28,7 @@
         @if ($product->is_trending)
             <span
                 class="absolute top-2 right-2 px-2 py-0.5 text-[11px] font-semibold bg-white/90 text-primary rounded-full">
-                <i class="fa-solid fa-fire"></i> Hot
+                <i class="fa-solid fa-fire"></i>
             </span>
         @endif
     </a>
@@ -60,7 +60,7 @@
             @if ($product->hasVariants())
                 <a href="{{ $url }}"
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary border border-primary/30 rounded-lg hover:bg-primary hover:text-white transition-colors">
-                    <i class="fa-solid fa-sliders"></i> Chọn
+                    <i class="fa-solid fa-sliders"></i> {{ __('client.product.choose') }}
                 </a>
             @else
                 <form action="{{ route('cart.store') }}" method="POST">
@@ -69,7 +69,7 @@
                     <input type="hidden" name="quantity" value="1">
                     <button type="submit"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
-                        <i class="fa-solid fa-cart-plus"></i> Thêm
+                        <i class="fa-solid fa-cart-plus"></i> {{ __('client.product.add') }}
                     </button>
                 </form>
             @endif

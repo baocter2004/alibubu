@@ -1,6 +1,6 @@
 @extends('client.layouts.app')
 
-@section('title', $product->name . ' - Alibubu')
+@section('title', $product->name . ' - ' . __('common.app_name'))
 
 @section('content')
     @php
@@ -12,9 +12,9 @@
     @endphp
 
     <nav class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">Trang chủ</a>
+        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">Sản phẩm</a>
+        <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
         @if ($category = $product->categories->first())
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
@@ -70,9 +70,9 @@
             <h1 class="text-2xl md:text-3xl font-bold text-foreground leading-snug mb-3">{{ $product->name }}</h1>
 
             <div class="flex items-center gap-4 text-sm text-muted-foreground mb-5">
-                <span><i class="fa-solid fa-eye mr-1"></i>{{ number_format($product->views) }} lượt xem</span>
+                <span><i class="fa-solid fa-eye mr-1"></i>{{ __('client.product.views', ['count' => number_format($product->views)]) }}</span>
                 @if ($product->sku)
-                    <span><i class="fa-solid fa-barcode mr-1"></i>{{ $product->sku }}</span>
+                    <span><i class="fa-solid fa-barcode mr-1"></i>{{ __('client.product.sku') }}: {{ $product->sku }}</span>
                 @endif
             </div>
 
@@ -99,7 +99,7 @@
 
                 @if ($hasVariants)
                     <div>
-                        <p class="text-sm font-semibold text-foreground mb-2">Chọn phiên bản</p>
+                        <p class="text-sm font-semibold text-foreground mb-2">{{ __('client.product.select_variant') }}</p>
                         <div class="flex flex-wrap gap-2">
                             @foreach ($variants as $index => $variant)
                                 @php
@@ -127,7 +127,7 @@
                     <div class="flex items-center border border-border rounded-lg overflow-hidden">
                         <button type="button" id="qty-minus"
                             class="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
-                            aria-label="Giảm số lượng">
+                            aria-label="{{ __('client.product.decrease') }}">
                             <i class="fa-solid fa-minus text-xs"></i>
                         </button>
                         <input type="number" id="quantity" name="quantity" value="1" min="1"
@@ -135,7 +135,7 @@
                             class="w-14 h-10 text-center border-x border-border focus:outline-none">
                         <button type="button" id="qty-plus"
                             class="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
-                            aria-label="Tăng số lượng">
+                            aria-label="{{ __('client.product.increase') }}">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
@@ -143,13 +143,13 @@
                     <button type="submit"
                         class="flex-1 min-w-40 inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
                         <i class="fa-solid fa-cart-plus"></i>
-                        Thêm vào giỏ hàng
+                        {{ __('client.product.add_to_cart') }}
                     </button>
                 </div>
             </form>
 
             <div class="grid grid-cols-3 gap-3 mt-7">
-                @foreach ([['fa-truck-fast', 'Giao nhanh 24h'], ['fa-rotate-left', 'Đổi trả 30 ngày'], ['fa-shield-halved', 'Bảo hành chính hãng']] as [$icon, $label])
+                @foreach ([['fa-truck-fast', __('client.product.benefits.shipping')], ['fa-rotate-left', __('client.product.benefits.returns')], ['fa-shield-halved', __('client.product.benefits.warranty')]] as [$icon, $label])
                     <div class="flex flex-col items-center gap-2 p-3 bg-card border border-border rounded-xl text-center">
                         <i class="fa-solid {{ $icon }} text-primary"></i>
                         <span class="text-xs text-muted-foreground">{{ $label }}</span>
@@ -161,7 +161,7 @@
 
     @if ($product->descriptions)
         <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
-            <h2 class="text-lg font-bold text-foreground mb-4">Mô tả sản phẩm</h2>
+            <h2 class="text-lg font-bold text-foreground mb-4">{{ __('client.product.description') }}</h2>
             <p class="text-muted-foreground leading-relaxed whitespace-pre-line">{{ $product->descriptions }}</p>
         </section>
     @endif
@@ -169,8 +169,8 @@
     @if ($relatedProducts->isNotEmpty())
         <section class="mb-12">
             <div class="flex items-center justify-between mb-5">
-                <h2 class="text-xl font-bold text-foreground">Sản phẩm liên quan</h2>
-                <a href="{{ route('shop.index') }}" class="text-sm font-medium text-primary hover:underline">Xem tất cả</a>
+                <h2 class="text-xl font-bold text-foreground">{{ __('client.product.related') }}</h2>
+                <a href="{{ route('shop.index') }}" class="text-sm font-medium text-primary hover:underline">{{ __('common.actions.view_all') }}</a>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($relatedProducts as $related)
