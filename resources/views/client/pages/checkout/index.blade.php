@@ -124,15 +124,45 @@
             <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
                 <h2 class="font-bold text-foreground mb-4">{{ __('client.checkout.payment_method') }}</h2>
 
-                <div class="flex items-start gap-3 px-4 py-3.5 bg-primary/5 border-2 border-primary/40 rounded-xl">
-                    <span class="w-10 h-10 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-foreground">{{ __('client.checkout.cod') }}</p>
-                        <p class="text-xs text-muted-foreground mt-0.5">{{ __('client.checkout.cod_description') }}</p>
-                    </div>
-                    <i class="fa-solid fa-circle-check text-primary ml-auto"></i>
+                <div class="space-y-3">
+                    @foreach (\App\Const\PaymentConst::methods() as $value => $label)
+                        <label class="block cursor-pointer">
+                            <input type="radio" name="payment_method" value="{{ $value }}"
+                                @checked((int) old('payment_method', \App\Const\PaymentConst::METHOD_COD) === (int) $value)
+                                class="peer sr-only payment-option">
+                            <span
+                                class="flex items-start gap-3 px-4 py-3.5 border-2 border-border rounded-xl transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                                <span class="w-10 h-10 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                    <i class="fa-solid {{ \App\Const\PaymentConst::methodIcon((int) $value) }}"></i>
+                                </span>
+                                <span class="flex-1">
+                                    <span class="block text-sm font-semibold text-foreground">{{ $label }}</span>
+                                    <span class="block text-xs text-muted-foreground mt-0.5">
+                                        {{ (int) $value === \App\Const\PaymentConst::METHOD_BANK_TRANSFER ? __('client.checkout.method_bank_desc') : __('client.checkout.method_cod_desc') }}
+                                    </span>
+                                </span>
+                                <i class="fa-solid fa-circle-check text-primary opacity-0 peer-checked:opacity-100 mt-2.5"></i>
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+
+                @error('payment_method')
+                    <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                @enderror
+
+                <div id="bank-details"
+                    class="hidden mt-4 p-4 bg-muted/50 border border-border rounded-xl text-sm space-y-2">
+                    <p class="font-semibold text-foreground">{{ __('client.checkout.bank_details') }}</p>
+                    <dl class="grid grid-cols-3 gap-2">
+                        <dt class="text-muted-foreground">{{ __('client.checkout.bank_name') }}</dt>
+                        <dd class="col-span-2 text-foreground font-medium">Vietcombank</dd>
+                        <dt class="text-muted-foreground">{{ __('client.checkout.bank_account') }}</dt>
+                        <dd class="col-span-2 text-foreground font-medium">0123 4567 8910</dd>
+                        <dt class="text-muted-foreground">{{ __('client.checkout.bank_holder') }}</dt>
+                        <dd class="col-span-2 text-foreground font-medium">CONG TY ALIBUBU</dd>
+                    </dl>
+                    <p class="text-xs text-muted-foreground pt-1">{{ __('client.checkout.bank_note_hint') }}</p>
                 </div>
             </section>
         </div>
@@ -219,6 +249,14 @@
 @push('scripts')
     <script>
         $(function() {
+            function toggleBank() {
+                const isBank = $('.payment-option:checked').val() === '{{ \App\Const\PaymentConst::METHOD_BANK_TRANSFER }}';
+                $('#bank-details').toggleClass('hidden', !isBank);
+            }
+
+            $('.payment-option').on('change', toggleBank);
+            toggleBank();
+
             $('#use-saved-address').on('click', function() {
                 $('#fullname').val($(this).data('fullname'));
                 $('#phone_number').val($(this).data('phone'));

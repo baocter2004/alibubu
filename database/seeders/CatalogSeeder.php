@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductGallery;
+use App\Models\ProductSpecification;
 use App\Models\ProductVariant;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
@@ -68,6 +69,7 @@ class CatalogSeeder extends Seeder
             $product->tags()->sync(collect($item['tags'])->map(fn ($tag) => $tags[$tag]->id)->all());
 
             $this->seedGallery($product, $item['gallery']);
+            $this->seedSpecifications($product, $item);
 
             if ($item['has_variants']) {
                 $this->seedVariants($product->load('galleries'), $item, $attributeValues);
@@ -165,6 +167,28 @@ class CatalogSeeder extends Seeder
             if ($stored) {
                 ProductGallery::create(['product_id' => $product->id, 'image' => $stored]);
             }
+        }
+    }
+
+    protected function seedSpecifications(Product $product, array $item): void
+    {
+        if ($product->specifications()->exists()) {
+            return;
+        }
+
+        $specs = [
+            ['group' => 'Tổng quan', 'name' => 'Thương hiệu', 'value' => $item['brand']],
+            ['group' => 'Tổng quan', 'name' => 'Danh mục', 'value' => $item['category']],
+            ['group' => 'Tổng quan', 'name' => 'Mã sản phẩm', 'value' => $item['sku'] ?? '-'],
+            ['group' => 'Bảo hành', 'name' => 'Chính sách', 'value' => $item['short']],
+            ['group' => 'Kho hàng', 'name' => 'Tồn kho', 'value' => (string) ($item['stock'] ?? 0)],
+        ];
+
+        foreach ($specs as $ordinal => $spec) {
+            ProductSpecification::create(array_merge($spec, [
+                'product_id' => $product->id,
+                'ordinal' => $ordinal,
+            ]));
         }
     }
 

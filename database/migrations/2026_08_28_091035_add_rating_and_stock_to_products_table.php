@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->decimal('rating', 3, 2)->default(0)->after('views');
+            $table->unsignedInteger('reviews_count')->default(0)->after('rating');
             $table->unsignedInteger('stock')->default(0)->after('rating');
             $table->unsignedInteger('sold')->default(0)->after('stock');
         });
@@ -24,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['rating', 'stock', 'sold']);
+            $table->dropColumn(['rating', 'reviews_count', 'stock', 'sold']);
         });
     }
 };

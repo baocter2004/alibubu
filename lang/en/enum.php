@@ -36,6 +36,13 @@ return [
         ],
     ],
 
+    'payment' => [
+        'method' => [
+            1 => 'Cash on delivery (COD)',
+            2 => 'Bank transfer',
+        ],
+    ],
+
     'coupon' => [
         'discount_type' => [
             1 => 'Fixed amount',

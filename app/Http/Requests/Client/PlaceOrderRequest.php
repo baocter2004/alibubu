@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Client;
 
+use App\Const\PaymentConst;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PlaceOrderRequest extends FormRequest
 {
@@ -27,6 +29,7 @@ class PlaceOrderRequest extends FormRequest
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
             'note' => ['nullable', 'string', 'max:1000'],
+            'payment_method' => ['required', 'integer', Rule::in(array_keys(PaymentConst::methods()))],
         ];
     }
 

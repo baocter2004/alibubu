@@ -2,6 +2,7 @@
     $links = [
         ['route' => 'account.profile', 'icon' => 'fa-user', 'label' => __('client.account.nav.profile')],
         ['route' => 'account.orders', 'icon' => 'fa-receipt', 'label' => __('client.account.nav.orders')],
+        ['route' => 'account.wishlist', 'icon' => 'fa-heart', 'label' => __('client.account.nav.wishlist')],
         ['route' => 'account.addresses', 'icon' => 'fa-location-dot', 'label' => __('client.account.nav.addresses')],
     ];
 @endphp

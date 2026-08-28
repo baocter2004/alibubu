@@ -147,6 +147,43 @@ return [
         ],
     ],
 
+    'review' => [
+        'title' => 'Đánh giá từ khách hàng',
+        'subtitle' => ':count đánh giá',
+        'empty' => 'Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này.',
+        'write' => 'Viết đánh giá',
+        'submit' => 'Gửi đánh giá',
+        'login_prompt' => 'Đăng nhập và mua sản phẩm để có thể đánh giá.',
+        'purchase_prompt' => 'Chỉ khách hàng đã nhận sản phẩm mới có thể đánh giá.',
+        'pending_note' => 'Đánh giá của bạn sẽ hiển thị sau khi được duyệt.',
+        'verified' => 'Đã mua hàng',
+        'average' => 'Điểm trung bình',
+        'fields' => [
+            'rating' => 'Đánh giá của bạn',
+            'title' => 'Tiêu đề',
+            'title_placeholder' => 'Tóm tắt trải nghiệm của bạn',
+            'comment' => 'Nội dung đánh giá',
+            'comment_placeholder' => 'Bạn thích hoặc chưa hài lòng điều gì?',
+        ],
+        'messages' => [
+            'submitted' => 'Cảm ơn bạn! Đánh giá đã được gửi và đang chờ duyệt.',
+            'already_reviewed' => 'Bạn đã đánh giá sản phẩm này rồi.',
+            'not_purchased' => 'Bạn chỉ có thể đánh giá sản phẩm đã nhận.',
+        ],
+    ],
+
+    'wishlist' => [
+        'title' => 'Sản phẩm yêu thích',
+        'subtitle' => 'Những sản phẩm bạn đã lưu lại.',
+        'empty' => 'Danh sách yêu thích đang trống.',
+        'add' => 'Lưu vào yêu thích',
+        'remove' => 'Bỏ khỏi yêu thích',
+        'messages' => [
+            'added' => 'Đã lưu vào danh sách yêu thích.',
+            'removed' => 'Đã bỏ khỏi danh sách yêu thích.',
+        ],
+    ],
+
     'cart' => [
         'title' => 'Giỏ hàng của bạn',
         'breadcrumb' => 'Giỏ hàng',
@@ -157,6 +194,14 @@ return [
         'clear' => 'Xoá tất cả',
         'remove' => 'Xoá',
         'line_total' => 'Thành tiền',
+        'method_cod_desc' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
+        'method_bank_desc' => 'Chuyển khoản tới tài khoản của shop, hàng được gửi sau khi xác nhận.',
+        'bank_details' => 'Thông tin chuyển khoản',
+        'bank_name' => 'Ngân hàng',
+        'bank_account' => 'Số tài khoản',
+        'bank_holder' => 'Chủ tài khoản',
+        'bank_note' => 'Nội dung chuyển khoản',
+        'bank_note_hint' => 'Ghi mã đơn hàng vào nội dung chuyển khoản.',
         'summary' => 'Tóm tắt đơn hàng',
         'subtotal' => 'Tạm tính',
         'shipping' => 'Phí vận chuyển',
@@ -230,6 +275,7 @@ return [
         'nav' => [
             'profile' => 'Thông tin cá nhân',
             'orders' => 'Đơn hàng của tôi',
+            'wishlist' => 'Sản phẩm yêu thích',
             'addresses' => 'Sổ địa chỉ',
         ],
         'profile' => [

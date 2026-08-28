@@ -28,6 +28,10 @@ class PostProductRequest extends FormRequest
                 $this->input('variants', []),
                 fn ($variant) => ! empty($variant['price']) || ! empty($variant['sku']) || ! empty($variant['attribute_value_ids'])
             )),
+            'specifications' => array_values(array_filter(
+                $this->input('specifications', []),
+                fn ($spec) => ! empty($spec['name']) || ! empty($spec['value'])
+            )),
         ]);
     }
 
@@ -64,6 +68,12 @@ class PostProductRequest extends FormRequest
             'variants.*.is_active' => ['nullable', 'boolean'],
             'variants.*.attribute_value_ids' => [Rule::requiredIf($isVariable), 'array', 'min:1'],
             'variants.*.attribute_value_ids.*' => ['uuid', 'exists:attribute_values,id'],
+
+            'specifications' => ['nullable', 'array', 'max:40'],
+            'specifications.*.id' => ['nullable', 'uuid', 'exists:product_specifications,id'],
+            'specifications.*.group' => ['nullable', 'string', 'max:100'],
+            'specifications.*.name' => ['required_with:specifications.*.value', 'nullable', 'string', 'max:120'],
+            'specifications.*.value' => ['required_with:specifications.*.name', 'nullable', 'string', 'max:255'],
             'is_featured' => ['nullable', 'boolean'],
             'is_trending' => ['nullable', 'boolean'],
             'is_active' => ['required', Rule::in(array_keys(GlobalConst::statuses()))],
@@ -96,6 +106,10 @@ class PostProductRequest extends FormRequest
             'variants.*.price' => __('admin/product.fields.price'),
             'variants.*.sale_price' => __('admin/product.fields.sale_price'),
             'variants.*.attribute_value_ids' => __('admin/product.fields.attributes'),
+            'specifications' => __('admin/product.fields.specifications'),
+            'specifications.*.group' => __('admin/product.spec.group'),
+            'specifications.*.name' => __('admin/product.spec.name'),
+            'specifications.*.value' => __('admin/product.spec.value'),
         ];
     }
 

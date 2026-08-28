@@ -167,6 +167,18 @@
                 </div>
             </form>
 
+            @auth
+                @php $wishlisted = Auth::user()->hasWishlisted($product->id); @endphp
+                <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" class="mt-3">
+                    @csrf
+                    <button type="submit"
+                        class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100' : 'border-border text-muted-foreground hover:border-primary hover:text-primary' }}">
+                        <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart"></i>
+                        {{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}
+                    </button>
+                </form>
+            @endauth
+
             <div class="grid grid-cols-3 gap-3 mt-7">
                 @foreach ([['fa-truck-fast', __('client.product.benefits.shipping')], ['fa-rotate-left', __('client.product.benefits.returns')], ['fa-shield-halved', __('client.product.benefits.warranty')]] as [$icon, $label])
                     <div class="flex flex-col items-center gap-2 p-3 bg-card border border-border rounded-xl text-center">
@@ -184,6 +196,184 @@
             <p class="text-muted-foreground leading-relaxed whitespace-pre-line">{{ $product->descriptions }}</p>
         </section>
     @endif
+
+
+    @if ($product->specifications->isNotEmpty())
+        <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
+            <h2 class="text-lg font-bold text-foreground mb-5">{{ __('admin/product.spec.section') }}</h2>
+
+            @php $grouped = $product->specifications->groupBy(fn($sp) => $sp->group ?: ''); @endphp
+
+            <div class="space-y-6">
+                @foreach ($grouped as $group => $specs)
+                    <div>
+                        @if ($group)
+                            <p class="text-sm font-semibold text-primary mb-2">{{ $group }}</p>
+                        @endif
+
+                        <dl class="divide-y divide-border rounded-xl overflow-hidden border border-border">
+                            @foreach ($specs as $spec)
+                                <div class="grid grid-cols-3 gap-4 px-4 py-3 odd:bg-muted/40">
+                                    <dt class="text-sm text-muted-foreground">{{ $spec->name }}</dt>
+                                    <dd class="col-span-2 text-sm text-foreground font-medium">{{ $spec->value }}</dd>
+                                </div>
+                            @endforeach
+                        </dl>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div>
+                <h2 class="text-lg font-bold text-foreground">{{ __('client.review.title') }}</h2>
+                <p class="text-sm text-muted-foreground mt-0.5">
+                    {{ __('client.review.subtitle', ['count' => number_format($product->reviews_count)]) }}
+                </p>
+            </div>
+
+            @if ($canReview)
+                <button type="button" id="write-review-btn"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                    <i class="fa-solid fa-pen"></i>
+                    {{ __('client.review.write') }}
+                </button>
+            @endif
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div class="flex flex-col items-center justify-center bg-muted/40 rounded-xl p-6">
+                <p class="text-4xl font-bold text-foreground">{{ number_format((float) $product->rating, 1) }}</p>
+                @include('components.rating', ['rating' => $product->rating, 'size' => 'text-base', 'showValue' => false])
+                <p class="text-xs text-muted-foreground mt-2">{{ __('client.review.average') }}</p>
+            </div>
+
+            <div class="md:col-span-2 space-y-2">
+                @foreach ($ratingBreakdown as $star => $row)
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 text-xs text-muted-foreground whitespace-nowrap">{{ $star }} <i class="fa-solid fa-star text-amber-400"></i></span>
+                        <span class="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                            <span class="block h-full bg-amber-400 rounded-full" style="width: {{ $row['percent'] }}%"></span>
+                        </span>
+                        <span class="w-10 text-right text-xs text-muted-foreground">{{ $row['count'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        @auth
+            @if ($canReview)
+                <form action="{{ route('shop.reviews.store', $product->slug) }}" method="POST"
+                    id="review-form" class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
+                    @csrf
+
+                    <div>
+                        <p class="text-sm font-medium text-foreground mb-2">
+                            {{ __('client.review.fields.rating') }} <span class="text-red-500">*</span>
+                        </p>
+                        <div class="flex items-center gap-1" id="rating-picker">
+                            @for ($i = 1; $i <= 5; $i++)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="rating" value="{{ $i }}" @checked((int) old('rating') === $i)
+                                        class="peer sr-only rating-input">
+                                    <i class="fa-solid fa-star text-2xl text-muted-foreground/30 peer-checked:text-amber-400 transition-colors"
+                                        data-star="{{ $i }}"></i>
+                                </label>
+                            @endfor
+                        </div>
+                        @error('rating')
+                            <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-foreground mb-1.5">
+                            {{ __('client.review.fields.title') }}
+                        </label>
+                        <input type="text" id="title" name="title" value="{{ old('title') }}"
+                            placeholder="{{ __('client.review.fields.title_placeholder') }}"
+                            class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('title') ? 'is-invalid' : 'border-border' }}">
+                        @error('title')
+                            <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="comment" class="block text-sm font-medium text-foreground mb-1.5">
+                            {{ __('client.review.fields.comment') }}
+                        </label>
+                        <textarea id="comment" name="comment" rows="4"
+                            placeholder="{{ __('client.review.fields.comment_placeholder') }}"
+                            class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('comment') ? 'is-invalid' : 'border-border' }}">{{ old('comment') }}</textarea>
+                        @error('comment')
+                            <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <p class="text-xs text-muted-foreground">{{ __('client.review.pending_note') }}</p>
+
+                    <div class="flex justify-end">
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            {{ __('client.review.submit') }}
+                        </button>
+                    </div>
+                </form>
+            @else
+                <p class="text-sm text-muted-foreground bg-muted/40 border border-border rounded-xl p-4 mb-6">
+                    <i class="fa-solid fa-circle-info text-primary mr-1.5"></i>{{ __('client.review.purchase_prompt') }}
+                </p>
+            @endif
+        @else
+            <p class="text-sm text-muted-foreground bg-muted/40 border border-border rounded-xl p-4 mb-6">
+                <i class="fa-solid fa-circle-info text-primary mr-1.5"></i>
+                <a href="{{ route('auth.client.showFormLogin') }}" class="text-primary font-medium hover:underline">
+                    {{ __('common.actions.login') }}</a>
+                — {{ __('client.review.login_prompt') }}
+            </p>
+        @endauth
+
+        @if ($reviews->isEmpty())
+            <p class="py-10 text-center text-sm text-muted-foreground">{{ __('client.review.empty') }}</p>
+        @else
+            <div class="space-y-5">
+                @foreach ($reviews as $review)
+                    <div class="flex gap-4 pb-5 border-b border-border last:border-0 last:pb-0">
+                        <span class="w-10 h-10 shrink-0 rounded-full bg-primary/10 text-primary font-semibold flex items-center justify-center">
+                            {{ Str::upper(Str::substr($review->user?->fullname ?? '?', 0, 1)) }}
+                        </span>
+
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="font-medium text-foreground">{{ $review->user?->fullname }}</span>
+                                @if ($review->order_id)
+                                    <span class="px-2 py-0.5 text-[11px] font-medium bg-green-100 text-green-700 rounded-full">
+                                        <i class="fa-solid fa-circle-check"></i> {{ __('client.review.verified') }}
+                                    </span>
+                                @endif
+                                <span class="text-xs text-muted-foreground">{{ $review->created_at?->format('d/m/Y') }}</span>
+                            </div>
+
+                            @include('components.rating', ['rating' => $review->rating, 'showValue' => false])
+
+                            @if ($review->title)
+                                <p class="font-medium text-foreground mt-2">{{ $review->title }}</p>
+                            @endif
+
+                            @if ($review->comment)
+                                <p class="text-sm text-muted-foreground mt-1 leading-relaxed">{{ $review->comment }}</p>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @include('components.pagination', ['paginator' => $reviews->withQueryString()])
+        @endif
+    </section>
 
     @if ($relatedProducts->isNotEmpty())
         <section class="mb-12">
@@ -238,6 +428,32 @@
                     $('#discount-badge').addClass('hidden');
                 }
             });
+
+            $('#write-review-btn').on('click', function() {
+                $('#review-form').removeClass('hidden');
+                $('html, body').animate({ scrollTop: $('#review-form').offset().top - 100 }, 300);
+            });
+
+            $('#rating-picker').on('mouseleave', function() {
+                paintStars($('.rating-input:checked').val() || 0);
+            });
+
+            $('#rating-picker i').on('mouseenter', function() {
+                paintStars($(this).data('star'));
+            });
+
+            $('.rating-input').on('change', function() {
+                paintStars($(this).val());
+            });
+
+            function paintStars(upTo) {
+                $('#rating-picker i').each(function() {
+                    $(this).toggleClass('text-amber-400', $(this).data('star') <= upTo)
+                        .toggleClass('text-muted-foreground/30', $(this).data('star') > upTo);
+                });
+            }
+
+            paintStars($('.rating-input:checked').val() || 0);
 
             function formatPrice(value) {
                 return new Intl.NumberFormat('vi-VN').format(value) + 'đ';

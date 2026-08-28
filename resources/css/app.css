@@ -8,14 +8,30 @@
 
 :root {
     --primary: 221 83% 53%;
+    --primary-hover: 221 83% 46%;
     --primary-fg: 0 0% 100%;
-    --background: 260 100% 99%;
+    --primary-soft: 221 83% 96%;
+
+    --accent: 16 90% 55%;
+    --success: 152 60% 40%;
+    --warning: 38 92% 50%;
+    --danger: 0 72% 51%;
+
+    --background: 220 33% 98%;
     --foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-fg: 215 16% 47%;
-    --border: 214 32% 91%;
+    --muted: 220 20% 95%;
+    --muted-fg: 220 12% 46%;
+    --border: 220 18% 90%;
     --card: 0 0% 100%;
-    --radius: 0.625rem;
+
+    --radius: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
+
+    --shadow-xs: 0 1px 2px 0 rgb(16 24 40 / 0.04);
+    --shadow-sm: 0 1px 3px 0 rgb(16 24 40 / 0.08), 0 1px 2px -1px rgb(16 24 40 / 0.04);
+    --shadow-md: 0 4px 12px -2px rgb(16 24 40 / 0.08), 0 2px 6px -2px rgb(16 24 40 / 0.04);
+    --shadow-lg: 0 12px 28px -6px rgb(16 24 40 / 0.12), 0 4px 10px -4px rgb(16 24 40 / 0.06);
 }
 
 @theme {
@@ -28,7 +44,7 @@
     --color-muted-foreground: hsl(var(--muted-fg));
     --color-border: hsl(var(--border));
     --color-card: hsl(var(--card));
-    --color-light-bg: hsl(210 40% 98%);
+    --color-light-bg: hsl(220 33% 98%);
 }
 
 body.bg-background-light {
@@ -113,4 +129,76 @@ a:focus-visible {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.011em;
+}
+
+h1, h2, h3 {
+    letter-spacing: -0.022em;
+}
+
+.card-surface {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-interactive {
+    transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+}
+
+.card-interactive:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: hsl(var(--primary) / 0.35);
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-fg));
+    box-shadow: 0 1px 2px 0 rgb(16 24 40 / 0.06);
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-primary:hover {
+    background: hsl(var(--primary-hover));
+    box-shadow: var(--shadow-md);
+}
+
+.price-main {
+    color: hsl(var(--danger));
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.badge-sale {
+    background: linear-gradient(135deg, hsl(var(--danger)), hsl(var(--accent)));
+    color: #fff;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(220 20% 92%) 37%, hsl(var(--muted)) 63%);
+    background-size: 400% 100%;
+    animation: skeleton 1.4s ease infinite;
+}
+
+@keyframes skeleton {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+::selection {
+    background: hsl(var(--primary) / 0.18);
+}
+
+.admin-table thead tr {
+    background: linear-gradient(180deg, hsl(221 83% 53%), hsl(221 83% 48%));
+}
+
+.admin-table tbody tr {
+    transition: background-color 0.15s ease;
 }

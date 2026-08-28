@@ -3,6 +3,7 @@
 namespace App\Services\Client;
 
 use App\Const\OrderConst;
+use App\Const\PaymentConst;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -41,6 +42,7 @@ class OrderService
                 'note' => $params['note'] ?? null,
                 'total_amount' => max($subtotal - $discount, 0),
                 'status' => OrderConst::STATUS_PENDING,
+                'payment_method' => (int) ($params['payment_method'] ?? PaymentConst::METHOD_COD),
                 'is_paid' => false,
             ], $this->couponSnapshot($coupon, $discount)));
 

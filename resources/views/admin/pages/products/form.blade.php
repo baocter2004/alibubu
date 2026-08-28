@@ -16,6 +16,10 @@
         ])->all()
         : ($values['variants'] ?? []);
     $variantRows = old('variants', $existingVariants);
+    $existingSpecs = $isEdit
+        ? $product->specifications->map(fn($sp) => ['id' => $sp->id, 'group' => $sp->group, 'name' => $sp->name, 'value' => $sp->value])->all()
+        : ($values['specifications'] ?? []);
+    $specRows = old('specifications', $existingSpecs);
 @endphp
 
 <form
@@ -200,6 +204,34 @@
     </section>
 
     <section>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 mb-5 border-b border-gray-200">
+            <div>
+                <h2 class="text-base font-semibold text-gray-900">{{ __('admin/product.spec.section') }}</h2>
+                <p class="text-xs text-gray-500 mt-0.5">{{ __('admin/product.spec.description') }}</p>
+            </div>
+            <button type="button" id="add-spec-btn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fa-solid fa-plus"></i>
+                {{ __('admin/product.spec.add') }}
+            </button>
+        </div>
+
+        <div id="spec-list" class="space-y-3">
+            @foreach ($specRows as $index => $spec)
+                @include('admin.pages.products.spec-row', ['index' => $index, 'spec' => $spec])
+            @endforeach
+        </div>
+
+        <p id="spec-empty" class="{{ count($specRows) ? 'hidden' : '' }} py-8 text-center text-sm text-gray-500">
+            {{ __('admin/product.spec.empty') }}
+        </p>
+
+        <template id="spec-template">
+            @include('admin.pages.products.spec-row', ['index' => 'INDEX', 'spec' => []])
+        </template>
+    </section>
+
+    <section>
         <h2 class="text-base font-semibold text-gray-900 pb-2 mb-5 border-b border-gray-200">
             {{ __('admin/product.sections.media') }}
         </h2>
@@ -298,6 +330,25 @@
             $('.product-type-option').on('change', toggleTypeSections);
 
             refreshVariantState();
+
+            let specIndex = {{ count($specRows) }};
+
+            function refreshSpecState() {
+                $('#spec-empty').toggleClass('hidden', $('#spec-list .spec-item').length > 0);
+            }
+
+            $('#add-spec-btn').on('click', function() {
+                $('#spec-list').append($('#spec-template').html().replace(/INDEX/g, specIndex));
+                specIndex += 1;
+                refreshSpecState();
+            });
+
+            $(document).on('click', '.remove-spec-btn', function() {
+                $(this).closest('.spec-item').remove();
+                refreshSpecState();
+            });
+
+            refreshSpecState();
         });
     </script>
 @endpush

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
@@ -45,6 +46,13 @@ Route::prefix('/admin')
                     Route::delete('/{id}', 'destroy')->name('destroy');
                 });
         }
+
+        Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/{id}/approve', 'approve')->name('approve');
+            Route::post('/{id}/reject', 'reject')->name('reject');
+            Route::delete('/{id}', 'destroy')->name('destroy');
+        });
 
         Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group(function () {
             Route::get('/', 'index')->name('index');

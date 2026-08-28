@@ -10,7 +10,7 @@
 @endphp
 
 <article
-    class="group relative flex flex-col bg-card border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40">
+    class="group relative flex flex-col card-surface card-interactive overflow-hidden">
     <a href="{{ $url }}" class="relative block aspect-square bg-white overflow-hidden">
         @if ($product->thumbnail)
             <img src="{{ Storage::disk('public')->url($product->thumbnail) }}" alt="{{ $product->name }}"
@@ -22,9 +22,9 @@
             </span>
         @endif
 
-        <span class="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">
+        <span class="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start z-10">
             @if ($discount > 0)
-                <span class="px-2 py-0.5 text-[11px] font-bold bg-red-500 text-white rounded-full shadow-sm">
+                <span class="px-2 py-0.5 text-[11px] font-bold badge-sale rounded-full shadow-sm">
                     -{{ $discount }}%
                 </span>
             @endif
@@ -65,7 +65,7 @@
         </div>
 
         <div class="flex flex-wrap items-baseline gap-2 mb-3 mt-auto">
-            <span class="text-lg font-bold text-primary">{{ format_price($price) }}</span>
+            <span class="text-lg price-main">{{ format_price($price) }}</span>
             @if ($discount > 0)
                 <span class="text-xs text-muted-foreground line-through">{{ format_price($base) }}</span>
             @endif
@@ -88,7 +88,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit"
-                    class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                    class="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold btn-primary rounded-xl">
                     <i class="fa-solid fa-cart-plus"></i>
                     {{ __('client.product.add_to_cart') }}
                 </button>

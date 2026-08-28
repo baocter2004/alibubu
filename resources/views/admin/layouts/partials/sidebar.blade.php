@@ -20,6 +20,7 @@
             'label' => __('admin/nav.groups.sales'),
             'items' => [
                 ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders')],
+                ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews')],
                 ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons'],
             ],
         ],

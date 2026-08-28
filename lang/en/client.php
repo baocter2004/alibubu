@@ -147,6 +147,43 @@ return [
         ],
     ],
 
+    'review' => [
+        'title' => 'Customer reviews',
+        'subtitle' => ':count reviews',
+        'empty' => 'No review yet. Be the first to review this product.',
+        'write' => 'Write a review',
+        'submit' => 'Submit review',
+        'login_prompt' => 'Sign in and buy this product to leave a review.',
+        'purchase_prompt' => 'Only customers who completed an order for this product can review it.',
+        'pending_note' => 'Your review will appear once approved.',
+        'verified' => 'Verified purchase',
+        'average' => 'Average rating',
+        'fields' => [
+            'rating' => 'Your rating',
+            'title' => 'Title',
+            'title_placeholder' => 'Sum up your experience',
+            'comment' => 'Your review',
+            'comment_placeholder' => 'What did you like or dislike?',
+        ],
+        'messages' => [
+            'submitted' => 'Thank you! Your review was submitted and is awaiting approval.',
+            'already_reviewed' => 'You have already reviewed this product.',
+            'not_purchased' => 'You can only review a product you have received.',
+        ],
+    ],
+
+    'wishlist' => [
+        'title' => 'Wishlist',
+        'subtitle' => 'Products you saved for later.',
+        'empty' => 'Your wishlist is empty.',
+        'add' => 'Save to wishlist',
+        'remove' => 'Remove from wishlist',
+        'messages' => [
+            'added' => 'Saved to your wishlist.',
+            'removed' => 'Removed from your wishlist.',
+        ],
+    ],
+
     'cart' => [
         'title' => 'Your cart',
         'breadcrumb' => 'Cart',
@@ -157,6 +194,14 @@ return [
         'clear' => 'Clear cart',
         'remove' => 'Remove',
         'line_total' => 'Line total',
+        'method_cod_desc' => 'Pay in cash when the order arrives.',
+        'method_bank_desc' => 'Transfer to our bank account, we ship after confirmation.',
+        'bank_details' => 'Transfer details',
+        'bank_name' => 'Bank',
+        'bank_account' => 'Account number',
+        'bank_holder' => 'Account holder',
+        'bank_note' => 'Transfer note',
+        'bank_note_hint' => 'Use your order code as the transfer note.',
         'summary' => 'Order summary',
         'subtotal' => 'Subtotal',
         'shipping' => 'Shipping',
@@ -230,6 +275,7 @@ return [
         'nav' => [
             'profile' => 'Profile',
             'orders' => 'My orders',
+            'wishlist' => 'Wishlist',
             'addresses' => 'Address book',
         ],
         'profile' => [

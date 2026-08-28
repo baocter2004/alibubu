@@ -25,6 +25,7 @@ class Product extends Model
         'slug',
         'views',
         'rating',
+        'reviews_count',
         'stock',
         'sold',
         'short_descriptions',
@@ -52,6 +53,7 @@ class Product extends Model
         return [
             'views' => 'integer',
             'rating' => 'decimal:2',
+            'reviews_count' => 'integer',
             'stock' => 'integer',
             'sold' => 'integer',
             'type' => 'integer',
@@ -90,6 +92,21 @@ class Product extends Model
     public function galleries(): HasMany
     {
         return $this->hasMany(ProductGallery::class);
+    }
+
+    public function specifications(): HasMany
+    {
+        return $this->hasMany(ProductSpecification::class)->orderBy('ordinal');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->reviews()->where('is_approved', true)->latest('id');
     }
 
     public function accessories(): BelongsToMany
@@ -132,6 +149,19 @@ class Product extends Model
         }
 
         return (int) round((($base - $effective) / $base) * 100);
+    }
+
+    public function refreshRating(): void
+    {
+        $stats = $this->reviews()
+            ->where('is_approved', true)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        $this->forceFill([
+            'rating' => round((float) ($stats->avg_rating ?? 0), 2),
+            'reviews_count' => (int) ($stats->total ?? 0),
+        ])->saveQuietly();
     }
 
     public function inStock(): bool

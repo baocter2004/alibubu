@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Const\GlobalConst;
 use App\Const\ProductConst;
 use App\Models\Product;
+use App\Models\ProductSpecification;
 use App\Models\ProductVariant;
 use App\Repositories\ProductRepository;
 use App\Services\BaseCrudService;
@@ -100,6 +101,7 @@ class ProductService extends BaseCrudService
             'is_trending' => false,
             'is_active' => GlobalConst::IS_ACTIVE,
             'variants' => [],
+            'specifications' => [],
         ], $validated);
 
         $data['id'] = $id;
@@ -108,6 +110,8 @@ class ProductService extends BaseCrudService
         $data['variants'] = (int) $data['type'] === ProductConst::VARIANT
             ? $this->normalizeVariants($data['variants'])
             : [];
+
+        $data['specifications'] = $this->normalizeSpecifications($data['specifications']);
 
         if (! empty($validated['thumbnail']) && $validated['thumbnail'] instanceof UploadedFile) {
             if (! empty($oldSessionData['thumbnail']) && $oldSessionData['thumbnail'] !== ($oldSessionData['persisted_thumbnail'] ?? null)) {
@@ -131,6 +135,16 @@ class ProductService extends BaseCrudService
         return $data;
     }
 
+    protected function normalizeSpecifications(array $specs): array
+    {
+        return array_values(array_filter(array_map(fn ($spec) => array_merge([
+            'id' => null,
+            'group' => null,
+            'name' => null,
+            'value' => null,
+        ], $spec), $specs), fn ($spec) => ! empty($spec['name']) && ! empty($spec['value'])));
+    }
+
     protected function normalizeVariants(array $variants): array
     {
         return array_values(array_map(fn ($variant) => array_merge([
@@ -152,6 +166,7 @@ class ProductService extends BaseCrudService
                 $product = parent::create($this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
+                $this->syncSpecifications($product, $params['specifications'] ?? []);
 
                 return $product;
             });
@@ -176,6 +191,7 @@ class ProductService extends BaseCrudService
                 $product = parent::update($id, $this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
+                $this->syncSpecifications($product, $params['specifications'] ?? []);
 
                 return $product;
             });
@@ -246,6 +262,7 @@ class ProductService extends BaseCrudService
             $product->categories()->detach();
             $product->tags()->detach();
             $product->galleries()->delete();
+            $product->specifications()->delete();
             $product->variants()->delete();
 
             return parent::forceDelete($id);
@@ -305,6 +322,34 @@ class ProductService extends BaseCrudService
             });
     }
 
+    protected function syncSpecifications(Product $product, array $specs): void
+    {
+        $keptIds = [];
+
+        foreach ($specs as $index => $spec) {
+            $attributes = [
+                'group' => $spec['group'] ?: null,
+                'name' => $spec['name'],
+                'value' => $spec['value'],
+                'ordinal' => $index,
+            ];
+
+            $model = ! empty($spec['id'])
+                ? $product->specifications()->whereKey($spec['id'])->first()
+                : null;
+
+            if ($model) {
+                $model->update($attributes);
+            } else {
+                $model = ProductSpecification::create(array_merge($attributes, ['product_id' => $product->id]));
+            }
+
+            $keptIds[] = $model->id;
+        }
+
+        $product->specifications()->whereNotIn('id', $keptIds)->delete();
+    }
+
     protected function generateVariantSku(Product $product, int $index): string
     {
         $base = $product->sku ?: Str::upper(Str::substr($product->slug, 0, 12));
@@ -318,7 +363,7 @@ class ProductService extends BaseCrudService
 
     protected function productAttributes(array $params): array
     {
-        $attributes = Arr::except($params, ['id', 'category_ids', 'persisted_thumbnail', 'variants']);
+        $attributes = Arr::except($params, ['id', 'category_ids', 'persisted_thumbnail', 'variants', 'specifications']);
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {
