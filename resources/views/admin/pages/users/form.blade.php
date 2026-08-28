@@ -1,334 +1,294 @@
-<form action="{{ $formAction }}" method="POST" enctype="multipart/form-data">
+@php
+    $maxAddresses = 5;
+    $currentAddresses = ! empty($user)
+        ? $user->userAddresses->toArray()
+        : (old('user_addresses') ?? ($data['user_addresses'] ?? [[]]));
+
+    $hasDefault = false;
+    foreach ($currentAddresses as &$addr) {
+        $addr['is_default'] = ! $hasDefault && ! empty($addr['is_default']);
+        $hasDefault = $hasDefault || $addr['is_default'];
+    }
+    unset($addr);
+@endphp
+
+<form action="{{ $formAction }}" method="POST" enctype="multipart/form-data" class="space-y-8">
     @csrf
-    {{-- Thông Tin Cơ Bản --}}
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-            1
-        </div>
-        <div>
-            <h2 class="text-lg font-semibold text-gray-800">
-                Thông Tin Cơ Bản
-            </h2>
-            <p class="text-sm text-gray-500">
-                Nhập thông tin cá nhân của người dùng
-            </p>
-        </div>
-    </div>
-    <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @include('components.input', [
-                'name' => 'fullname',
-                'required' => true,
-                'label' => 'Họ Và Tên',
-                'placeholder' => 'Mời nhập họ và tên',
-                'value' => $user->fullname ?? ($data['fullname'] ?? ''),
-                'icon' => 'user-tag',
-            ])
-            @include('components.input', [
-                'name' => 'email',
-                'required' => true,
-                'label' => 'Email',
-                'placeholder' => 'Mời nhập email',
-                'value' => $user->email ?? ($data['email'] ?? ''),
-                'icon' => 'envelope',
-            ])
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            @include('components.input', [
-                'name' => 'phone_number',
-                'required' => true,
-                'label' => 'Số Điện Thoại',
-                'placeholder' => 'Mời nhập số điện thoại',
-                'value' => $user->phone_number ?? ($data['phone_number'] ?? ''),
-                'icon' => 'phone',
-            ])
-        </div>
+    <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">1</span>
+            <span>
+                <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.basic') }}</span>
+                <span class="block text-sm text-gray-500">{{ __('admin/user.sections.basic_hint') }}</span>
+            </span>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @include('components.input', [
-                'name' => 'password',
-                'label' => 'Mật khẩu',
-                'type' => 'password',
-                'required' => empty($user->id),
-                'placeholder' => '********************',
-                'icon' => 'lock',
-            ])
+        <div class="p-5 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                @include('components.input', [
+                    'name' => 'fullname',
+                    'required' => true,
+                    'label' => __('admin/user.fields.fullname'),
+                    'value' => $user->fullname ?? ($data['fullname'] ?? ''),
+                    'icon' => 'user-tag',
+                ])
 
-            @include('components.input', [
-                'name' => 'password_confirmation',
-                'label' => 'Xác nhận mật khẩu',
-                'type' => 'password',
-                'required' => empty($user->id),
-                'placeholder' => '********************',
-                'icon' => 'lock',
-            ])
-        </div>
-
-        @if (!empty($user))
-            <div class="text-sm font-medium text-gray-700">
-                <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i>
-                Nếu không muốn thay đổi mật khẩu, hãy để trống 2 trường mật khẩu ở trên.
+                @include('components.input', [
+                    'name' => 'email',
+                    'required' => true,
+                    'label' => __('admin/user.fields.email'),
+                    'value' => $user->email ?? ($data['email'] ?? ''),
+                    'icon' => 'envelope',
+                ])
             </div>
-        @endif
-    </div>
 
-    {{-- // Thông Tin Cá Nhân --}}
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-            2
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                @include('components.input', [
+                    'name' => 'phone_number',
+                    'required' => true,
+                    'label' => __('admin/user.fields.phone_number'),
+                    'value' => $user->phone_number ?? ($data['phone_number'] ?? ''),
+                    'icon' => 'phone',
+                ])
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                @include('components.input', [
+                    'name' => 'password',
+                    'label' => __('admin/user.fields.password'),
+                    'type' => 'password',
+                    'required' => empty($user->id),
+                    'icon' => 'lock',
+                ])
+
+                @include('components.input', [
+                    'name' => 'password_confirmation',
+                    'label' => __('admin/user.fields.password_confirmation'),
+                    'type' => 'password',
+                    'required' => empty($user->id),
+                    'icon' => 'lock',
+                ])
+            </div>
+
+            @if (! empty($user))
+                <p class="flex items-start gap-2 text-sm text-gray-600 bg-amber-50 border border-amber-100 rounded-lg p-3">
+                    <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
+                    {{ __('admin/user.hints.password_optional') }}
+                </p>
+            @endif
         </div>
-        <div>
-            <h2 class="text-lg font-semibold text-gray-800">
-                Thông Tin Cá Nhân
-            </h2>
-            <p class="text-sm text-gray-500">
-                Thông tin bổ sung
-            </p>
-        </div>
-    </div>
-    <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    </section>
+
+    <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">2</span>
+            <span>
+                <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.personal') }}</span>
+                <span class="block text-sm text-gray-500">{{ __('admin/user.sections.personal_hint') }}</span>
+            </span>
+        </header>
+
+        <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
             @include('components.select', [
                 'name' => 'gender',
-                'label' => 'Giới tính',
+                'label' => __('admin/user.fields.gender'),
                 'icon' => 'venus-mars',
-                'placeholder' => 'Chọn giới tính',
+                'placeholder' => __('common.labels.none'),
                 'value' => $user->gender ?? ($data['gender'] ?? ''),
                 'options' => \App\Const\UserConst::genders(),
             ])
 
             @include('components.date', [
                 'name' => 'birthday',
-                'label' => 'Ngày sinh',
-                'placeholder' => '10/04/2004',
+                'label' => __('admin/user.fields.birthday'),
                 'value' => $user->birthday ?? ($data['birthday'] ?? ''),
             ])
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @include('components.select', [
                 'name' => 'role',
-                'label' => 'Vai trò',
+                'label' => __('admin/user.fields.role'),
                 'icon' => 'user-shield',
-                'value' => $user->role ?? ($data['role'] ?? ''),
+                'required' => true,
+                'value' => $user->role ?? ($data['role'] ?? \App\Const\UserConst::ROLE_USER),
                 'options' => \App\Const\UserConst::roles(),
             ])
 
             @include('components.select', [
                 'name' => 'status',
-                'label' => 'Trạng thái',
+                'label' => __('admin/user.fields.status'),
                 'icon' => 'toggle-on',
-                'value' => $user->status ?? ($data['status'] ?? ''),
+                'required' => true,
+                'value' => $user->status ?? ($data['status'] ?? \App\Const\UserConst::STATUS_ACTIVE),
                 'options' => \App\Const\UserConst::statuses(),
             ])
         </div>
-    </div>
+    </section>
 
-    {{-- // Địa chỉ Nhận Hàng --}}
-    <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-                3
-            </div>
-            <div>
-                <h2 class="text-lg font-semibold text-gray-800">Địa Chỉ Nhận Hàng</h2>
-                <p class="text-sm text-gray-500">Tối đa 5 địa chỉ (<span id="address-count">0</span>/5)</p>
-            </div>
-        </div>
-        <button type="button" id="add-address-btn"
-            class="flex items-center px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-all">
-            <i class="fa-solid fa-plus mr-1"></i> Thêm địa chỉ
-        </button>
-    </div>
-
-    <div
-        class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4 {{ $errors->has('user_addresses') ? 'is-invalid bg-red-100 border-red-500' : '' }}">
-        @php
-            $currentAddresses = [];
-
-            if (!empty($user)) {
-                $currentAddresses = $user->userAddresses->toArray();
-            } else {
-                $currentAddresses = old('user_addresses') ?? ($data['user_addresses'] ?? [[]]);
-            }
-
-            $hasDefault = false;
-            foreach ($currentAddresses as $i => &$addr) {
-                if (!empty($addr['is_default']) && !$hasDefault) {
-                    $addr['is_default'] = true;
-                    $hasDefault = true;
-                } else {
-                    $addr['is_default'] = false;
-                }
-            }
-        @endphp
-
-        <div id="address-container" class="space-y-4 mb-12">
-            @foreach ($currentAddresses as $index => $address)
-                @include('components.address-form', [
-                    'index' => $index,
-                    'provinces' => $provinces,
-                ])
-            @endforeach
-        </div>
-
-        <template id="address-template">
-            @include('components.address-form', [
-                'index' => 'INDEX',
-                'provinces' => $provinces,
-                'address' => [],
-            ])
-        </template>
-
-        <div class="text-center">
-            <i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-1"></i>
-            <span class="text-sm font-medium text-gray-700">
-                Lưu ý: Nếu có nhiều hơn 1 địa chỉ, vui lòng chọn 1 địa chỉ mặc định để làm địa chỉ nhận hàng chính.
+    <section
+        class="bg-white rounded-xl shadow-sm border overflow-hidden {{ $errors->has('user_addresses') ? 'border-red-300' : 'border-gray-100' }}">
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+            <span class="flex items-center gap-3">
+                <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">3</span>
+                <span>
+                    <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.address') }}</span>
+                    <span id="address-hint" class="block text-sm text-gray-500">
+                        {{ __('admin/user.sections.address_hint', ['max' => $maxAddresses, 'count' => count($currentAddresses)]) }}
+                    </span>
+                </span>
             </span>
-        </div>
 
-        @if ($errors->has('user_addresses'))
-            <div class="mt-2 p-2 bg-red-100 border text-center border-red-500 text-red-800 rounded-lg is-invalid">
-                {{ $errors->first('user_addresses') }}
+            <button type="button" id="add-address-btn"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fa-solid fa-plus"></i>
+                {{ __('admin/user.address.add') }}
+            </button>
+        </header>
+
+        <div class="p-5 space-y-4">
+            <div id="address-container" class="space-y-4">
+                @foreach ($currentAddresses as $index => $address)
+                    @include('components.address-form', ['index' => $index, 'provinces' => $provinces])
+                @endforeach
             </div>
-        @endif
-    </div>
 
-    {{-- // Thông Tin Ngân hàng --}}
-    <div class="flex items-center gap-3 mb-4">
-        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-semibold">
-            4
-        </div>
-        <div>
-            <h2 class="text-lg font-semibold text-gray-800">
-                Thông Tin Ngân Hàng
-            </h2>
-            <p class="text-sm text-gray-500">
-                Không bắt buộc
+            <template id="address-template">
+                @include('components.address-form', [
+                    'index' => 'INDEX',
+                    'provinces' => $provinces,
+                    'address' => [],
+                ])
+            </template>
+
+            <p class="flex items-start gap-2 text-sm text-gray-600 bg-amber-50 border border-amber-100 rounded-lg p-3">
+                <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
+                {{ __('admin/user.hints.default_address') }}
             </p>
+
+            @error('user_addresses')
+                <p class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">{{ $message }}</p>
+            @enderror
         </div>
-    </div>
-    <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg space-y-4">
-        @include('components.select', [
-            'name' => 'bank_name',
-            'label' => 'Tên ngân hàng',
-            'icon' => 'building-columns',
-            'options' => \App\Const\BankConst::getOptions(),
-            'value' => $user->bank_name ?? ($data['bank_name'] ?? ''),
-            'placeholder' => '-- Chọn ngân hàng --',
-            'required' => true,
-        ])
+    </section>
 
-        @include('components.input', [
-            'name' => 'user_bank_name',
-            'label' => 'Tên chủ tài khoản',
-            'icon' => 'user',
-            'value' => $user->user_bank_name ?? ($data['user_bank_name'] ?? ''),
-        ])
+    <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">4</span>
+            <span>
+                <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.bank') }}</span>
+                <span class="block text-sm text-gray-500">{{ __('admin/user.sections.bank_hint') }}</span>
+            </span>
+        </header>
 
-        @include('components.input', [
-            'name' => 'bank_account',
-            'label' => 'Số tài khoản',
-            'icon' => 'credit-card',
-            'value' => $user->bank_account ?? ($data['bank_account'] ?? ''),
-        ])
-    </div>
+        <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-5">
+            @include('components.select', [
+                'name' => 'bank_name',
+                'label' => __('admin/user.fields.bank_name'),
+                'icon' => 'building-columns',
+                'options' => \App\Const\BankConst::getOptions(),
+                'value' => $user->bank_name ?? ($data['bank_name'] ?? ''),
+                'placeholder' => __('common.labels.none'),
+            ])
 
-    <div class="w-full p-4 mt-4 bg-white rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+            @include('components.input', [
+                'name' => 'user_bank_name',
+                'label' => __('admin/user.fields.user_bank_name'),
+                'icon' => 'user',
+                'value' => $user->user_bank_name ?? ($data['user_bank_name'] ?? ''),
+            ])
 
-        <!-- Back -->
+            @include('components.input', [
+                'name' => 'bank_account',
+                'label' => __('admin/user.fields.bank_account'),
+                'icon' => 'credit-card',
+                'value' => $user->bank_account ?? ($data['bank_account'] ?? ''),
+            ])
+        </div>
+    </section>
+
+    <div class="flex flex-col sm:flex-row justify-end gap-3">
         <a href="{{ route('admin.users.index') }}"
-            class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
-
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
             <i class="fa-solid fa-arrow-left"></i>
-            Quay Lại Danh Sách
+            {{ __('admin/user.buttons.back_to_list') }}
         </a>
 
-        <!-- Submit -->
         <button type="submit"
-            class="w-full flex justify-center items-center gap-2 p-2 md:p-4 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            <i class="fa-solid fa-plus"></i>
-            {{ empty($user->id) ? 'Tạo Người Dùng' : 'Cập Nhật Thông Tin' }}
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+            <i class="fa-solid fa-arrow-right"></i>
+            {{ __('common.actions.confirm') }}
         </button>
-
     </div>
 </form>
 
 @once
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('address-container');
-                const template = document.getElementById('address-template').innerHTML;
-                const addBtn = document.getElementById('add-address-btn');
-                const countSpan = document.getElementById('address-count');
+            $(function() {
+                const MAX = {{ $maxAddresses }};
+                const HINT = @json(__('admin/user.sections.address_hint', ['max' => $maxAddresses, 'count' => ':n']));
+                const LOADING = @json(__('admin/user.hints.loading'));
+                const LOAD_FAILED = @json(__('admin/user.hints.load_failed'));
+                const SELECT_WARD = @json(__('admin/user.address.select_ward'));
 
-                function updateUI() {
-                    const items = container.querySelectorAll('.address-item');
-                    countSpan.innerText = items.length;
-                    addBtn.style.display = items.length >= 5 ? 'none' : 'inline-flex';
+                const $container = $('#address-container');
+                const template = $('#address-template').html();
+
+                function refresh() {
+                    const count = $container.find('.address-item').length;
+                    $('#address-hint').text(HINT.replace(':n', count));
+                    $('#add-address-btn').toggle(count < MAX);
+
+                    $container.find('.address-item').each(function(position) {
+                        $(this).find('.remove-address-btn').toggle(count > 1);
+                        $(this).find('.address-title').text(position + 1);
+                    });
                 }
 
-                // 1. Thêm địa chỉ
-                addBtn.addEventListener('click', function() {
-                    if (container.querySelectorAll('.address-item').length < 5) {
-                        const index = Date.now(); // Tạo index duy nhất
-                        const html = template.replace(/INDEX/g, index);
-                        container.insertAdjacentHTML('beforeend', html);
-                        updateUI();
+                $('#add-address-btn').on('click', function() {
+                    if ($container.find('.address-item').length >= MAX) {
+                        return;
                     }
+
+                    $container.append(template.replace(/INDEX/g, Date.now()));
+                    refresh();
                 });
 
-                // 2. Xóa địa chỉ
-                container.addEventListener('click', function(e) {
-                    if (e.target.closest('.remove-address-btn')) {
-                        e.target.closest('.address-item').remove();
-                        updateUI();
-                    }
+                $container.on('click', '.remove-address-btn', function() {
+                    $(this).closest('.address-item').remove();
+                    refresh();
                 });
 
-                // 3. Load Phường/Xã khi chọn Tỉnh
-                container.addEventListener('change', async function(e) {
-                    if (e.target.classList.contains('province-select')) {
-                        const provinceId = e.target.value;
-                        const wardSelect = e.target.closest('.address-item').querySelector('.ward-select');
+                $container.on('change', '.province-select', function() {
+                    const provinceId = $(this).val();
+                    const $ward = $(this).closest('.address-item').find('.ward-select');
 
-                        console.log(provinceId)
+                    $ward.prop('disabled', true).html(`<option value="">${LOADING}</option>`);
 
-                        wardSelect.innerHTML = '<option value="">Đang tải...</option>';
-                        wardSelect.disabled = true;
-
-                        if (provinceId) {
-                            try {
-                                const res = await fetch(`/api/get-wards/${provinceId}`);
-                                const wards = await res.json();
-                                console.log(wards)
-
-                                let options = '<option value="">-- Chọn xã --</option>';
-                                wards.forEach(w => options += `<option value="${w.id}">${w.name}</option>`);
-                                wardSelect.innerHTML = options;
-                                wardSelect.disabled = false;
-                            } catch (err) {
-                                wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
-                            }
-                        }
+                    if (!provinceId) {
+                        $ward.html(`<option value="">${SELECT_WARD}</option>`);
+                        return;
                     }
-                });
 
-                // 4. Chỉ cho phép chọn 1 địa chỉ mặc định
-                container.addEventListener('change', function(e) {
-                    if (e.target.classList.contains('address-default-checkbox') && e.target.checked) {
-                        container.querySelectorAll('.address-default-checkbox').forEach(cb => {
-                            if (cb !== e.target) cb.checked = false;
+                    $.getJSON(`/api/get-wards/${provinceId}`)
+                        .done(function(wards) {
+                            let options = `<option value="">${SELECT_WARD}</option>`;
+                            wards.forEach(w => options += `<option value="${w.id}">${w.name}</option>`);
+                            $ward.html(options).prop('disabled', false);
+                        })
+                        .fail(function() {
+                            $ward.html(`<option value="">${LOAD_FAILED}</option>`);
                         });
+                });
+
+                $container.on('change', '.address-default-checkbox', function() {
+                    if ($(this).is(':checked')) {
+                        $container.find('.address-default-checkbox').not(this).prop('checked', false);
                     }
                 });
 
-                updateUI(); // Khởi tạo số lượng lúc đầu
+                refresh();
             });
         </script>
     @endpush
-
 @endonce

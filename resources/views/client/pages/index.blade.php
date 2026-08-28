@@ -98,7 +98,7 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($featuredProducts as $product)
-                    <x-product-card :product="$product" />
+                    @include('components.product-card', ['product' => $product])
                 @endforeach
             </div>
         </section>
@@ -119,7 +119,7 @@
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($trendingProducts as $product)
-                    <x-product-card :product="$product" />
+                    @include('components.product-card', ['product' => $product])
                 @endforeach
             </div>
         </section>

@@ -13,7 +13,34 @@ return [
     'subtitle' => [
         'index' => 'Quản lý toàn bộ tài khoản trong hệ thống.',
         'trash' => 'Khôi phục hoặc xoá vĩnh viễn tài khoản đã xoá.',
+        'create' => 'Điền đầy đủ thông tin để tạo tài khoản mới.',
+        'edit' => 'Cập nhật thông tin cho tài khoản này.',
+        'show' => 'Thông tin chi tiết của tài khoản.',
         'confirm' => 'Vui lòng kiểm tra lại thông tin trước khi lưu.',
+    ],
+
+    'sections' => [
+        'basic' => 'Thông tin tài khoản',
+        'basic_hint' => 'Thông tin đăng nhập và liên hệ.',
+        'personal' => 'Thông tin cá nhân',
+        'personal_hint' => 'Thông tin hồ sơ bổ sung.',
+        'address' => 'Địa chỉ nhận hàng',
+        'address_hint' => 'Tối đa :max địa chỉ (:count/:max).',
+        'bank' => 'Thông tin ngân hàng',
+        'bank_hint' => 'Không bắt buộc.',
+    ],
+
+    'hints' => [
+        'password_optional' => 'Để trống cả hai ô mật khẩu nếu không muốn thay đổi.',
+        'default_address' => 'Nếu có nhiều hơn một địa chỉ, hãy chọn một địa chỉ mặc định.',
+        'loading' => 'Đang tải...',
+        'load_failed' => 'Không tải được dữ liệu.',
+    ],
+
+    'buttons' => [
+        'create' => 'Tạo người dùng',
+        'update' => 'Cập nhật người dùng',
+        'back_to_list' => 'Quay lại danh sách',
     ],
 
     'fields' => [
@@ -37,7 +64,7 @@ return [
 
     'address' => [
         'section' => 'Địa chỉ nhận hàng',
-        'title' => 'Địa chỉ :number',
+        'title' => 'Địa chỉ ',
         'recipient' => 'Họ và tên người nhận',
         'phone_number' => 'Số điện thoại',
         'province' => 'Tỉnh/Thành phố',

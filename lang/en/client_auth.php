@@ -46,6 +46,17 @@ return [
         'submit' => 'Update password',
     ],
 
+    'mail' => [
+        'verify' => [
+            'title' => 'Verify your email',
+            'greeting' => 'Hello :name,',
+            'intro' => 'Tap the button below to verify your account:',
+            'action' => 'Verify email',
+            'expires' => 'This link expires in :minutes minutes.',
+            'ignore' => 'If you did not create an account, no further action is required.',
+        ],
+    ],
+
     'messages' => [
         'registered' => 'Registration successful! Please verify your email to start ordering.',
         'register_failed' => 'Registration failed. Please try again.',

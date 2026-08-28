@@ -2,6 +2,7 @@
 
 namespace App\Services\Client;
 
+use App\Const\OrderConst;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Collection;
@@ -30,6 +31,7 @@ class OrderService
                 'address' => $params['address'],
                 'note' => $params['note'] ?? null,
                 'total_amount' => $this->cartService->subtotal($items),
+                'status' => OrderConst::STATUS_PENDING,
                 'is_paid' => false,
             ]);
 

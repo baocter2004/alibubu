@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Const\OrderConst;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -42,6 +43,9 @@ class OrderSeeder extends Seeder
                 'address' => $address?->full_address ?? 'Việt Nam',
                 'note' => null,
                 'total_amount' => $total,
+                'status' => $this->statusFor($index),
+                'confirmed_at' => $index % 2 === 0 ? now()->subDays(2) : null,
+                'completed_at' => $index % 4 === 0 ? now()->subDay() : null,
                 'is_paid' => $index % 2 === 0,
             ]);
 
@@ -56,5 +60,15 @@ class OrderSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    protected function statusFor(int $index): int
+    {
+        return match ($index % 4) {
+            0 => OrderConst::STATUS_COMPLETED,
+            1 => OrderConst::STATUS_PENDING,
+            2 => OrderConst::STATUS_CONFIRMED,
+            default => OrderConst::STATUS_SHIPPING,
+        };
     }
 }

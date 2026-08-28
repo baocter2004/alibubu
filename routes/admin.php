@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
@@ -38,6 +39,13 @@ Route::prefix('/admin')
                     Route::delete('/{id}', 'destroy')->name('destroy');
                 });
         }
+
+        Route::prefix('orders')->name('orders.')->controller(OrderController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+            Route::patch('/{id}/status', 'updateStatus')->name('update-status');
+            Route::post('/{id}/mark-paid', 'markPaid')->name('mark-paid');
+        });
 
         Route::prefix('provinces')->name('provinces.')->controller(ProvinceController::class)->group(function () {
             Route::get('/', 'index')->name('index');

@@ -174,7 +174,7 @@
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($relatedProducts as $related)
-                    <x-product-card :product="$related" />
+                    @include('components.product-card', ['product' => $related])
                 @endforeach
             </div>
         </section>

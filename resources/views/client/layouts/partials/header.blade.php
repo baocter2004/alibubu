@@ -59,7 +59,7 @@
             </form>
 
             <div class="flex items-center gap-1">
-                <x-locale-switcher />
+                @include('components.locale-switcher')
 
                 <a href="{{ route('cart.index') }}"
                     class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors relative"

@@ -57,7 +57,7 @@
                 <div id="placeholder-{{ $name }}"
                     class="flex flex-col items-center justify-center text-center p-5 {{ $value ? 'hidden' : '' }}">
                     <i class="fa-solid fa-cloud-arrow-up text-2xl text-blue-500 mb-2"></i>
-                    <p class="text-sm text-gray-500">Click để chọn ảnh hoặc kéo thả vào đây</p>
+                    <p class="text-sm text-gray-500">{{ __('common.labels.upload_hint') }}</p>
                 </div>
 
                 <img id="preview-{{ $name }}" src="{{ $value ? asset('storage/' . $value) : '' }}"

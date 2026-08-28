@@ -53,6 +53,7 @@ return [
         'detail' => 'Detail',
         'information' => 'Information',
         'optional' => 'optional',
+        'upload_hint' => 'Click to choose an image or drag and drop it here',
     ],
 
     'empty' => [

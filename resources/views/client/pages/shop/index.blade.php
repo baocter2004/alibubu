@@ -145,7 +145,7 @@
             @else
                 <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach ($products as $product)
-                        <x-product-card :product="$product" />
+                        @include('components.product-card', ['product' => $product])
                     @endforeach
                 </div>
 

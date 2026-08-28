@@ -8,32 +8,40 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', __('common.app_name'))</title>
+    <title>@yield('title', __('common.app_name')) · {{ __('admin/nav.brand_subtitle') }}</title>
     @include('admin.layouts.partials.common.css')
     @stack('styles')
 </head>
 
-<body class="flex min-h-screen bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="min-h-screen" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
     @include('admin.layouts.partials.sidebar')
 
-    <div id="content" class="flex flex-col flex-1">
+    <div id="content" class="flex flex-col">
         @include('admin.layouts.partials.header')
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-6">
-            <div class="w-full mx-auto">
+        <main class="flex-1 px-4 py-6 md:px-6 md:py-8">
+            <div class="max-w-[1600px] mx-auto">
+                @hasSection('breadcrumb')
+                    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-5">
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition-colors">
+                            <i class="fa-solid fa-house"></i>
+                        </a>
+                        @yield('breadcrumb')
+                    </nav>
+                @endif
+
                 @yield('content')
             </div>
-
-            <button id="scrollToTop"
-                class="fixed z-20 bottom-6 right-6 p-3 w-12 h-12 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition opacity-0 pointer-events-none">
-                <i class="fa-solid fa-arrow-up"></i>
-            </button>
         </main>
 
         @include('admin.layouts.partials.footer')
-
-        @include('admin.layouts.partials.common.scripts')
     </div>
+
+    <button type="button" id="scrollToTop"
+        class="fixed z-40 bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition-all opacity-0 pointer-events-none"
+        aria-label="Top">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
 
     <script>
         window.confirmLabels = {
@@ -42,6 +50,7 @@
         };
     </script>
 
+    @include('admin.layouts.partials.common.scripts')
     @stack('scripts')
 </body>
 

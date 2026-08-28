@@ -1,5 +1,3 @@
-@props(['product'])
-
 @php
     $price = $product->effective_price;
     $base = $product->base_price;

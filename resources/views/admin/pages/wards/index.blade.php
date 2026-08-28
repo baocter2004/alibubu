@@ -1,105 +1,90 @@
 @extends('admin.layouts.app')
 
-@section('title')
-    Trang Danh Sách Các Phường / Xã
-@endsection
+@section('title', __('admin/address.ward.title'))
 
 @section('content')
-    <div class="w-full p-4 mt-4 mb-12 bg-white rounded-lg shadow-lg">
-        <form action="{{ route('admin.wards.index') }}" method="GET">
-            <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-2 mt-4">
-                <div class="w-full">
-                    <label for="keyword" class="block text-sm font-medium text-gray-700 mb-1">
-                        Tìm Kiếm phường / Xã
-                    </label>
-                    <input type="text" id="keyword" name="keyword" value="{{ old('keyword', request('keyword')) }}"
-                        placeholder="Tìm kiếm theo từ khóa"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="w-full">
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tên phường / xã</label>
-                    <input type="text" id="name" name="name" value="{{ old('name', request('name')) }}"
-                        placeholder="Nhập tên phường / xã"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="w-full">
-                    <label for="division_type" class="block text-sm font-medium text-gray-700 mb-1">Loại</label>
-                    <select id="division_type" name="division_type"
-                        class="w-full border border-gray-300 rounded-md p-2 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Vui lòng chọn loại</option>
-                        <option value="phường">Phường</option>
-                        <option value="xã">Xã</option>
-                    </select>
-                </div>
+    <div class="w-full mb-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <div class="mb-5">
+            <h1 class="text-xl md:text-2xl font-semibold text-gray-900">{{ __('admin/address.ward.title') }}</h1>
+            <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/address.ward.subtitle') }}</p>
+        </div>
+
+        <form action="{{ route('admin.wards.index') }}" method="GET"
+            class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="md:col-span-2">
+                <label for="name"
+                    class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/address.ward.fields.name') }}</label>
+                <input type="search" id="name" name="name" value="{{ request('name') }}"
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
-            <div class="w-full flex justify-end items-center px-4 py-2 mt-4">
+
+            <div>
+                <label for="division_type"
+                    class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/address.ward.fields.division_type') }}</label>
+                <select id="division_type" name="division_type"
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">{{ __('common.labels.all') }}</option>
+                    @foreach (\App\Const\WardConst::DIVISION_TYPE as $type)
+                        <option value="{{ $type }}" @selected(request('division_type') === $type)>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex gap-2">
                 <button type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                    Tìm Kiếm
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-magnifying-glass"></i>
+                    {{ __('common.actions.search') }}
                 </button>
-                @if (request()->filled('keyword') || request()->filled('name') || request()->filled('division_type'))
-                    <a href="{{ route('admin.wards.index') }}"
-                        class="ml-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                        Xóa Bộ Lọc
-                    </a>
-                @endif
+                <a href="{{ route('admin.wards.index') }}"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-rotate-left"></i>
+                </a>
             </div>
         </form>
     </div>
-    <div class="w-full p-4 bg-white shadow-lg">
-        <div class="w-full px-4 py-2 mb-4">
-            <h1 class="text-2xl font-semibold text-gray-900">Danh Sách xã</h1>
-        </div>
-        <div class="w-full overflow-x-auto rounded-2xl">
-            <table class="min-w-[1280px] w-full table-fixed px-4 py-2 border border-gray-200 overflow-hidden">
+
+    <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+        <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-[840px] w-full table-fixed">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
-                        <th class="w-[5%] text-center px-4 py-3">ID</th>
-                        <th class="w-[15%] px-4 py-3">Tên xã</th>
-                        <th class="w-[10%] text-center px-4 py-3">Code</th>
-                        <th class="w-[15%] px-4 py-3">Code Name</th>
-                        <th class="w-[10%] px-4 py-3">Loại</th>
-                        <th class="w-[15%] px-4 py-3">Thuộc Tỉnh</th>
-                        <th class="w-[10%] text-center px-4 py-3">Sử Dụng</th>
-                        <th class="w-[10%] px-4 py-3">Ngày Tạo</th>
-                        <th class="w-[10%] text-center px-4 py-3">Hành Động</th>
+                        <th class="w-[8%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>
+                        <th class="w-[27%] px-4 py-3">{{ __('admin/address.ward.fields.name') }}</th>
+                        <th class="w-[12%] text-center px-4 py-3">{{ __('admin/address.ward.fields.code') }}</th>
+                        <th class="w-[19%] px-4 py-3">{{ __('admin/address.ward.fields.division_type') }}</th>
+                        <th class="w-[22%] px-4 py-3">{{ __('admin/address.ward.fields.province') }}</th>
+                        <th class="w-[12%] text-center px-4 py-3">{{ __('common.labels.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($wards as $ward)
-                        <tr class="text-sm text-gray-700 hover:bg-blue-100">
+                        <tr class="text-sm text-gray-700 hover:bg-blue-50 transition-colors">
                             <td class="text-center px-4 py-3">{{ $ward->id }}</td>
-                            <td class="px-4 py-3 text-ellipsis whitespace-nowrap overflow-hidden">
-                                {{ $ward->name }}
-                            </td>
+                            <td class="px-4 py-3 font-medium text-gray-900 truncate">{{ $ward->name }}</td>
+                            <td class="text-center px-4 py-3">{{ $ward->code }}</td>
+                            <td class="px-4 py-3 truncate">{{ $ward->division_type }}</td>
+                            <td class="px-4 py-3 truncate">{{ $ward->province?->name ?? '-' }}</td>
                             <td class="text-center px-4 py-3">
-                                {{ $ward->code }}
-                            </td>
-                            <td class="px-4 py-3">{{ $ward->codename }}</td>
-                            <td class="px-4 py-3">{{ $ward->division_type }}</td>
-                            <td class="px-4 py-3">{{ $ward->province->name }}</td>
-                            <td class="text-center px-4 py-3">{{ $ward->user_addresses_count }}</td>
-                            <td class="px-4 py-3">{{ $ward->created_at->format('d/m/Y') }}</td>
-                            <td class="flex justify-center gap-2 items-center text-center px-4 py-3">
                                 <a href="{{ route('admin.wards.show', $ward->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="Xem">
+                                    class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </td>
                         </tr>
                     @empty
-                        <tr class="w-full h-40 text-center text-gray-500">
-                            <td colspan="9" class="px-4 py-3">
-                                Không có xã nào.
+                        <tr>
+                            <td colspan="6" class="px-4 py-16 text-center text-gray-500">
+                                <i class="fas fa-map-location-dot text-4xl text-gray-300 block mb-3"></i>
+                                <p class="font-medium text-gray-700">{{ __('common.empty.title') }}</p>
+                                <p class="text-sm">{{ __('common.empty.description') }}</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        @include('components.pagination', ['paginator' => $wards])
+
+        @include('components.pagination', ['paginator' => $wards->withQueryString()])
     </div>
 @endsection

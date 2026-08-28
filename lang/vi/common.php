@@ -53,6 +53,7 @@ return [
         'detail' => 'Chi tiết',
         'information' => 'Thông tin',
         'optional' => 'không bắt buộc',
+        'upload_hint' => 'Nhấn để chọn ảnh hoặc kéo thả vào đây',
     ],
 
     'empty' => [

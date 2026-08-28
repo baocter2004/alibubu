@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const overlay = $("#overlay");
 
     $("#sidebarToggle, #sidebarToggleMobile").on("click", function () {
-        if ($(window).width() <= 768) {
+        if ($(window).width() <= 1024) {
             sidebar.toggleClass("show");
             overlay.toggleClass("active");
             $("body").toggleClass("overflow-hidden");
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     $(window).on("resize", function () {
-        if ($(window).width() > 768) {
+        if ($(window).width() > 1024) {
             sidebar.removeClass("show");
             overlay.removeClass("active");
             $("body").removeClass("overflow-hidden");

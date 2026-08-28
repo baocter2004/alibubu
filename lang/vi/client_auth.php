@@ -46,6 +46,17 @@ return [
         'submit' => 'Đổi mật khẩu',
     ],
 
+    'mail' => [
+        'verify' => [
+            'title' => 'Xác minh email',
+            'greeting' => 'Xin chào :name,',
+            'intro' => 'Nhấn nút bên dưới để xác minh tài khoản của bạn:',
+            'action' => 'Xác minh email',
+            'expires' => 'Liên kết sẽ hết hạn sau :minutes phút.',
+            'ignore' => 'Nếu bạn không tạo tài khoản, hãy bỏ qua email này.',
+        ],
+    ],
+
     'messages' => [
         'registered' => 'Đăng ký thành công! Vui lòng xác nhận email để có thể mua hàng.',
         'register_failed' => 'Đăng ký thất bại. Vui lòng thử lại.',
