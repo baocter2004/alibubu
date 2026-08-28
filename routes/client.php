@@ -3,6 +3,7 @@
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\CouponController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,11 @@ Route::prefix('account')
         Route::patch('/addresses/{id}', 'updateAddress')->name('addresses.update');
         Route::delete('/addresses/{id}', 'destroyAddress')->name('addresses.destroy');
     });
+
+Route::prefix('coupon')->name('coupon.')->controller(CouponController::class)->group(function () {
+    Route::post('/', 'store')->name('store');
+    Route::delete('/', 'destroy')->name('destroy');
+});
 
 Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'index')->name('index');

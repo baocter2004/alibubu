@@ -269,23 +269,24 @@ class ProductService extends BaseCrudService
         $keptIds = [];
 
         foreach ($variants as $index => $variant) {
-            $attributes = [
-                'product_id' => $product->id,
-                'sku' => $variant['sku'] ?: $this->generateVariantSku($product, $index),
-                'price' => $variant['price'],
-                'sale_price' => $variant['sale_price'] ?? null,
-                'thumbnail' => '',
-                'is_active' => ! empty($variant['is_active']),
-            ];
-
             $model = ! empty($variant['id'])
                 ? $product->variants()->whereKey($variant['id'])->first()
                 : null;
 
+            $attributes = [
+                'sku' => $variant['sku'] ?: ($model?->sku ?: $this->generateVariantSku($product, $index)),
+                'price' => $variant['price'],
+                'sale_price' => $variant['sale_price'] ?? null,
+                'is_active' => ! empty($variant['is_active']),
+            ];
+
             if ($model) {
-                $model->update(Arr::except($attributes, ['product_id', 'thumbnail']));
+                $model->update($attributes);
             } else {
-                $model = ProductVariant::create($attributes);
+                $model = ProductVariant::create(array_merge($attributes, [
+                    'product_id' => $product->id,
+                    'thumbnail' => $product->thumbnail,
+                ]));
             }
 
             $model->attributeValues()->sync($variant['attribute_value_ids'] ?? []);

@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Const\OrderConst;
 use App\Models\Order;
+use App\Models\Product;
 use App\Repositories\OrderRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
@@ -106,6 +107,8 @@ class OrderService extends BaseCrudService
                 if ($status === OrderConst::STATUS_CANCELLED) {
                     $attributes['cancelled_at'] = now();
                     $attributes['cancel_reason'] = $reason;
+
+                    $this->restoreStock($order);
                 }
 
                 $order->update($attributes);
@@ -119,6 +122,20 @@ class OrderService extends BaseCrudService
             Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id, 'status' => $status]);
 
             throw $th;
+        }
+    }
+
+    protected function restoreStock(Order $order): void
+    {
+        foreach ($order->items()->get() as $item) {
+            if (! $item->product_id) {
+                continue;
+            }
+
+            Product::whereKey($item->product_id)->update([
+                'stock' => DB::raw('stock + ' . (int) $item->quantity),
+                'sold' => DB::raw('MAX(sold - ' . (int) $item->quantity . ', 0)'),
+            ]);
         }
     }
 

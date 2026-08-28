@@ -124,7 +124,7 @@
             <aside class="bg-card border border-border rounded-2xl p-5 lg:sticky lg:top-24">
                 <h2 class="font-bold text-foreground mb-4">{{ __('client.cart.summary') }}</h2>
 
-                <dl class="space-y-3 text-sm">
+                <dl class="space-y-3 text-sm mb-4">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">{{ __('client.cart.subtotal') }}</dt>
                         <dd class="font-medium text-foreground">{{ format_price($subtotal) }}</dd>
@@ -135,11 +135,20 @@
                     </div>
                 </dl>
 
+                @include('components.coupon-box', ['coupon' => $coupon, 'discount' => $discount])
+
+                @if ($discount > 0)
+                    <div class="flex justify-between text-sm mb-4">
+                        <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>
+                        <span class="font-medium text-green-600">-{{ format_price($discount) }}</span>
+                    </div>
+                @endif
+
                 <div class="border-t border-border my-4"></div>
 
                 <div class="flex justify-between items-baseline mb-5">
                     <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                    <span class="text-2xl font-bold text-primary">{{ format_price($subtotal) }}</span>
+                    <span class="text-2xl font-bold text-primary">{{ format_price($total) }}</span>
                 </div>
 
                 <a href="{{ route('checkout.index') }}"

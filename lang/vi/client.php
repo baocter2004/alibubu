@@ -135,6 +135,27 @@ return [
         'checkout' => 'Tiến hành thanh toán',
     ],
 
+    'coupon' => [
+        'title' => 'Mã giảm giá',
+        'placeholder' => 'Nhập mã giảm giá',
+        'apply' => 'Áp dụng',
+        'remove' => 'Bỏ chọn',
+        'discount' => 'Giảm giá',
+        'applied_label' => 'Đã áp dụng mã :code',
+        'messages' => [
+            'applied' => 'Áp dụng mã giảm giá thành công.',
+            'removed' => 'Đã bỏ mã giảm giá.',
+            'not_found' => 'Mã giảm giá không tồn tại.',
+            'inactive' => 'Mã giảm giá đã ngừng hoạt động.',
+            'not_started' => 'Mã giảm giá chưa đến thời gian sử dụng.',
+            'expired' => 'Mã giảm giá đã hết hạn.',
+            'exhausted' => 'Mã giảm giá đã hết lượt sử dụng.',
+            'already_used' => 'Bạn đã sử dụng mã giảm giá này rồi.',
+            'min_order' => 'Đơn hàng chưa đạt giá trị tối thiểu của mã này.',
+            'not_applicable' => 'Mã này không áp dụng cho sản phẩm trong giỏ hàng.',
+        ],
+    ],
+
     'checkout' => [
         'title' => 'Thanh toán',
         'steps' => [
@@ -269,5 +290,7 @@ return [
         'order_success' => 'Đặt hàng thành công!',
         'order_failed' => 'Đặt hàng thất bại. Vui lòng thử lại.',
         'product_not_found' => 'Sản phẩm không tồn tại.',
+        'out_of_stock' => ':name không còn đủ hàng.',
+        'stock_restored' => 'Đã hoàn lại tồn kho cho đơn hàng đã huỷ.',
     ],
 ];

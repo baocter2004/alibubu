@@ -64,10 +64,10 @@
 
     <nav class="sidebar-scroll py-3">
         @foreach ($navGroups as $group)
+            <span class="group-divider"></span>
             <p class="group-label px-5 pt-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 {{ $group['label'] }}
             </p>
-            <span class="group-divider"></span>
 
             @foreach ($group['items'] as $item)
                 @php $isActive = request()->routeIs($item['active']); @endphp

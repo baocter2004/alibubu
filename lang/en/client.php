@@ -135,6 +135,27 @@ return [
         'checkout' => 'Proceed to checkout',
     ],
 
+    'coupon' => [
+        'title' => 'Discount code',
+        'placeholder' => 'Enter your code',
+        'apply' => 'Apply',
+        'remove' => 'Remove',
+        'discount' => 'Discount',
+        'applied_label' => 'Code :code applied',
+        'messages' => [
+            'applied' => 'Discount code applied successfully.',
+            'removed' => 'Discount code removed.',
+            'not_found' => 'This discount code does not exist.',
+            'inactive' => 'This discount code is no longer active.',
+            'not_started' => 'This discount code is not active yet.',
+            'expired' => 'This discount code has expired.',
+            'exhausted' => 'This discount code has reached its usage limit.',
+            'already_used' => 'You have already used this discount code.',
+            'min_order' => 'Your order does not reach the minimum value for this code.',
+            'not_applicable' => 'This code does not apply to the items in your cart.',
+        ],
+    ],
+
     'checkout' => [
         'title' => 'Checkout',
         'steps' => [
@@ -269,5 +290,7 @@ return [
         'order_success' => 'Your order has been placed!',
         'order_failed' => 'Could not place the order. Please try again.',
         'product_not_found' => 'This product does not exist.',
+        'out_of_stock' => ':name does not have enough stock left.',
+        'stock_restored' => 'Stock has been restored for the cancelled order.',
     ],
 ];

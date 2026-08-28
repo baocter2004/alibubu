@@ -175,7 +175,7 @@
                 @endforeach
             </div>
 
-            <dl class="space-y-3 text-sm border-t border-border pt-4">
+            <dl class="space-y-3 text-sm border-t border-border pt-4 mb-4">
                 <div class="flex justify-between">
                     <dt class="text-muted-foreground">{{ __('client.cart.subtotal') }}</dt>
                     <dd class="font-medium text-foreground">{{ format_price($subtotal) }}</dd>
@@ -186,11 +186,20 @@
                 </div>
             </dl>
 
+            @if ($coupon)
+                <div class="flex items-center justify-between gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg mb-4">
+                    <span class="text-xs font-semibold text-green-700 truncate">
+                        {{ __('client.coupon.applied_label', ['code' => $coupon->code]) }}
+                    </span>
+                    <span class="text-sm font-medium text-green-600 whitespace-nowrap">-{{ format_price($discount) }}</span>
+                </div>
+            @endif
+
             <div class="border-t border-border my-4"></div>
 
             <div class="flex justify-between items-baseline mb-5">
                 <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                <span class="text-2xl font-bold text-primary">{{ format_price($subtotal) }}</span>
+                <span class="text-2xl font-bold text-primary">{{ format_price($total) }}</span>
             </div>
 
             <button type="submit"

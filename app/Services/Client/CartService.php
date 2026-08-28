@@ -21,7 +21,7 @@ class CartService
         $items[$key] = [
             'product_id' => $product->id,
             'product_variant_id' => $variant?->id,
-            'quantity' => $this->clamp($current + $quantity),
+            'quantity' => $this->clamp($current + $quantity, $product->stock),
         ];
 
         $this->persist($items);
@@ -38,7 +38,8 @@ class CartService
         if ($quantity < 1) {
             unset($items[$key]);
         } else {
-            $items[$key]['quantity'] = $this->clamp($quantity);
+            $stock = Product::whereKey($items[$key]['product_id'])->value('stock');
+            $items[$key]['quantity'] = $this->clamp($quantity, $stock);
         }
 
         $this->persist($items);
@@ -88,14 +89,15 @@ class CartService
                 }
 
                 $price = $variant ? $variant->effective_price : (float) $product->effective_price;
+                $quantity = $this->clamp($item['quantity'], $product->stock);
 
                 return [
                     'key' => $key,
                     'product' => $product,
                     'variant' => $variant,
-                    'quantity' => $item['quantity'],
+                    'quantity' => $quantity,
                     'price' => $price,
-                    'subtotal' => $price * $item['quantity'],
+                    'subtotal' => $price * $quantity,
                 ];
             })
             ->filter()
@@ -138,8 +140,14 @@ class CartService
         return $productId . ':' . ($variantId ?? 0);
     }
 
-    protected function clamp(int $quantity): int
+    protected function clamp(int $quantity, ?int $stock = null): int
     {
-        return max(1, min($quantity, self::MAX_QUANTITY));
+        $ceiling = self::MAX_QUANTITY;
+
+        if ($stock !== null && $stock > 0) {
+            $ceiling = min($ceiling, $stock);
+        }
+
+        return max(1, min($quantity, $ceiling));
     }
 }
