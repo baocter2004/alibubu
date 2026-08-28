@@ -1,7 +1,5 @@
 <?php
 
-// ========================= ADMIN ===========================
-
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WardController;
@@ -10,7 +8,7 @@ use App\Http\Controllers\ProvinceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/admin')
-    // ->middleware(['auth:admin', 'adminLogin'])
+    ->middleware('auth:admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
@@ -34,13 +32,11 @@ Route::prefix('/admin')
             Route::delete('/force/{id}', [UserController::class, 'forceDestroy'])->name('force-destroy');
         });
 
-        // Province Resource
         Route::prefix('provinces')->name('provinces.')->group(function () {
             Route::get('/', [ProvinceController::class, 'index'])->name('index');
             Route::get('/{id}', [ProvinceController::class, 'show'])->name('show');
         });
 
-        // Ward Resource
         Route::prefix('wards')->name('wards.')->group(function () {
             Route::get('/', [WardController::class, 'index'])->name('index');
             Route::get('/{id}', [WardController::class, 'show'])->name('show');

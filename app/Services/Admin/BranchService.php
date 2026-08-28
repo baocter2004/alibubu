@@ -6,10 +6,12 @@ use App\Const\GlobalConst;
 use App\Models\Branch;
 use App\Repositories\BranchRepository;
 use App\Services\BaseCrudService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BranchService extends BaseCrudService
 {
@@ -22,16 +24,33 @@ class BranchService extends BaseCrudService
         return $this->repository;
     }
 
-    protected function buildFilterParams(array $params): array
+    protected function buildFilterParams(array $params = []): array
     {
         $wheres = Arr::get($params, 'wheres', []);
         $whereIns = Arr::get($params, 'where_ins', []);
         $whereLikes = Arr::get($params, 'where_likes', []);
         $whereEquals = Arr::get($params, 'where_equals', []);
         $orWheres = Arr::get($params, 'or_wheres', []);
-        $sort = Arr::get($params, 'sort', 'created_at:desc');
+        $sort = Arr::get($params, 'sort', 'id:desc');
         $relates = Arr::get($params, 'relates', []);
         $relatesCount = Arr::get($params, 'relates_count', []);
+
+        if (! empty($params['name'])) {
+            $whereLikes['name'] = $params['name'];
+        }
+
+        if (! empty($params['slug'])) {
+            $whereLikes['slug'] = $params['slug'];
+        }
+
+        if (isset($params['is_active']) && $params['is_active'] !== '' && $params['is_active'] !== null) {
+            $wheres['is_active'] = (int) $params['is_active'];
+        }
+
+        if (! empty($params['keyword'])) {
+            $orWheres[] = ['name', 'like', '%' . $params['keyword'] . '%'];
+            $orWheres[] = ['slug', 'like', '%' . $params['keyword'] . '%'];
+        }
 
         return [
             'wheres' => $wheres,
@@ -49,18 +68,24 @@ class BranchService extends BaseCrudService
     {
         $data = $validated;
         $data['id'] = $id;
+        $data['slug'] = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['name']);
 
-        if (!empty($validated['logo']) && $validated['logo'] instanceof \Illuminate\Http\UploadedFile) {
-            if (!empty($oldSessionData['logo'])) {
+        if (! empty($validated['logo']) && $validated['logo'] instanceof UploadedFile) {
+            if (! empty($oldSessionData['logo']) && $oldSessionData['logo'] !== ($oldSessionData['persisted_logo'] ?? null)) {
                 Storage::disk('public')->delete($oldSessionData['logo']);
             }
 
-            $logoPath = $validated['logo']->store('branches', 'public');
-            $data['logo'] = $logoPath;
-        } elseif (!empty($id)) {
+            $data['logo'] = $validated['logo']->store('branches', 'public');
+        } elseif (! empty($oldSessionData['logo'])) {
+            $data['logo'] = $oldSessionData['logo'];
+        }
+
+        if (! empty($id)) {
             $branch = $this->find($id);
-            if ($branch) {
-                $data['logo'] = $branch->logo;
+            $data['persisted_logo'] = $branch?->logo;
+
+            if (empty($data['logo'])) {
+                $data['logo'] = $branch?->logo;
             }
         }
 
@@ -72,37 +97,39 @@ class BranchService extends BaseCrudService
         $logoPath = Arr::get($params, 'logo');
 
         try {
-            return parent::create($params);
-        } catch (\Exception $e) {
+            return parent::create(Arr::except($params, ['id', 'persisted_logo']));
+        } catch (\Throwable $th) {
             if ($logoPath) {
                 Storage::disk('public')->delete($logoPath);
             }
-            Log::error('Error creating branch: ' . $e->getMessage(), ['params' => $params]);
-            throw $e;
+
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'params' => $params]);
+
+            throw $th;
         }
     }
 
     public function update(int|string $id, array $params = []): Branch
     {
         $newLogoPath = Arr::get($params, 'logo');
+        $oldLogoPath = Arr::get($params, 'persisted_logo');
 
         try {
-            $branch = $this->find($id);
-            $oldLogoPath = $branch?->logo;
-
-            $result = parent::update($id, $params);
+            $branch = parent::update($id, Arr::except($params, ['id', 'persisted_logo']));
 
             if ($newLogoPath && $oldLogoPath && $oldLogoPath !== $newLogoPath) {
                 Storage::disk('public')->delete($oldLogoPath);
             }
 
-            return $result;
-        } catch (\Exception $e) {
-            if ($newLogoPath) {
+            return $branch;
+        } catch (\Throwable $th) {
+            if ($newLogoPath && $newLogoPath !== $oldLogoPath) {
                 Storage::disk('public')->delete($newLogoPath);
             }
-            Log::error('Error updating branch: ' . $e->getMessage(), ['id' => $id, 'params' => $params]);
-            throw $e;
+
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id, 'params' => $params]);
+
+            throw $th;
         }
     }
 
@@ -111,75 +138,74 @@ class BranchService extends BaseCrudService
         try {
             $branch = $this->find($id);
 
-            if (!$branch) {
-                throw new \Exception("Branch not found: {$id}");
-            }
-
-            // Check for associated products before deletion
-            if ($branch->products()->exists()) {
+            if (! $branch) {
                 return [
                     'status' => false,
-                    'message' => 'Cannot delete branch with associated products.'
+                    'message' => 'Không tìm thấy chi nhánh.',
                 ];
             }
 
-            DB::beginTransaction();
+            if ($branch->products()->exists()) {
+                return [
+                    'status' => false,
+                    'message' => 'Không thể xoá chi nhánh đang có sản phẩm.',
+                ];
+            }
 
-            // Soft delete: deactivate and then delete
-            $branch->update(['status' => GlobalConst::IS_NOT_ACTIVE]);
-            parent::delete($id);
-
-            DB::commit();
+            DB::transaction(function () use ($branch, $id) {
+                $branch->update(['is_active' => GlobalConst::IS_NOT_ACTIVE]);
+                parent::delete($id);
+            });
 
             return [
                 'status' => true,
-                'message' => 'Branch deleted successfully.'
+                'message' => 'Xoá chi nhánh thành công.',
             ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error deleting branch: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
         }
     }
 
     public function restore($id)
     {
         try {
-            $branch = $this->getRepository()->restore($id);
-            $branch->update(['status' => GlobalConst::IS_ACTIVE]);
+            $restored = $this->getRepository()->restore($id);
 
-            return $branch;
-        } catch (\Exception $e) {
-            Log::error('Error restoring branch: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
+            $branch = $this->find($id);
+            $branch?->update(['is_active' => GlobalConst::IS_ACTIVE]);
+
+            return $restored;
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
         }
     }
 
     public function forceDelete($id)
     {
         try {
-            DB::beginTransaction();
+            $branch = $this->getRepository()->findWithTrashed($id);
 
-            $branch = $this->find($id);
-
-            if (!$branch) {
-                throw new \Exception("Branch not found: {$id}");
+            if (! $branch) {
+                return false;
             }
 
-            // Remove logo file if exists
-            if ($branch->logo) {
-                Storage::disk('public')->delete($branch->logo);
+            $logo = $branch->logo;
+
+            $result = DB::transaction(fn () => parent::forceDelete($id));
+
+            if ($result && $logo) {
+                Storage::disk('public')->delete($logo);
             }
-
-            $result = parent::forceDelete($id);
-
-            DB::commit();
 
             return $result;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error force deleting branch: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id]);
+
+            throw $th;
         }
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\CheckAdminLogin;
 use App\Http\Middleware\OverwriteAuthenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,7 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'adminLogin' => CheckAdminLogin::class,
             'auth' => OverwriteAuthenticate::class,
         ]);
     })

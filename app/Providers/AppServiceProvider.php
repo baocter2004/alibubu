@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,9 +22,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Authenticate::redirectUsing(function ($request) {
-            session()->flash('error', 'Bạn cần đăng nhập để tiếp tục.');
-            return route('auth.client.showFormLogin');
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+        RedirectIfAuthenticated::redirectUsing(function (Request $request) {
+            return $request->is('admin', 'admin/*')
+                ? route('admin.dashboard')
+                : route('index');
         });
     }
 }

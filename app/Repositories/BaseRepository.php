@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 abstract class BaseRepository
 {
@@ -34,6 +35,18 @@ abstract class BaseRepository
     public function newQuery(): Builder
     {
         return $this->getModel()->newQuery();
+    }
+
+    public function usesSoftDeletes(): bool
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive($this->getModel()), true);
+    }
+
+    protected function queryWithTrashed(): Builder
+    {
+        $query = $this->newQuery();
+
+        return $this->usesSoftDeletes() ? $query->withTrashed() : $query;
     }
 
     public function find(int|string $id): ?Model
@@ -246,10 +259,14 @@ abstract class BaseRepository
     public function update($id, array $params): ?Model
     {
         $result = $this->newQuery()->find($id);
-        $result->fill($params);
-        $saved = $result->save();
 
-        return $saved ? $result : null;
+        if (! $result) {
+            return null;
+        }
+
+        $result->fill($params);
+
+        return $result->save() ? $result : null;
     }
 
     public function createOrUpdate(array $params, $instance = null): Model
@@ -275,11 +292,11 @@ abstract class BaseRepository
         return false;
     }
 
-    public function forceDelete(int $id)
+    public function forceDelete(int|string $id)
     {
-        $model = $this->newQuery()->find($id);
+        $model = $this->queryWithTrashed()->find($id);
 
-        return $model->forceDelete();
+        return $model ? $model->forceDelete() : false;
     }
 
     public function deleteAll(array $ids)
@@ -304,7 +321,7 @@ abstract class BaseRepository
 
     public function lastest()
     {
-        return $this->newQuery()->withTrashed()->orderBy('id', 'DESC')->first();
+        return $this->queryWithTrashed()->orderBy('id', 'DESC')->first();
     }
 
     public function existOrNot($value, $column)
@@ -312,19 +329,19 @@ abstract class BaseRepository
         return $this->newQuery()->where($column, $value)->exists();
     }
 
-    public function restore(int $id)
+    public function restore(int|string $id)
     {
         return $this->newQuery()->onlyTrashed()->where('id', $id)->restore();
     }
 
-    public function findTrashed(int $id)
+    public function findTrashed(int|string $id)
     {
         return $this->newQuery()->onlyTrashed()->where('id', $id)->first();
     }
 
-    public function findWithTrashed(int $id)
+    public function findWithTrashed(int|string $id)
     {
-        return $this->newQuery()->withTrashed()->where('id', $id)->first();
+        return $this->queryWithTrashed()->where('id', $id)->first();
     }
 
     public function updateOrCreate(array $values, array $attributes = []): ?Model

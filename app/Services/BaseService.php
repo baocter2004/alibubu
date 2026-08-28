@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Const\GlobalConst;
-use App\Constants\GlobalConstant;
 use App\Repositories\BaseRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
@@ -83,6 +83,10 @@ abstract class BaseService
         $params = $this->hashPassword($params);
 
         $item = $this->getRepository()->update($id, $params);
+
+        if (! $item) {
+            throw new ModelNotFoundException('Không tìm thấy bản ghi cần cập nhật: ' . $id);
+        }
 
         return $item;
     }

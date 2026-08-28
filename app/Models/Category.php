@@ -3,29 +3,55 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'fullname',
-        'email',
-        'password',
-        'email_verified_at',
-        'avatar',
-        'role',
-        'phone_number',
-        'gender',
-        'birthday',
-        'status',
-        'reason_lock',
-        'bank_name',
-        'user_bank_name',
-        'bank_account',
-        'loyalty_points',
+        'parent_id',
+        'icon',
+        'name',
+        'slug',
+        'ordinal',
+        'is_active',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'ordinal' => 'integer',
+            'is_active' => 'boolean',
+        ];
+    }
+
+    // Relations
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'category_product');
+    }
 }

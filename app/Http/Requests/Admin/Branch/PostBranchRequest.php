@@ -23,14 +23,15 @@ class PostBranchRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route()->id;
+        $id = $this->route('id');
+
         return [
             'name' => 'required|string|max:255',
             'slug' => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('branches','slug')->ignore($id)
+                Rule::unique('branches', 'slug')->ignore($id),
             ],
             'logo' => [
                 empty($id) ? 'required' : 'nullable',
@@ -40,8 +41,8 @@ class PostBranchRequest extends FormRequest
             ],
             'is_active' => [
                 'required',
-                Rule::in(array_keys(GlobalConst::STATUS))
-            ]
+                Rule::in(array_keys(GlobalConst::STATUS)),
+            ],
         ];
     }
 }
