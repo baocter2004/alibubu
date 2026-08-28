@@ -30,7 +30,7 @@ class ShopController extends Controller
         $product = $this->productService->findBySlug($slug);
 
         if (! $product) {
-            throw new NotFoundHttpException('Sản phẩm không tồn tại.');
+            throw new NotFoundHttpException(__('client.messages.product_not_found'));
         }
 
         $product->increment('views');

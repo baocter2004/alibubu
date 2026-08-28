@@ -1,6 +1,6 @@
 @extends('client.layouts.app')
 
-@section('title', 'Alibubu - Quên mật khẩu')
+@section('title', __('common.app_name') . ' - ' . __('client_auth.forgot.title'))
 
 @section('content')
     <div class="max-w-md mx-auto py-10">
@@ -8,10 +8,8 @@
             <span class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 text-primary mb-4">
                 <i class="fa-solid fa-key text-xl"></i>
             </span>
-            <h1 class="text-2xl font-bold text-foreground mb-2">Quên mật khẩu?</h1>
-            <p class="text-sm text-muted-foreground">
-                Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu cho bạn.
-            </p>
+            <h1 class="text-2xl font-bold text-foreground mb-2">{{ __('client_auth.forgot.heading') }}</h1>
+            <p class="text-sm text-muted-foreground">{{ __('client_auth.forgot.subheading') }}</p>
         </div>
 
         <div class="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8">
@@ -20,7 +18,7 @@
 
                 <div>
                     <label for="email" class="block text-sm font-medium text-foreground mb-1.5">
-                        Email <span class="text-red-500">*</span>
+                        {{ __('client_auth.login.email') }} <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <i
@@ -37,14 +35,15 @@
                 <button type="submit"
                     class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
                     <i class="fa-solid fa-paper-plane"></i>
-                    Gửi liên kết đặt lại
+                    {{ __('client_auth.forgot.submit') }}
                 </button>
             </form>
 
             <p class="text-center text-sm text-muted-foreground mt-6">
-                Nhớ mật khẩu rồi?
-                <a href="{{ route('auth.client.showFormLogin') }}"
-                    class="font-medium text-primary hover:underline">Đăng nhập</a>
+                {{ __('client_auth.forgot.remembered') }}
+                <a href="{{ route('auth.client.showFormLogin') }}" class="font-medium text-primary hover:underline">
+                    {{ __('client_auth.forgot.login_link') }}
+                </a>
             </p>
         </div>
     </div>

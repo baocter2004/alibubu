@@ -17,7 +17,7 @@ class OrderService
         $items = $this->cartService->items();
 
         if ($items->isEmpty()) {
-            throw new \RuntimeException('Giỏ hàng đang trống.');
+            throw new \RuntimeException(__('client.messages.cart_empty'));
         }
 
         return DB::transaction(function () use ($items, $params, $userId) {

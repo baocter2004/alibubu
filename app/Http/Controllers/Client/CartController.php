@@ -32,7 +32,7 @@ class CartController extends Controller
             ->find($data['product_id']);
 
         if (! $product) {
-            return back()->with('error', 'Sản phẩm không còn khả dụng.');
+            return back()->with('error', __('client.messages.product_unavailable'));
         }
 
         $variant = null;
@@ -41,17 +41,17 @@ class CartController extends Controller
             $variant = $product->variants->firstWhere('id', $data['product_variant_id']);
 
             if (! $variant) {
-                return back()->with('error', 'Phiên bản sản phẩm không hợp lệ.');
+                return back()->with('error', __('client.messages.variant_invalid'));
             }
         } elseif ($product->hasVariants()) {
-            return back()->with('error', 'Vui lòng chọn phiên bản sản phẩm.');
+            return back()->with('error', __('client.messages.variant_required'));
         }
 
         $this->cartService->add($product, $variant, (int) ($data['quantity'] ?? 1));
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Đã thêm sản phẩm vào giỏ hàng.');
+            ->with('success', __('client.messages.cart_added'));
     }
 
     public function update(UpdateCartItemRequest $request, string $key)
@@ -60,7 +60,7 @@ class CartController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Đã cập nhật giỏ hàng.');
+            ->with('success', __('client.messages.cart_updated'));
     }
 
     public function destroy(string $key)
@@ -69,7 +69,7 @@ class CartController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Đã xoá sản phẩm khỏi giỏ hàng.');
+            ->with('success', __('client.messages.cart_removed'));
     }
 
     public function clear()
@@ -78,6 +78,6 @@ class CartController extends Controller
 
         return redirect()
             ->route('cart.index')
-            ->with('success', 'Đã xoá toàn bộ giỏ hàng.');
+            ->with('success', __('client.messages.cart_cleared'));
     }
 }

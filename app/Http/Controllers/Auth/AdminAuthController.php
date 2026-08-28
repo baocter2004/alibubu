@@ -24,12 +24,12 @@ class AdminAuthController extends Controller
         if (! $this->authService->login($request->validated())) {
             return back()
                 ->withInput($request->except('password'))
-                ->with('error', 'Email hoặc mật khẩu không chính xác.');
+                ->with('error', __('admin/auth.messages.failed'));
         }
 
         return redirect()
             ->intended(route('admin.dashboard'))
-            ->with('success', 'Đăng nhập thành công!');
+            ->with('success', __('admin/auth.messages.logged_in'));
     }
 
     public function showFormForgotPassword()
@@ -42,10 +42,10 @@ class AdminAuthController extends Controller
         if (! $this->authService->sendResetLinkEmail($request->validated())) {
             return back()
                 ->withInput()
-                ->with('error', 'Không gửi được email đặt lại mật khẩu. Vui lòng thử lại sau.');
+                ->with('error', __('admin/auth.messages.reset_link_failed'));
         }
 
-        return back()->with('success', 'Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email.');
+        return back()->with('success', __('admin/auth.messages.reset_link_sent'));
     }
 
     public function showFormNewPassword(Request $request, string $token)
@@ -61,12 +61,12 @@ class AdminAuthController extends Controller
         if (! $this->authService->resetPassword($request->validated())) {
             return back()
                 ->withInput($request->except('password', 'password_confirmation'))
-                ->with('error', 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.');
+                ->with('error', __('admin/auth.messages.reset_failed'));
         }
 
         return redirect()
             ->route('auth.admin.showFormLogin')
-            ->with('success', 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại!');
+            ->with('success', __('admin/auth.messages.reset_success'));
     }
 
     public function logout()
@@ -78,6 +78,6 @@ class AdminAuthController extends Controller
 
         return redirect()
             ->route('auth.admin.showFormLogin')
-            ->with('success', 'Đăng xuất thành công!');
+            ->with('success', __('admin/auth.messages.logged_out'));
     }
 }

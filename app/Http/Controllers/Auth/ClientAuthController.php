@@ -30,7 +30,7 @@ class ClientAuthController extends Controller
         if (! $user) {
             return back()
                 ->withInput($request->except('password', 'password_confirmation'))
-                ->with('error', 'Đăng ký thất bại. Vui lòng thử lại.');
+                ->with('error', __('client_auth.messages.register_failed'));
         }
 
         Auth::login($user);
@@ -38,7 +38,7 @@ class ClientAuthController extends Controller
 
         return redirect()
             ->route('index')
-            ->with('success', 'Đăng ký thành công! Vui lòng xác nhận email để có thể mua hàng.');
+            ->with('success', __('client_auth.messages.registered'));
     }
 
     public function showFormLogin()
@@ -51,12 +51,12 @@ class ClientAuthController extends Controller
         if (! $this->authService->login($request->validated())) {
             return back()
                 ->withInput($request->except('password'))
-                ->with('error', 'Email hoặc mật khẩu không chính xác.');
+                ->with('error', __('client_auth.messages.login_failed'));
         }
 
         return redirect()
             ->intended(route('index'))
-            ->with('success', 'Đăng nhập thành công!');
+            ->with('success', __('client_auth.messages.logged_in'));
     }
 
     public function showFormForgotPassword()
@@ -69,10 +69,10 @@ class ClientAuthController extends Controller
         if (! $this->authService->sendResetLinkEmail($request->validated())) {
             return back()
                 ->withInput()
-                ->with('error', 'Không gửi được email đặt lại mật khẩu. Vui lòng thử lại sau.');
+                ->with('error', __('client_auth.messages.reset_link_failed'));
         }
 
-        return back()->with('success', 'Đã gửi liên kết đặt lại mật khẩu. Vui lòng kiểm tra email của bạn!');
+        return back()->with('success', __('client_auth.messages.reset_link_sent'));
     }
 
     public function showFormNewPassword(Request $request, string $token)
@@ -88,12 +88,12 @@ class ClientAuthController extends Controller
         if (! $this->authService->reset($request->validated())) {
             return back()
                 ->withInput($request->except('password', 'password_confirmation'))
-                ->with('error', 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.');
+                ->with('error', __('client_auth.messages.reset_failed'));
         }
 
         return redirect()
             ->route('auth.client.showFormLogin')
-            ->with('success', 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại!');
+            ->with('success', __('client_auth.messages.reset_success'));
     }
 
     public function logout(Request $request)
@@ -105,7 +105,7 @@ class ClientAuthController extends Controller
 
         return redirect()
             ->route('index')
-            ->with('success', 'Đăng xuất thành công!');
+            ->with('success', __('client_auth.messages.logged_out'));
     }
 
     public function redirectToGoogle()
@@ -126,7 +126,7 @@ class ClientAuthController extends Controller
 
             return redirect()
                 ->route('auth.client.showFormLogin')
-                ->with('error', 'Không thể đăng nhập bằng Google. Vui lòng thử lại.');
+                ->with('error', __('client_auth.messages.google_failed'));
         }
 
         $user = $this->authService->google($googleUser);
@@ -134,7 +134,7 @@ class ClientAuthController extends Controller
         if (! $user) {
             return redirect()
                 ->route('auth.client.showFormLogin')
-                ->with('error', 'Tài khoản bị khóa hoặc không hợp lệ.');
+                ->with('error', __('client_auth.messages.account_locked'));
         }
 
         Auth::login($user);
@@ -142,7 +142,7 @@ class ClientAuthController extends Controller
 
         return redirect()
             ->route('index')
-            ->with('success', 'Đăng nhập thành công!');
+            ->with('success', __('client_auth.messages.logged_in'));
     }
 
     public function verifyEmail(EmailVerificationRequest $request)
@@ -150,14 +150,14 @@ class ClientAuthController extends Controller
         if ($request->user()->hasVerifiedEmail()) {
             return redirect()
                 ->route('index')
-                ->with('error', 'Email đã được xác minh trước đó.');
+                ->with('error', __('client_auth.messages.email_already_verified'));
         }
 
         $request->fulfill();
 
         return redirect()
             ->route('verification.success')
-            ->with('success', 'Xác minh email thành công!');
+            ->with('success', __('client.verification.title'));
     }
 
     public function showVerifySuccess()

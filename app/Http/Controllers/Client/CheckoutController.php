@@ -21,7 +21,7 @@ class CheckoutController extends Controller
         if ($this->cartService->isEmpty()) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Giỏ hàng đang trống.');
+                ->with('error', __('client.messages.cart_empty'));
         }
 
         $items = $this->cartService->items();
@@ -50,12 +50,12 @@ class CheckoutController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Đặt hàng thất bại. Vui lòng thử lại.');
+                ->with('error', __('client.messages.order_failed'));
         }
 
         return redirect()
             ->route('thanks-you')
             ->with('order_code', $order->code)
-            ->with('success', 'Đặt hàng thành công!');
+            ->with('success', __('client.messages.order_success'));
     }
 }
