@@ -1,20 +1,29 @@
 <?php
 
-// ================= HOME - CLIENT =====================
-
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
-Route::get('/shops', [HomeController::class, 'shops'])->name('shops');
-Route::get('/shop-detail/{id}/', [HomeController::class, 'shopDetail'])->name('shop-detail');
-Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
-Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::get('/thanks-you', [HomeController::class, 'thankYou'])->name('thanks-you');
 
-Route::get('/about',  function () {
-    return view('client.pages.about');
-})->name('about');
+Route::prefix('shop')->name('shop.')->controller(ShopController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/{slug}', 'show')->name('show');
+});
 
-Route::get('/thanks-you', function () {
-    return view('client.pages.thank-you');
-})->name('thanks-you');
+Route::prefix('cart')->name('cart.')->controller(CartController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+    Route::patch('/{key}', 'update')->name('update');
+    Route::delete('/clear', 'clear')->name('clear');
+    Route::delete('/{key}', 'destroy')->name('destroy');
+});
+
+Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+});

@@ -1,55 +1,50 @@
 @extends('admin.layouts.app-blank')
 
-@section('title', 'Alibubu Admin - Đăng Nhập Tài Khoản Quản Trị Viên')
+@section('title', 'Alibubu Admin - Đặt Lại Mật Khẩu')
 
 @section('content')
     <div class="w-full mt-10 m-auto">
         <div class="flex flex-col justify-center items-center gap-4 text-center">
-            <h1 class="text-2xl md:text-3xl text-blue-500 font-bold">
-                Welcome, Admin
-            </h1>
-            <h2 class="text-sm md:text-base text-blue-500 leading-relaxed">
-                Please log in to access the administration dashboard
+            <h1 class="text-2xl md:text-3xl text-blue-500 font-bold">Đặt lại mật khẩu</h1>
+            <h2 class="text-sm md:text-base text-gray-500 leading-relaxed">
+                Nhập mật khẩu mới cho tài khoản quản trị.
             </h2>
         </div>
 
         <div class="w-full m-auto max-w-md bg-white shadow-md rounded-md mt-10 p-6 md:p-10">
-            <form action="{{ route('auth.admin.handleLogin') }}" method="POST"
+            <form action="{{ route('admin.password.update') }}" method="POST"
                 class="flex flex-col justify-center items-center space-y-4">
                 @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
 
                 @include('components.input', [
                     'label' => 'Email',
                     'name' => 'email',
+                    'value' => $email,
                     'required' => true,
                     'icon' => 'envelope',
-                    'placeholder' => 'abcexample@gmail.com',
                 ])
 
                 @include('components.input', [
-                    'label' => 'Password',
+                    'label' => 'Mật khẩu mới',
                     'name' => 'password',
                     'type' => 'password',
                     'required' => true,
                     'icon' => 'lock',
-                    'placeholder' => '********************',
                 ])
 
-                @include('components.checkbox', [
-                    'name' => 'remember',
-                    'label' => 'Ghi nhớ đăng nhập',
+                @include('components.input', [
+                    'label' => 'Xác nhận mật khẩu',
+                    'name' => 'password_confirmation',
+                    'type' => 'password',
+                    'required' => true,
+                    'icon' => 'lock',
                 ])
-
-                <div class="flex justify-end w-full">
-                    <a href="{{ route('admin.password.request') }}" class="text-sm text-blue-500 hover:underline">
-                        Quên mật khẩu?
-                    </a>
-                </div>
 
                 @include('components.button', [
                     'type' => 'submit',
                     'color' => 'blue',
-                    'text' => 'Đăng Nhập',
+                    'text' => 'Đổi mật khẩu',
                 ])
             </form>
         </div>
