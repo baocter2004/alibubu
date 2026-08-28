@@ -8,9 +8,10 @@ return [
     'stats' => [
         'users' => 'Người dùng',
         'products' => 'Sản phẩm',
+        'categories' => 'Danh mục',
         'branches' => 'Thương hiệu',
         'orders' => 'Đơn hàng',
-        'revenue' => 'Doanh thu',
+        'revenue' => 'Doanh thu đã thanh toán',
     ],
 
     'sections' => [

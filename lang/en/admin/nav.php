@@ -14,6 +14,7 @@ return [
 
     'dashboard' => 'Dashboard',
     'branches' => 'Brands',
+    'categories' => 'Categories',
     'products' => 'Products',
     'orders' => 'Orders',
     'users' => 'Users',

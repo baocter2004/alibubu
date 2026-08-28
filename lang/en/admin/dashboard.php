@@ -8,9 +8,10 @@ return [
     'stats' => [
         'users' => 'Users',
         'products' => 'Products',
+        'categories' => 'Categories',
         'branches' => 'Brands',
         'orders' => 'Orders',
-        'revenue' => 'Revenue',
+        'revenue' => 'Paid revenue',
     ],
 
     'sections' => [

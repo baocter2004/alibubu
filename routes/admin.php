@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\WardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\WardController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/admin')
@@ -13,52 +15,37 @@ Route::prefix('/admin')
     ->group(function () {
         Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
 
-        Route::prefix('/users')->name('users.')->group(function () {
-            Route::get('/', [UserController::class, 'index'])->name('index');
-            Route::get('/trash', [UserController::class, 'trash'])->name('trash');
+        foreach ([
+            'users' => UserController::class,
+            'branches' => BranchController::class,
+            'categories' => CategoryController::class,
+            'products' => ProductController::class,
+        ] as $slug => $controller) {
+            Route::prefix($slug)
+                ->name($slug . '.')
+                ->controller($controller)
+                ->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('/trash', 'trash')->name('trash');
+                    Route::get('/create', 'create')->name('create');
+                    Route::get('/confirm', 'confirmDetail')->name('confirm-detail');
+                    Route::post('/confirm/{id?}', 'confirm')->name('confirm');
+                    Route::post('/save', 'save')->name('save');
+                    Route::post('/restore/{id}', 'restore')->name('restore');
+                    Route::delete('/force/{id}', 'forceDestroy')->name('force-destroy');
+                    Route::get('/{id}/edit', 'edit')->name('edit');
+                    Route::get('/{id}', 'show')->name('show');
+                    Route::delete('/{id}', 'destroy')->name('destroy');
+                });
+        }
 
-            Route::get('/create', [UserController::class, 'create'])->name('create');
-            Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
-
-            Route::post('/confirm/{id?}', [UserController::class, 'confirm'])->name('confirm');
-            Route::get('/confirm', [UserController::class, 'confirmDetail'])->name('confirm-detail');
-
-            Route::post('/save', [UserController::class, 'save'])->name('save');
-            Route::get('/{id}', [UserController::class, 'show'])->name('show');
-
-            Route::post('/restore/{id}', [UserController::class, 'restore'])->name('restore');
-
-            Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
-            Route::delete('/force/{id}', [UserController::class, 'forceDestroy'])->name('force-destroy');
+        Route::prefix('provinces')->name('provinces.')->controller(ProvinceController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
         });
 
-        Route::prefix('provinces')->name('provinces.')->group(function () {
-            Route::get('/', [ProvinceController::class, 'index'])->name('index');
-            Route::get('/{id}', [ProvinceController::class, 'show'])->name('show');
+        Route::prefix('wards')->name('wards.')->controller(WardController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
         });
-
-        Route::prefix('wards')->name('wards.')->group(function () {
-            Route::get('/', [WardController::class, 'index'])->name('index');
-            Route::get('/{id}', [WardController::class, 'show'])->name('show');
-        });
-
-        Route::prefix('/branches')
-            ->name('branches.')
-            ->group(function () {
-                Route::get('/', [BranchController::class, 'index'])->name('index');
-                Route::get('/trash', [BranchController::class, 'trash'])->name('trash');
-                Route::get('/create', [BranchController::class, 'create'])->name('create');
-                Route::get('/{id}/edit', [BranchController::class, 'edit'])->name('edit');
-
-                Route::post('/confirm/{id?}', [BranchController::class, 'confirm'])->name('confirm');
-                Route::get('/confirm', [BranchController::class, 'confirmDetail'])->name('confirm-detail');
-
-                Route::post('/save', [BranchController::class, 'save'])->name('save');
-                Route::get('/{id}', [BranchController::class, 'show'])->name('show');
-
-                Route::post('/restore/{id}', [BranchController::class, 'restore'])->name('restore');
-
-                Route::delete('/{id}', [BranchController::class, 'destroy'])->name('destroy');
-                Route::delete('/force/{id}', [BranchController::class, 'forceDestroy'])->name('force-destroy');
-            });
     });

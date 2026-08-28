@@ -14,6 +14,7 @@ return [
 
     'dashboard' => 'Bảng điều khiển',
     'branches' => 'Thương hiệu',
+    'categories' => 'Danh mục',
     'products' => 'Sản phẩm',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',

@@ -53,3 +53,28 @@ document.addEventListener("DOMContentLoaded", function () {
         $arrow.toggleClass("rotate-90");
     });
 });
+
+$(document).on("submit", "form[data-confirm]", function (e) {
+    const $form = $(this);
+
+    if ($form.data("confirmed")) {
+        return true;
+    }
+
+    e.preventDefault();
+
+    Swal.fire({
+        icon: "warning",
+        title: $form.data("confirm-title") || "",
+        text: $form.data("confirm"),
+        showCancelButton: true,
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: $form.data("confirm-yes") || (window.confirmLabels && window.confirmLabels.yes) || "OK",
+        cancelButtonText: $form.data("confirm-no") || (window.confirmLabels && window.confirmLabels.no) || "Cancel",
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $form.data("confirmed", true).trigger("submit");
+        }
+    });
+});

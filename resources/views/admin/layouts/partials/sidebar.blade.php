@@ -17,6 +17,28 @@
             'items' => [
                 [
                     'type' => 'dropdown',
+                    'active' => 'admin.products.*',
+                    'icon' => 'fa-boxes',
+                    'label' => __('admin/nav.products'),
+                    'children' => [
+                        ['route' => 'admin.products.index', 'icon' => 'fa-list', 'label' => __('admin/nav.index')],
+                        ['route' => 'admin.products.create', 'icon' => 'fa-plus', 'label' => __('admin/nav.create')],
+                        ['route' => 'admin.products.trash', 'icon' => 'fa-trash', 'label' => __('admin/nav.trash')],
+                    ],
+                ],
+                [
+                    'type' => 'dropdown',
+                    'active' => 'admin.categories.*',
+                    'icon' => 'fa-layer-group',
+                    'label' => __('admin/nav.categories'),
+                    'children' => [
+                        ['route' => 'admin.categories.index', 'icon' => 'fa-list', 'label' => __('admin/nav.index')],
+                        ['route' => 'admin.categories.create', 'icon' => 'fa-plus', 'label' => __('admin/nav.create')],
+                        ['route' => 'admin.categories.trash', 'icon' => 'fa-trash', 'label' => __('admin/nav.trash')],
+                    ],
+                ],
+                [
+                    'type' => 'dropdown',
                     'active' => 'admin.branches.*',
                     'icon' => 'fa-store',
                     'label' => __('admin/nav.branches'),
@@ -31,7 +53,6 @@
         [
             'label' => __('admin/nav.groups.sales'),
             'items' => [
-                ['type' => 'soon', 'icon' => 'fa-boxes', 'label' => __('admin/nav.products')],
                 ['type' => 'soon', 'icon' => 'fa-cart-shopping', 'label' => __('admin/nav.orders')],
             ],
         ],

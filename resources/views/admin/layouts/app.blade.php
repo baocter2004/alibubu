@@ -34,6 +34,14 @@
 
         @include('admin.layouts.partials.common.scripts')
     </div>
+
+    <script>
+        window.confirmLabels = {
+            yes: @json(__('common.confirm.yes')),
+            no: @json(__('common.confirm.no')),
+        };
+    </script>
+
     @stack('scripts')
 </body>
 
