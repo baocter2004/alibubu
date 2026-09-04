@@ -63,7 +63,7 @@
                                 </p>
                             @endif
 
-                            <p class="text-sm font-semibold text-primary mt-1.5">{{ format_price($item['price']) }}</p>
+                            <p class="text-sm price-main mt-1.5">{{ format_price($item['price']) }}</p>
 
                             <div class="flex flex-wrap items-center gap-3 mt-3">
                                 <form action="{{ route('cart.update', $item['key']) }}" method="POST"
@@ -131,7 +131,7 @@
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">{{ __('client.cart.shipping') }}</dt>
-                        <dd class="font-medium text-green-600">{{ __('client.cart.free') }}</dd>
+                        <dd class="font-medium text-success">{{ __('client.cart.free') }}</dd>
                     </div>
                 </dl>
 
@@ -140,7 +140,7 @@
                 @if ($discount > 0)
                     <div class="flex justify-between text-sm mb-4">
                         <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>
-                        <span class="font-medium text-green-600">-{{ format_price($discount) }}</span>
+                        <span class="font-medium text-success">-{{ format_price($discount) }}</span>
                     </div>
                 @endif
 
@@ -148,7 +148,7 @@
 
                 <div class="flex justify-between items-baseline mb-5">
                     <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                    <span class="text-2xl font-bold text-primary">{{ format_price($total) }}</span>
+                    <span class="text-2xl price-main">{{ format_price($total) }}</span>
                 </div>
 
                 <a href="{{ route('checkout.index') }}"

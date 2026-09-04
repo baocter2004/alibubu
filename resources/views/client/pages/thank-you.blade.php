@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="max-w-lg mx-auto text-center py-14">
-        <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-green-600 mb-6">
+        <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-success mb-6">
             <i class="fa-solid fa-check text-3xl"></i>
         </span>
 

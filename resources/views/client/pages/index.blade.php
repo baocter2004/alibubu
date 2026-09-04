@@ -45,7 +45,7 @@
                         <div>
                             <dt class="sr-only">{{ __('client.home.stats.' . $key) }}</dt>
                             <dd class="text-2xl md:text-3xl font-extrabold tabular tracking-tight">{{ $value }}</dd>
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45 mt-0.5">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60 mt-0.5">
                                 {{ __('client.home.stats.' . $key) }}
                             </p>
                         </div>

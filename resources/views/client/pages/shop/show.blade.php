@@ -101,7 +101,7 @@
                     @endif
                 </div>
 
-                <p class="mt-2 text-sm {{ $outOfStock ? 'text-red-600' : 'text-green-600' }}">
+                <p class="mt-2 text-sm {{ $outOfStock ? 'text-red-600' : 'text-success' }}">
                     <i class="fa-solid {{ $outOfStock ? 'fa-circle-xmark' : 'fa-circle-check' }} mr-1"></i>
                     {{ $outOfStock ? __('client.product.out_of_stock') : __('client.product.stock_left', ['count' => number_format($product->stock)]) }}
                 </p>

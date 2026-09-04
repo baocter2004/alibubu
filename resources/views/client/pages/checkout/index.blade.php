@@ -212,7 +212,7 @@
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-muted-foreground">{{ __('client.cart.shipping') }}</dt>
-                    <dd class="font-medium text-green-600">{{ __('client.cart.free') }}</dd>
+                    <dd class="font-medium text-success">{{ __('client.cart.free') }}</dd>
                 </div>
             </dl>
 
@@ -221,7 +221,7 @@
                     <span class="text-xs font-semibold text-green-700 truncate">
                         {{ __('client.coupon.applied_label', ['code' => $coupon->code]) }}
                     </span>
-                    <span class="text-sm font-medium text-green-600 whitespace-nowrap">-{{ format_price($discount) }}</span>
+                    <span class="text-sm font-medium text-success whitespace-nowrap">-{{ format_price($discount) }}</span>
                 </div>
             @endif
 
@@ -229,7 +229,7 @@
 
             <div class="flex justify-between items-baseline mb-5">
                 <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                <span class="text-2xl font-bold text-primary">{{ format_price($total) }}</span>
+                <span class="text-2xl price-main">{{ format_price($total) }}</span>
             </div>
 
             <button type="submit"

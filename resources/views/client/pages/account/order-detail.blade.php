@@ -31,7 +31,7 @@
                             {{ \App\Const\OrderConst::statusLabel($order->status) }}
                         </span>
                         <span
-                            class="px-3 py-1.5 text-xs font-semibold rounded-full {{ $order->is_paid ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600' }}">
+                            class="px-3 py-1.5 text-xs font-semibold rounded-full {{ $order->is_paid ? 'bg-green-100 text-success' : 'bg-amber-100 text-amber-600' }}">
                             {{ $order->is_paid ? __('admin/order.payment.paid') : __('admin/order.payment.unpaid') }}
                         </span>
                     </div>
