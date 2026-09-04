@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Const\OrderConst;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\CancelOrderRequest;
 use App\Http\Requests\Client\StoreAddressRequest;
 use App\Http\Requests\Client\UpdatePasswordRequest;
 use App\Http\Requests\Client\UpdateProfileRequest;
@@ -55,6 +56,19 @@ class AccountController extends Controller
         }
 
         return view('client.pages.account.order-detail', compact('order'));
+    }
+
+    public function cancelOrder(CancelOrderRequest $request, int|string $id)
+    {
+        $result = $this->accountService->cancelOrder(
+            Auth::user(),
+            $id,
+            $request->validated()['cancel_reason'] ?? null
+        );
+
+        return redirect()
+            ->route('account.orders.show', $id)
+            ->with($result['status'] ? 'success' : 'error', $result['message']);
     }
 
     public function addresses()

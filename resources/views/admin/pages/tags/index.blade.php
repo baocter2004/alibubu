@@ -17,7 +17,7 @@
                     <span class="hidden sm:inline">{{ __('common.labels.trash') }}</span>
                 </a>
                 <a href="{{ route('admin.tags.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-plus"></i>
                     {{ __('common.actions.create') }}
                 </a>
@@ -27,9 +27,9 @@
         <form action="{{ route('admin.tags.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
             <input type="search" name="keyword" value="{{ request('keyword') }}"
                 placeholder="{{ __('common.labels.keyword') }}"
-                class="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
             <button type="submit"
-                class="px-5 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                class="px-5 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                 <i class="fas fa-magnifying-glass mr-1"></i>{{ __('common.actions.search') }}
             </button>
             <a href="{{ route('admin.tags.index') }}"
@@ -54,14 +54,14 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($tags as $tag)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3 truncate">{{ $tag->id }}</td>
+                            <td class="text-center px-4 py-3 truncate">@include('components.id-badge', ['id' => $tag->id])</td>
                             <td class="px-4 py-3 font-medium text-gray-900 truncate">{{ $tag->name }}</td>
                             <td class="px-4 py-3 text-gray-500 truncate">{{ $tag->slug }}</td>
                             <td class="text-center px-4 py-3">{{ $tag->products_count }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-center gap-3">
                                     <a href="{{ route('admin.tags.show', $tag->id) }}"
-                                        class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                        class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.tags.edit', $tag->id) }}"

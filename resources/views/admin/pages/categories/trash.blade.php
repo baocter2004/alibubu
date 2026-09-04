@@ -30,7 +30,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($categories as $category)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $category->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $category->id])</td>
                             <td class="px-4 py-3 truncate">{{ $category->name }}</td>
                             <td class="px-4 py-3 truncate text-gray-500">{{ $category->slug }}</td>
                             <td class="px-4 py-3">{{ $category->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>

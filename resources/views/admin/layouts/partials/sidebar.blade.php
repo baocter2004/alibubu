@@ -49,12 +49,12 @@
 <aside id="sidebar">
     <div class="flex items-center justify-between gap-2 px-4 py-4 border-b border-white/10">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand flex items-center gap-3 min-w-0">
-            <span class="w-10 h-10 shrink-0 rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold">
+            <span class="w-10 h-10 shrink-0 rounded-xl bg-accent flex items-center justify-center text-accent-foreground font-bold">
                 A
             </span>
             <span class="brand-text min-w-0">
                 <span class="block text-base font-bold text-white truncate">{{ __('admin/nav.brand') }}</span>
-                <span class="block text-[10px] font-semibold uppercase tracking-widest text-blue-400 truncate">
+                <span class="block text-[10px] font-semibold uppercase tracking-widest text-accent/80 truncate">
                     {{ __('admin/nav.brand_subtitle') }}
                 </span>
             </span>

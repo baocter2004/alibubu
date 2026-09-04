@@ -51,7 +51,7 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach ($category->children as $child)
                         <a href="{{ route('admin.categories.show', $child->id) }}"
-                            class="px-3 py-1.5 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                            class="px-3 py-1.5 text-sm bg-primary-soft text-primary rounded-lg hover:bg-primary-soft transition-colors">
                             {{ $child->name }}
                         </a>
                     @endforeach

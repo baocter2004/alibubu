@@ -15,6 +15,7 @@ return [
         'search_placeholder' => 'Search products...',
         'track_order' => 'Track order',
         'support' => 'Support',
+        'skip_to_content' => 'Skip to main content',
         'free_shipping' => 'Free shipping on orders over 500,000đ',
     ],
 
@@ -293,6 +294,13 @@ return [
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',
+            'cancel' => 'Cancel order',
+            'cancel_title' => 'Cancel this order?',
+            'cancel_hint' => 'You can only cancel an order before it ships. The items will be returned to stock.',
+            'cancel_reason' => 'Cancellation reason',
+            'cancel_reason_placeholder' => 'For example: I would like to order a different item...',
+            'cancel_submit' => 'Confirm cancellation',
+            'cancel_keep' => 'Keep the order',
         ],
         'addresses' => [
             'title' => 'Address book',
@@ -327,6 +335,9 @@ return [
             'address_deleted' => 'Address removed successfully.',
             'address_not_found' => 'Address not found.',
             'delete_address_confirm' => 'This address will be removed from your address book.',
+            'order_not_found' => 'Order not found.',
+            'order_cancelled' => 'Your order has been cancelled.',
+            'cancel_not_allowed' => 'This order can no longer be cancelled. Please contact our support team.',
         ],
     ],
 
@@ -352,6 +363,27 @@ return [
         'terms' => 'Terms',
         'privacy' => 'Privacy',
         'cookie' => 'Cookies',
+    ],
+
+    'mail' => [
+        'order' => [
+            'subject' => 'Order confirmation :code',
+            'title' => 'Order confirmation',
+            'greeting' => 'Hi :name,',
+            'intro' => 'Thank you for shopping at Alibubu. We have received your order and will contact you to confirm it shortly.',
+            'code' => 'Order code',
+            'item' => 'Item',
+            'quantity' => 'Qty',
+            'subtotal' => 'Subtotal',
+            'discount' => 'Discount',
+            'total' => 'Order total',
+            'recipient' => 'Recipient',
+            'phone_number' => 'Phone number',
+            'address' => 'Shipping address',
+            'payment_method' => 'Payment method',
+            'action' => 'Continue shopping',
+            'outro' => 'If you did not place this order, please contact us right away.',
+        ],
     ],
 
     'messages' => [

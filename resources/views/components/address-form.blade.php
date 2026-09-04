@@ -7,10 +7,10 @@
         : [];
 @endphp
 
-<div class="address-item relative bg-gray-50 border border-gray-200 rounded-xl p-5" data-index="{{ $idx }}">
+<div class="address-item relative bg-gray-50 border border-border rounded-xl p-5" data-index="{{ $idx }}">
     <div class="flex items-center justify-between mb-4">
         <p class="text-sm font-semibold text-gray-700">
-            <i class="fa-solid fa-location-dot text-blue-500 mr-1.5"></i>
+            <i class="fa-solid fa-location-dot text-accent mr-1.5"></i>
             {{ __('admin/user.address.title') }}<span class="address-title">{{ is_numeric($idx) ? $idx + 1 : 1 }}</span>
         </p>
 
@@ -69,7 +69,7 @@
         <label class="flex items-center gap-2 cursor-pointer pb-2">
             <input type="checkbox" id="is_default_{{ $idx }}" name="user_addresses[{{ $idx }}][is_default]"
                 value="1" @checked(! empty($address['is_default']))
-                class="address-default-checkbox w-4 h-4 rounded accent-blue-500">
+                class="address-default-checkbox w-4 h-4 rounded accent-accent">
             <span class="text-sm text-gray-700">{{ __('admin/user.address.is_default') }}</span>
         </label>
     </div>

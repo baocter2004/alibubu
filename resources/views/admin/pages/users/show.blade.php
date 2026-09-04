@@ -7,7 +7,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div class="flex items-center gap-4">
                 <span
-                    class="w-14 h-14 shrink-0 rounded-full bg-blue-100 text-blue-600 text-xl font-bold flex items-center justify-center">
+                    class="w-14 h-14 shrink-0 rounded-full bg-primary-soft text-primary text-xl font-bold flex items-center justify-center">
                     {{ Str::upper(Str::substr($user->fullname, 0, 1)) }}
                 </span>
                 <div>
@@ -35,7 +35,7 @@
                 class="px-3 py-1.5 text-xs font-semibold rounded-full {{ \App\Const\UserConst::statusBadgeClass($user->status) }}">
                 {{ \App\Const\UserConst::statusLabel($user->status) }}
             </span>
-            <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-600">
+            <span class="px-3 py-1.5 text-xs font-semibold rounded-full bg-primary-soft text-primary">
                 {{ \App\Const\UserConst::roleLabel($user->role) }}
             </span>
             <span
@@ -89,12 +89,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach ($user->userAddresses as $address)
                     <div
-                        class="border rounded-xl p-4 {{ $address->is_default ? 'border-blue-300 bg-blue-50/50' : 'border-gray-200 bg-gray-50' }}">
+                        class="border rounded-xl p-4 {{ $address->is_default ? 'border-primary/30 bg-primary-soft/50' : 'border-gray-200 bg-gray-50' }}">
                         <div class="flex items-start justify-between gap-3 mb-2">
                             <p class="font-medium text-gray-900">{{ $address->fullname }}</p>
                             @if ($address->is_default)
                                 <span
-                                    class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-blue-500 text-white shrink-0">
+                                    class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-primary text-white shrink-0">
                                     {{ __('admin/user.address.default_badge') }}
                                 </span>
                             @endif

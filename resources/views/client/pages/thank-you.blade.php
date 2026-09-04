@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="max-w-lg mx-auto text-center py-14">
-        <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 text-green-600 mb-6">
+        <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success-soft text-success mb-6">
             <i class="fa-solid fa-check text-3xl"></i>
         </span>
 
@@ -20,7 +20,7 @@
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="{{ route('shop.index') }}"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
                 <i class="fa-solid fa-bag-shopping"></i> {{ __('client.thank_you.continue') }}
             </a>
             <a href="{{ route('index') }}"

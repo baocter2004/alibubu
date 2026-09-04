@@ -4,11 +4,15 @@ namespace App\Services\Client;
 
 use App\Const\OrderConst;
 use App\Const\PaymentConst;
+use App\Mail\OrderPlaced;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -27,11 +31,12 @@ class OrderService
         }
 
         $subtotal = $this->cartService->subtotal($items);
-        $applied = $this->couponService->current($items, $subtotal, $userId ? \App\Models\User::find($userId) : null);
+        $user = $userId ? User::find($userId) : null;
+        $applied = $this->couponService->current($items, $subtotal, $user);
         $coupon = $applied['coupon'] ?? null;
         $discount = (float) ($applied['discount'] ?? 0);
 
-        return DB::transaction(function () use ($items, $params, $userId, $subtotal, $coupon, $discount) {
+        $order = DB::transaction(function () use ($items, $params, $userId, $subtotal, $coupon, $discount) {
             $order = Order::create(array_merge([
                 'code' => $this->generateCode(),
                 'user_id' => $userId,
@@ -55,6 +60,28 @@ class OrderService
 
             return $order;
         });
+
+        $this->sendConfirmationMail($order, $user);
+
+        return $order;
+    }
+
+    protected function sendConfirmationMail(Order $order, ?User $user = null): void
+    {
+        $email = $order->email ?: $user?->email;
+
+        if (! $email) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->send(new OrderPlaced($order));
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, [
+                'message' => $th->getMessage(),
+                'order_code' => $order->code,
+            ]);
+        }
     }
 
     protected function consumeStock(Collection $items): void

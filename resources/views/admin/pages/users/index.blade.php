@@ -17,7 +17,7 @@
                     <span class="hidden sm:inline">{{ __('common.labels.trash') }}</span>
                 </a>
                 <a href="{{ route('admin.users.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-plus"></i>
                     <span>{{ __('common.actions.create') }}</span>
                 </a>
@@ -30,7 +30,7 @@
                     class="block text-sm font-medium text-gray-700 mb-1">{{ __('common.labels.keyword') }}</label>
                 <input type="search" id="keyword" name="keyword" value="{{ request('keyword') }}"
                     placeholder="{{ __('admin/user.fields.fullname') }}, {{ __('admin/user.fields.email') }}, {{ __('admin/user.fields.phone_number') }}"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -38,25 +38,25 @@
                     <label for="fullname"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.fullname') }}</label>
                     <input type="text" id="fullname" name="fullname" value="{{ request('fullname') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                 </div>
                 <div>
                     <label for="email"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.email') }}</label>
                     <input type="text" id="email" name="email" value="{{ request('email') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                 </div>
                 <div>
                     <label for="phone_number"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.phone_number') }}</label>
                     <input type="text" id="phone_number" name="phone_number" value="{{ request('phone_number') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                 </div>
                 <div>
                     <label for="role"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.role') }}</label>
                     <select id="role" name="role"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                         <option value="">{{ __('common.labels.all') }}</option>
                         @foreach ($roles as $key => $value)
                             <option value="{{ $key }}" @selected((string) request('role') === (string) $key)>{{ $value }}</option>
@@ -67,7 +67,7 @@
                     <label for="status"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/user.fields.status') }}</label>
                     <select id="status" name="status"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                         <option value="">{{ __('common.labels.all') }}</option>
                         @foreach ($statuses as $key => $value)
                             <option value="{{ $key }}" @selected((string) request('status') === (string) $key)>{{ $value }}</option>
@@ -78,7 +78,7 @@
 
             <div class="flex justify-end items-center gap-2">
                 <button type="submit"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-magnifying-glass"></i>
                     {{ __('common.actions.search') }}
                 </button>
@@ -112,7 +112,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($users as $user)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $user->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $user->id])</td>
                             <td class="px-4 py-3 truncate">{{ $user->fullname }}</td>
                             <td class="px-4 py-3">{{ $user->phone_number ?: '-' }}</td>
                             <td class="px-4 py-3 truncate">{{ $user->email }}</td>
@@ -128,7 +128,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex justify-center gap-3">
                                     <a href="{{ route('admin.users.show', $user->id) }}"
-                                        class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                        class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.users.edit', $user->id) }}"

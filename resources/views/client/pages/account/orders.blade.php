@@ -37,7 +37,7 @@
                     </select>
 
                     <button type="submit"
-                        class="px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                        class="px-5 py-2.5 text-sm font-bold btn-primary rounded-lg">
                         {{ __('common.actions.search') }}
                     </button>
                 </form>
@@ -47,7 +47,7 @@
                         <i class="fa-solid fa-receipt text-5xl text-muted-foreground/25 mb-4"></i>
                         <p class="text-foreground font-medium mb-4">{{ __('client.account.orders.empty') }}</p>
                         <a href="{{ route('shop.index') }}"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold btn-primary rounded-lg">
                             <i class="fa-solid fa-bag-shopping"></i>
                             {{ __('client.account.orders.empty_cta') }}
                         </a>
@@ -71,7 +71,7 @@
                                         class="px-2.5 py-1 text-xs font-semibold rounded-full {{ \App\Const\OrderConst::statusBadgeClass($order->status) }}">
                                         {{ \App\Const\OrderConst::statusLabel($order->status) }}
                                     </span>
-                                    <span class="font-bold text-primary whitespace-nowrap">
+                                    <span class="price-main whitespace-nowrap">
                                         {{ format_price($order->total_amount) }}
                                     </span>
                                     <i class="fa-solid fa-chevron-right text-xs text-muted-foreground"></i>

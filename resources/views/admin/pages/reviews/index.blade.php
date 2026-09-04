@@ -11,7 +11,7 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         @foreach ([['key' => 'pending', 'value' => $pending, 'icon' => 'fa-clock', 'tone' => 'bg-amber-50 text-amber-600', 'filter' => 'pending'], ['key' => 'approved', 'value' => $approved, 'icon' => 'fa-circle-check', 'tone' => 'bg-green-50 text-green-600', 'filter' => 'approved']] as $card)
             <a href="{{ route('admin.reviews.index', ['status' => $card['filter']]) }}"
-                class="bg-white rounded-xl border p-4 transition-all hover:shadow-md {{ request('status') === $card['filter'] ? 'border-blue-400 ring-1 ring-blue-200' : 'border-gray-100' }}">
+                class="bg-white rounded-xl border p-4 transition-all hover:shadow-md {{ request('status') === $card['filter'] ? 'border-primary/45 ring-1 ring-primary/20' : 'border-gray-100' }}">
                 <span class="w-9 h-9 rounded-lg flex items-center justify-center mb-2 {{ $card['tone'] }}">
                     <i class="fa-solid {{ $card['icon'] }} text-sm"></i>
                 </span>
@@ -21,7 +21,7 @@
         @endforeach
 
         <a href="{{ route('admin.reviews.index') }}"
-            class="bg-white rounded-xl border p-4 flex flex-col justify-center transition-all hover:shadow-md {{ request('status') ? 'border-gray-100' : 'border-blue-400 ring-1 ring-blue-200' }}">
+            class="bg-white rounded-xl border p-4 flex flex-col justify-center transition-all hover:shadow-md {{ request('status') ? 'border-gray-100' : 'border-primary/45 ring-1 ring-primary/20' }}">
             <span class="text-sm font-medium text-gray-700">{{ __('admin/review.status.all') }}</span>
             <span class="text-xs text-gray-500 mt-1">{{ number_format($pending + $approved) }}</span>
         </a>
@@ -32,9 +32,9 @@
             <input type="hidden" name="status" value="{{ request('status') }}">
             <input type="search" name="keyword" value="{{ request('keyword') }}"
                 placeholder="{{ __('common.labels.keyword') }}"
-                class="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="flex-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
             <button type="submit"
-                class="px-5 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                class="px-5 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                 <i class="fas fa-magnifying-glass mr-1"></i>{{ __('common.actions.search') }}
             </button>
         </form>
@@ -56,7 +56,7 @@
                         <tr class="text-sm text-gray-700 transition-colors">
                             <td class="px-4 py-3">
                                 <a href="{{ route('admin.products.show', $review->product_id) }}"
-                                    class="font-medium text-blue-600 hover:underline line-clamp-2">
+                                    class="font-medium text-primary hover:underline line-clamp-2">
                                     {{ $review->product?->name }}
                                 </a>
                             </td>

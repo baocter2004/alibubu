@@ -59,7 +59,7 @@
         </div>
 
         <div class="mt-5">
-            <label class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
+            <label class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
                 <i class="fa-solid fa-layer-group"></i>
                 {{ __('admin/product.fields.categories') }}
                 <span class="text-red-500 text-base leading-none">*</span>
@@ -71,7 +71,7 @@
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="category_ids[]" value="{{ $id }}"
                             @checked(in_array($id, old('category_ids', $selectedCategories), false))
-                            class="h-4 w-4 rounded accent-blue-500">
+                            class="h-4 w-4 rounded accent-accent">
                         <span class="text-sm text-gray-700 truncate">{{ $name }}</span>
                     </label>
                 @endforeach
@@ -92,12 +92,12 @@
         </div>
 
         <div class="mt-5">
-            <label for="descriptions" class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
+            <label for="descriptions" class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
                 <i class="fa-solid fa-file-lines"></i>
                 {{ __('admin/product.fields.descriptions') }}
             </label>
             <textarea id="descriptions" name="descriptions" rows="5"
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all {{ $errors->has('descriptions') ? 'is-invalid' : 'border-gray-300' }}">{{ old('descriptions', $values['descriptions'] ?? '') }}</textarea>
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all {{ $errors->has('descriptions') ? 'is-invalid' : 'border-gray-300' }}">{{ old('descriptions', $values['descriptions'] ?? '') }}</textarea>
             @error('descriptions')
                 <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
             @enderror
@@ -115,9 +115,9 @@
                     <input type="radio" name="type" value="{{ $type }}" @checked($currentType === $type)
                         class="peer sr-only product-type-option">
                     <span
-                        class="flex items-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50">
+                        class="flex items-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg transition-all peer-checked:border-primary peer-checked:bg-primary-soft">
                         <i
-                            class="fa-solid {{ $type === \App\Const\ProductConst::SINGLE ? 'fa-cube' : 'fa-cubes' }} text-blue-500"></i>
+                            class="fa-solid {{ $type === \App\Const\ProductConst::SINGLE ? 'fa-cube' : 'fa-cubes' }} text-primary"></i>
                         <span class="text-sm font-medium text-gray-800">{{ __('enum.product.type.' . $type) }}</span>
                     </span>
                 </label>
@@ -178,7 +178,7 @@
                 <p class="text-xs text-gray-500 mt-0.5">{{ __('admin/product.variant.description') }}</p>
             </div>
             <button type="button" id="add-variant-btn"
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                 <i class="fa-solid fa-plus"></i>
                 {{ __('admin/product.variant.add') }}
             </button>
@@ -210,7 +210,7 @@
                 <p class="text-xs text-gray-500 mt-0.5">{{ __('admin/product.spec.description') }}</p>
             </div>
             <button type="button" id="add-spec-btn"
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                 <i class="fa-solid fa-plus"></i>
                 {{ __('admin/product.spec.add') }}
             </button>
@@ -264,14 +264,14 @@
             <label class="flex items-center gap-2 cursor-pointer md:mt-9">
                 <input type="hidden" name="is_featured" value="0">
                 <input type="checkbox" name="is_featured" value="1"
-                    @checked(old('is_featured', $values['is_featured'] ?? false)) class="h-4 w-4 rounded accent-blue-500">
+                    @checked(old('is_featured', $values['is_featured'] ?? false)) class="h-4 w-4 rounded accent-accent">
                 <span class="text-sm text-gray-700">{{ __('admin/product.fields.is_featured') }}</span>
             </label>
 
             <label class="flex items-center gap-2 cursor-pointer md:mt-9">
                 <input type="hidden" name="is_trending" value="0">
                 <input type="checkbox" name="is_trending" value="1"
-                    @checked(old('is_trending', $values['is_trending'] ?? false)) class="h-4 w-4 rounded accent-blue-500">
+                    @checked(old('is_trending', $values['is_trending'] ?? false)) class="h-4 w-4 rounded accent-accent">
                 <span class="text-sm text-gray-700">{{ __('admin/product.fields.is_trending') }}</span>
             </label>
         </div>
@@ -283,7 +283,7 @@
             {{ __('common.actions.cancel') }}
         </a>
         <button type="submit"
-            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
             <i class="fa-solid fa-arrow-right"></i>
             {{ __('common.actions.confirm') }}
         </button>

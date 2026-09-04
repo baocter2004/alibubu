@@ -122,7 +122,7 @@
             </div>
 
             <div>
-                <label class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
+                <label class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
                     <i class="fa-solid fa-layer-group"></i>
                     {{ __('admin/coupon.fields.valid_categories') }}
                 </label>
@@ -133,7 +133,7 @@
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" name="valid_categories[]" value="{{ $id }}"
                                 @checked(in_array($id, $selectedCategories, false))
-                                class="h-4 w-4 rounded accent-blue-500">
+                                class="h-4 w-4 rounded accent-accent">
                             <span class="text-sm text-gray-700 truncate">{{ $name }}</span>
                         </label>
                     @endforeach
@@ -180,7 +180,7 @@
             {{ __('common.actions.back') }}
         </a>
         <button type="submit"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
             <i class="fa-solid fa-arrow-right"></i>
             {{ __('common.actions.confirm') }}
         </button>

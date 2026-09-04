@@ -84,7 +84,7 @@
 
                     <div class="flex justify-end">
                         <button type="submit"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold btn-primary rounded-xl">
                             <i class="fa-solid fa-floppy-disk"></i>
                             {{ __('common.actions.save') }}
                         </button>
@@ -118,7 +118,7 @@
 
                     <div class="flex justify-end">
                         <button type="submit"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold btn-primary rounded-xl">
                             <i class="fa-solid fa-key"></i>
                             {{ __('client.account.profile.password_title') }}
                         </button>

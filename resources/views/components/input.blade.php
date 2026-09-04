@@ -19,7 +19,7 @@
 @endphp
 
 <div class="w-full">
-    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
+    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-semibold text-primary mb-2">
         @if ($icon)
             <i class="fa-solid fa-{{ $icon }}"></i>
         @endif
@@ -34,7 +34,7 @@
             <input id="{{ $name }}" name="{{ $name }}" type="{{ $type }}"
                 @if ($disabled) disabled @endif @if ($readonly) readonly @endif
                 value="{{ old($dotName, $value) }}" placeholder="{{ $placeholder }}"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200
+                class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-all duration-200
                     {{ $hasError ? 'is-invalid' : '' }}
                     {{ $type === 'password' ? 'pr-10' : 'pr-4' }}
                     {{ $class }}">
@@ -42,7 +42,7 @@
 
         @if ($type === 'password')
             <button type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 toggle-password"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accent toggle-password"
                 data-target="#{{ $name }}" id="toggle-{{ $name }}">
                 <i class="fa-solid fa-eye"></i>
             </button>
@@ -52,11 +52,11 @@
     @if ($type === 'file')
         <div class="mt-2">
             <label for="{{ $name }}"
-                class="flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden relative hover:bg-gray-50 {{ $hasError ? 'border-red-500' : 'border-gray-300' }}">
+                class="flex flex-col items-center justify-center w-full h-60 border-2 border-dashed rounded-lg cursor-pointer overflow-hidden relative hover:bg-gray-50 {{ $hasError ? 'border-red-500' : 'border-border' }}">
 
                 <div id="placeholder-{{ $name }}"
                     class="flex flex-col items-center justify-center text-center p-5 {{ $value ? 'hidden' : '' }}">
-                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-blue-500 mb-2"></i>
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-accent mb-2"></i>
                     <p class="text-sm text-gray-500">{{ __('common.labels.upload_hint') }}</p>
                 </div>
 

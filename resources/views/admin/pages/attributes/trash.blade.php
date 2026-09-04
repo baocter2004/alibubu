@@ -29,7 +29,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($attributes as $attribute)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $attribute->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $attribute->id])</td>
                             <td class="px-4 py-3 truncate">{{ $attribute->name }}</td>
                             <td class="px-4 py-3">{{ $attribute->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>
                             <td class="px-4 py-3">

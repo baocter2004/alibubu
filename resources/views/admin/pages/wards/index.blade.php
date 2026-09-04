@@ -15,14 +15,14 @@
                 <label for="name"
                     class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/address.ward.fields.name') }}</label>
                 <input type="search" id="name" name="name" value="{{ request('name') }}"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
             </div>
 
             <div>
                 <label for="division_type"
                     class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/address.ward.fields.division_type') }}</label>
                 <select id="division_type" name="division_type"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                     <option value="">{{ __('common.labels.all') }}</option>
                     @foreach (\App\Const\WardConst::DIVISION_TYPE as $type)
                         <option value="{{ $type }}" @selected(request('division_type') === $type)>{{ $type }}</option>
@@ -32,7 +32,7 @@
 
             <div class="flex gap-2">
                 <button type="submit"
-                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-magnifying-glass"></i>
                     {{ __('common.actions.search') }}
                 </button>
@@ -60,14 +60,14 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($wards as $ward)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $ward->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $ward->id])</td>
                             <td class="px-4 py-3 font-medium text-gray-900 truncate">{{ $ward->name }}</td>
                             <td class="text-center px-4 py-3">{{ $ward->code }}</td>
                             <td class="px-4 py-3 truncate">{{ $ward->division_type }}</td>
                             <td class="px-4 py-3 truncate">{{ $ward->province?->name ?? '-' }}</td>
                             <td class="text-center px-4 py-3">
                                 <a href="{{ route('admin.wards.show', $ward->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                    class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </td>

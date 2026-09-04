@@ -14,7 +14,7 @@
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
                 <input type="search" name="keyword" value="{{ request('keyword') }}"
                     placeholder="{{ __('admin/nav.search_placeholder') }}"
-                    class="w-full pl-9 pr-4 py-2 text-sm bg-gray-100 border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-blue-400 transition-all">
+                    class="w-full pl-9 pr-4 py-2 text-sm bg-gray-100 border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-accent transition-all">
             </div>
         </form>
 
@@ -31,7 +31,7 @@
                 <button type="button"
                     class="flex items-center gap-3 pl-3 py-1.5 pr-2 rounded-lg border-l border-gray-200 hover:bg-gray-100 transition-colors">
                     <span
-                        class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center">
+                        class="w-9 h-9 rounded-full bg-primary-soft text-primary font-bold flex items-center justify-center">
                         {{ Str::upper(Str::substr($admin?->name ?? 'A', 0, 1)) }}
                     </span>
                     <span class="hidden sm:block text-left leading-tight">
@@ -48,11 +48,25 @@
                         <p class="text-xs text-gray-500 truncate">{{ $admin?->email }}</p>
                     </div>
 
+                    <a href="{{ route('admin.profile.edit') }}"
+                        class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-primary-soft transition-colors">
+                        <i class="fa-solid fa-user w-4"></i>
+                        {{ __('admin/nav.profile') }}
+                    </a>
+
+                    <a href="{{ route('admin.profile.edit') }}#password"
+                        class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-primary-soft transition-colors">
+                        <i class="fa-solid fa-key w-4"></i>
+                        {{ __('admin/nav.change_password') }}
+                    </a>
+
                     <a href="{{ route('index') }}" target="_blank" rel="noopener"
-                        class="sm:hidden flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-blue-50 transition-colors">
+                        class="sm:hidden flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-primary-soft transition-colors">
                         <i class="fa-solid fa-arrow-up-right-from-square w-4"></i>
                         {{ __('admin/nav.view_site') }}
                     </a>
+
+                    <span class="block my-1 border-t border-gray-100"></span>
 
                     <form action="{{ route('auth.admin.logout') }}" method="POST">
                         @csrf

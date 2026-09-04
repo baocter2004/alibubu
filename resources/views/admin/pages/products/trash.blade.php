@@ -30,7 +30,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($products as $product)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $product->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $product->id])</td>
                             <td class="px-4 py-3 truncate">{{ $product->name }}</td>
                             <td class="px-4 py-3 text-gray-500">{{ $product->sku ?: '-' }}</td>
                             <td class="px-4 py-3">{{ $product->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>

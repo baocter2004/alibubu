@@ -9,28 +9,29 @@
         <span class="text-foreground font-medium">{{ __('client.about.title') }}</span>
     </nav>
 
-    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-blue-600 to-indigo-700 mb-8">
-        <span class="absolute -top-20 -right-16 w-72 h-72 rounded-full bg-white/10"></span>
-        <span class="absolute -bottom-24 -left-16 w-80 h-80 rounded-full bg-white/5"></span>
-
-        <div class="relative px-6 py-12 md:px-12 md:py-16 text-white max-w-3xl">
-            <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full bg-white/15 backdrop-blur mb-5">
-                <i class="fa-solid fa-shield-halved"></i>
+    <section class="grain relative overflow-hidden ink-panel rounded-[1.75rem] mb-12">
+        <div class="relative px-6 py-14 md:px-14 md:py-20 text-white max-w-3xl">
+            <span class="inline-flex items-center gap-2 self-start px-3 py-1.5 mb-6 text-[11px] font-semibold tracking-wider uppercase rounded-full bg-white/10 border border-white/15">
+                <i class="fa-solid fa-shield-halved text-accent"></i>
                 {{ __('client.about.hero_badge') }}
             </span>
 
-            <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-4">{{ __('client.about.hero_title') }}</h1>
-            <p class="text-white/75 leading-relaxed mb-7">{{ __('client.about.hero_text') }}</p>
+            <h1 class="text-[2.25rem] leading-[1.08] md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5">
+                {{ __('client.about.hero_title') }}
+            </h1>
+            <p class="text-white/65 text-base md:text-lg leading-relaxed max-w-xl mb-9">
+                {{ __('client.about.hero_text') }}
+            </p>
 
             <a href="{{ route('shop.index') }}"
-                class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-primary bg-white rounded-xl hover:bg-white/90 transition-colors">
+                class="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold btn-accent rounded-xl">
                 <i class="fa-solid fa-bag-shopping"></i>
                 {{ __('client.about.cta_shop') }}
             </a>
         </div>
     </section>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16" data-reveal-group>
         @php
             $cards = [
                 ['icon' => 'fa-mobile-screen-button', 'value' => number_format($stats['products']), 'key' => 'products'],
@@ -41,12 +42,12 @@
         @endphp
 
         @foreach ($cards as $card)
-            <div class="bg-card border border-border rounded-2xl p-5 text-center">
-                <span class="inline-flex w-12 h-12 rounded-xl bg-primary/10 text-primary items-center justify-center mb-3">
+            <div class="reveal card-surface p-5">
+                <span class="inline-flex w-11 h-11 rounded-xl bg-accent-soft text-accent items-center justify-center mb-4">
                     <i class="fa-solid {{ $card['icon'] }}"></i>
                 </span>
-                <p class="text-2xl font-bold text-foreground">{{ $card['value'] }}</p>
-                <p class="text-xs text-muted-foreground mt-1">{{ __('client.about.stats.' . $card['key']) }}</p>
+                <p class="text-3xl font-extrabold text-foreground tabular tracking-tight">{{ $card['value'] }}</p>
+                <p class="eyebrow mt-1.5">{{ __('client.about.stats.' . $card['key']) }}</p>
             </div>
         @endforeach
     </div>

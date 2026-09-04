@@ -21,7 +21,7 @@
                     </div>
 
                     <button type="button" id="toggle-address-form"
-                        class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                        class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold btn-primary rounded-lg">
                         <i class="fa-solid fa-plus"></i>
                         {{ __('client.account.addresses.add') }}
                     </button>
@@ -110,7 +110,7 @@
                             {{ __('common.actions.cancel') }}
                         </button>
                         <button type="submit"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold btn-primary rounded-lg">
                             <i class="fa-solid fa-floppy-disk"></i>
                             {{ __('common.actions.save') }}
                         </button>

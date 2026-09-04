@@ -22,7 +22,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
         @foreach ($statCards as $card)
             <a href="{{ route('admin.orders.index', $card['value'] ? ['status' => $card['value']] : []) }}"
-                class="bg-white rounded-xl shadow-sm border p-4 transition-all hover:shadow-md {{ (string) request('status') === (string) $card['value'] ? 'border-blue-400 ring-1 ring-blue-200' : 'border-gray-100' }}">
+                class="bg-white rounded-xl shadow-sm border p-4 transition-all hover:shadow-md {{ (string) request('status') === (string) $card['value'] ? 'border-primary/45 ring-1 ring-primary/20' : 'border-gray-100' }}">
                 <span class="w-9 h-9 rounded-lg flex items-center justify-center mb-2 {{ $card['class'] }}">
                     <i class="fa-solid {{ $card['icon'] }} text-sm"></i>
                 </span>
@@ -39,14 +39,14 @@
                     <label for="keyword"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('common.labels.keyword') }}</label>
                     <input type="search" id="keyword" name="keyword" value="{{ request('keyword') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                 </div>
 
                 <div>
                     <label for="status"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.fields.status') }}</label>
                     <select id="status" name="status"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                         <option value="">{{ __('common.labels.all') }}</option>
                         @foreach ($statuses as $key => $value)
                             <option value="{{ $key }}" @selected((string) request('status') === (string) $key)>{{ $value }}</option>
@@ -58,14 +58,14 @@
                     <label for="from_date"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.fields.from_date') }}</label>
                     <input type="date" id="from_date" name="from_date" value="{{ request('from_date') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                 </div>
 
                 <div>
                     <label for="to_date"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.fields.to_date') }}</label>
                     <input type="date" id="to_date" name="to_date" value="{{ request('to_date') }}"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                     @error('to_date')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -74,7 +74,7 @@
 
             <div class="flex justify-end gap-2">
                 <button type="submit"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-magnifying-glass"></i>
                     {{ __('common.actions.search') }}
                 </button>
@@ -107,7 +107,7 @@
                         <tr class="text-sm text-gray-700 transition-colors">
                             <td class="px-4 py-3">
                                 <a href="{{ route('admin.orders.show', $order->id) }}"
-                                    class="font-medium text-blue-600 hover:underline">{{ $order->code }}</a>
+                                    class="font-medium text-primary hover:underline">{{ $order->code }}</a>
                                 <span
                                     class="block text-xs text-gray-500">{{ $order->created_at?->format('d/m/Y H:i') }}</span>
                             </td>
@@ -134,7 +134,7 @@
                             </td>
                             <td class="text-center px-4 py-3">
                                 <a href="{{ route('admin.orders.show', $order->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                    class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </td>

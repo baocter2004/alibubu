@@ -16,7 +16,7 @@
 @endphp
 
 <div class="w-full">
-    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-medium text-blue-500 mb-2">
+    <label for="{{ $name }}" class="flex items-center gap-x-2 text-sm font-semibold text-primary mb-2">
         @if ($icon)
             <i class="fa-solid fa-{{ $icon }}"></i>
         @endif
@@ -27,7 +27,7 @@
     </label>
 
     <select name="{{ $name }}" id="{{ $name }}"
-        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all {{ $class ?? '' }} {{ $hasError ? 'is-invalid' : 'border-gray-300' }}">
+        class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 transition-all {{ $class ?? '' }} {{ $hasError ? 'is-invalid' : 'border-border' }}">
         @if ($placeholder)
             <option value="" disabled {{ old($dotName, $value) === '' ? 'selected' : '' }}>
                 {{ $placeholder }}

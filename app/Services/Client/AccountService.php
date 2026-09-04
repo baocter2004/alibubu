@@ -2,7 +2,9 @@
 
 namespace App\Services\Client;
 
+use App\Const\OrderConst;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -27,6 +29,54 @@ class AccountService
             ->with(['items.product', 'items.productVariant'])
             ->whereKey($id)
             ->first();
+    }
+
+    public function cancelOrder(User $user, int|string $id, ?string $reason = null): array
+    {
+        $order = $user->orders()->whereKey($id)->first();
+
+        if (! $order) {
+            return [
+                'status' => false,
+                'message' => __('client.account.messages.order_not_found'),
+            ];
+        }
+
+        if (! OrderConst::isCancellableByCustomer($order->status)) {
+            return [
+                'status' => false,
+                'message' => __('client.account.messages.cancel_not_allowed'),
+            ];
+        }
+
+        DB::transaction(function () use ($order, $reason) {
+            $this->restoreStock($order);
+
+            $order->update([
+                'status' => OrderConst::STATUS_CANCELLED,
+                'cancelled_at' => now(),
+                'cancel_reason' => $reason,
+            ]);
+        });
+
+        return [
+            'status' => true,
+            'message' => __('client.account.messages.order_cancelled'),
+        ];
+    }
+
+    protected function restoreStock(Order $order): void
+    {
+        foreach ($order->items()->get() as $item) {
+            if (! $item->product_id) {
+                continue;
+            }
+
+            Product::whereKey($item->product_id)->update([
+                'stock' => DB::raw('stock + ' . (int) $item->quantity),
+                'sold' => DB::raw('MAX(sold - ' . (int) $item->quantity . ', 0)'),
+            ]);
+        }
     }
 
     public function updateProfile(User $user, array $params): User

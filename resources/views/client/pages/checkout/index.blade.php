@@ -212,16 +212,16 @@
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-muted-foreground">{{ __('client.cart.shipping') }}</dt>
-                    <dd class="font-medium text-green-600">{{ __('client.cart.free') }}</dd>
+                    <dd class="font-medium text-success">{{ __('client.cart.free') }}</dd>
                 </div>
             </dl>
 
             @if ($coupon)
-                <div class="flex items-center justify-between gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg mb-4">
-                    <span class="text-xs font-semibold text-green-700 truncate">
+                <div class="flex items-center justify-between gap-2 px-3 py-2 bg-success-soft border border-success/25 rounded-lg mb-4">
+                    <span class="text-xs font-semibold text-success truncate">
                         {{ __('client.coupon.applied_label', ['code' => $coupon->code]) }}
                     </span>
-                    <span class="text-sm font-medium text-green-600 whitespace-nowrap">-{{ format_price($discount) }}</span>
+                    <span class="text-sm font-medium text-success whitespace-nowrap">-{{ format_price($discount) }}</span>
                 </div>
             @endif
 
@@ -229,11 +229,11 @@
 
             <div class="flex justify-between items-baseline mb-5">
                 <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                <span class="text-2xl font-bold text-primary">{{ format_price($total) }}</span>
+                <span class="text-2xl price-main">{{ format_price($total) }}</span>
             </div>
 
             <button type="submit"
-                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold btn-accent rounded-xl">
                 <i class="fa-solid fa-circle-check"></i>
                 {{ __('client.checkout.place_order') }}
             </button>

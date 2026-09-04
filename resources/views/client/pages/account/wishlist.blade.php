@@ -24,7 +24,7 @@
                         <i class="fa-regular fa-heart text-5xl text-muted-foreground/25 mb-4"></i>
                         <p class="text-foreground font-medium mb-4">{{ __('client.wishlist.empty') }}</p>
                         <a href="{{ route('shop.index') }}"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold btn-primary rounded-lg">
                             <i class="fa-solid fa-bag-shopping"></i>
                             {{ __('client.cart.empty_cta') }}
                         </a>

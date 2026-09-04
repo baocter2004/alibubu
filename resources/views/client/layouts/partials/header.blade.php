@@ -3,10 +3,10 @@
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <span><i class="fa-solid fa-truck mr-1"></i> {{ __('client.nav.free_shipping') }}</span>
             <div class="flex gap-4">
-                <a href="{{ route('about') }}" class="hover:text-primary transition-colors">
+                <a href="{{ route('about') }}" class="hover:text-accent transition-colors">
                     {{ __('client.nav.about') }}
                 </a>
-                <a href="{{ route('shop.index', ['is_sale' => 1]) }}" class="hover:text-primary transition-colors">
+                <a href="{{ route('shop.index', ['is_sale' => 1]) }}" class="hover:text-accent transition-colors">
                     {{ __('client.nav.deals') }}
                 </a>
             </div>
