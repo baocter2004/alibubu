@@ -293,6 +293,13 @@ return [
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',
+            'cancel' => 'Huỷ đơn hàng',
+            'cancel_title' => 'Huỷ đơn hàng này?',
+            'cancel_hint' => 'Bạn chỉ có thể huỷ đơn khi đơn chưa được giao đi. Sản phẩm sẽ được hoàn lại kho.',
+            'cancel_reason' => 'Lý do huỷ',
+            'cancel_reason_placeholder' => 'Ví dụ: Tôi muốn đổi sang sản phẩm khác...',
+            'cancel_submit' => 'Xác nhận huỷ đơn',
+            'cancel_keep' => 'Giữ đơn hàng',
         ],
         'addresses' => [
             'title' => 'Sổ địa chỉ',
@@ -327,6 +334,9 @@ return [
             'address_deleted' => 'Đã xoá địa chỉ.',
             'address_not_found' => 'Không tìm thấy địa chỉ.',
             'delete_address_confirm' => 'Địa chỉ này sẽ bị xoá khỏi sổ địa chỉ của bạn.',
+            'order_not_found' => 'Không tìm thấy đơn hàng.',
+            'order_cancelled' => 'Đã huỷ đơn hàng thành công.',
+            'cancel_not_allowed' => 'Đơn hàng này không thể huỷ được nữa. Vui lòng liên hệ bộ phận hỗ trợ.',
         ],
     ],
 
@@ -352,6 +362,27 @@ return [
         'terms' => 'Điều khoản',
         'privacy' => 'Bảo mật',
         'cookie' => 'Cookie',
+    ],
+
+    'mail' => [
+        'order' => [
+            'subject' => 'Xác nhận đơn hàng :code',
+            'title' => 'Xác nhận đơn hàng',
+            'greeting' => 'Xin chào :name,',
+            'intro' => 'Cảm ơn bạn đã đặt hàng tại Alibubu. Chúng tôi đã nhận được đơn hàng của bạn và sẽ liên hệ xác nhận trong thời gian sớm nhất.',
+            'code' => 'Mã đơn hàng',
+            'item' => 'Sản phẩm',
+            'quantity' => 'SL',
+            'subtotal' => 'Thành tiền',
+            'discount' => 'Giảm giá',
+            'total' => 'Tổng thanh toán',
+            'recipient' => 'Người nhận',
+            'phone_number' => 'Số điện thoại',
+            'address' => 'Địa chỉ nhận hàng',
+            'payment_method' => 'Phương thức thanh toán',
+            'action' => 'Tiếp tục mua sắm',
+            'outro' => 'Nếu bạn không thực hiện đơn hàng này, vui lòng liên hệ với chúng tôi ngay.',
+        ],
     ],
 
     'messages' => [

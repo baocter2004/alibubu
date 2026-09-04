@@ -47,6 +47,7 @@ Route::prefix('account')
         Route::patch('/password', 'updatePassword')->name('password.update');
         Route::get('/orders', 'orders')->name('orders');
         Route::get('/orders/{id}', 'showOrder')->name('orders.show');
+        Route::patch('/orders/{id}/cancel', 'cancelOrder')->name('orders.cancel');
         Route::get('/wishlist', [WishlistController::class, 'index'])->withoutMiddleware([])->name('wishlist');
         Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
         Route::get('/addresses', 'addresses')->name('addresses');

@@ -46,4 +46,14 @@ class OrderConst
     {
         return in_array($status, [self::STATUS_COMPLETED, self::STATUS_CANCELLED], true);
     }
+
+    public static function customerCancellableStatuses(): array
+    {
+        return [self::STATUS_PENDING, self::STATUS_CONFIRMED];
+    }
+
+    public static function isCancellableByCustomer(?int $status): bool
+    {
+        return in_array($status, self::customerCancellableStatuses(), true);
+    }
 }

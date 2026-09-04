@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -19,6 +20,12 @@ Route::prefix('/admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+
+        Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
+            Route::get('/', 'edit')->name('edit');
+            Route::patch('/', 'update')->name('update');
+            Route::patch('/password', 'updatePassword')->name('password.update');
+        });
 
         foreach ([
             'users' => UserController::class,

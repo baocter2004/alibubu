@@ -125,7 +125,74 @@
                         <p class="text-sm text-red-700">{{ $order->cancel_reason }}</p>
                     </div>
                 @endif
+
+                @if ($order->status === \App\Const\OrderConst::STATUS_CANCELLED)
+                    <p class="mt-4 text-xs text-muted-foreground">
+                        <i class="fa-solid fa-rotate-left mr-1"></i>{{ __('client.messages.stock_restored') }}
+                    </p>
+                @endif
             </section>
+
+            @if (\App\Const\OrderConst::isCancellableByCustomer($order->status))
+                <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
+                    <h2 class="text-base font-bold text-foreground mb-1">
+                        {{ __('client.account.orders.cancel_title') }}
+                    </h2>
+                    <p class="text-sm text-muted-foreground mb-4">{{ __('client.account.orders.cancel_hint') }}</p>
+
+                    <button type="button" id="toggle-cancel-form"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors">
+                        <i class="fa-solid fa-ban"></i>
+                        {{ __('client.account.orders.cancel') }}
+                    </button>
+
+                    <form id="cancel-order-form" action="{{ route('account.orders.cancel', $order->id) }}" method="POST"
+                        class="{{ $errors->has('cancel_reason') ? '' : 'hidden' }} mt-4 space-y-4">
+                        @csrf
+                        @method('PATCH')
+
+                        <div>
+                            <label for="cancel_reason" class="block text-sm font-medium text-foreground mb-1.5">
+                                {{ __('client.account.orders.cancel_reason') }}
+                                <span class="text-muted-foreground font-normal">({{ __('common.labels.optional') }})</span>
+                            </label>
+                            <textarea id="cancel_reason" name="cancel_reason" rows="3"
+                                placeholder="{{ __('client.account.orders.cancel_reason_placeholder') }}"
+                                class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('cancel_reason') ? 'is-invalid' : 'border-border' }}">{{ old('cancel_reason') }}</textarea>
+                            @error('cancel_reason')
+                                <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex flex-wrap justify-end gap-3">
+                            <button type="button" id="keep-order"
+                                class="px-5 py-2.5 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors">
+                                {{ __('client.account.orders.cancel_keep') }}
+                            </button>
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                                <i class="fa-solid fa-ban"></i>
+                                {{ __('client.account.orders.cancel_submit') }}
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            @endif
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function() {
+            $('#toggle-cancel-form').on('click', function() {
+                $('#cancel-order-form').removeClass('hidden');
+                $('#cancel_reason').trigger('focus');
+            });
+
+            $('#keep-order').on('click', function() {
+                $('#cancel-order-form').addClass('hidden');
+            });
+        });
+    </script>
+@endpush
