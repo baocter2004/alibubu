@@ -9,20 +9,20 @@
     </p>
 
     @if ($coupon)
-        <div class="flex items-center justify-between gap-3 px-3 py-2.5 bg-green-50 border border-green-200 rounded-xl">
+        <div class="flex items-center justify-between gap-3 px-3 py-2.5 bg-success-soft border border-success/25 rounded-xl">
             <span class="min-w-0">
-                <span class="block text-sm font-semibold text-green-700 truncate">
+                <span class="block text-sm font-semibold text-success truncate">
                     {{ __('client.coupon.applied_label', ['code' => $coupon->code]) }}
                 </span>
                 @if ($coupon->title)
-                    <span class="block text-xs text-green-600 truncate">{{ $coupon->title }}</span>
+                    <span class="block text-xs text-success truncate">{{ $coupon->title }}</span>
                 @endif
             </span>
 
             <form action="{{ route('coupon.destroy') }}" method="POST">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="text-xs font-medium text-green-700 hover:text-red-600 transition-colors">
+                <button type="submit" class="text-xs font-medium text-success hover:text-red-600 transition-colors">
                     {{ __('client.coupon.remove') }}
                 </button>
             </form>

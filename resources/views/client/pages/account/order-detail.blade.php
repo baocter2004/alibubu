@@ -31,7 +31,7 @@
                             {{ \App\Const\OrderConst::statusLabel($order->status) }}
                         </span>
                         <span
-                            class="px-3 py-1.5 text-xs font-semibold rounded-full {{ $order->is_paid ? 'bg-green-100 text-success' : 'bg-amber-100 text-amber-600' }}">
+                            class="px-3 py-1.5 text-xs font-semibold rounded-full {{ $order->is_paid ? 'bg-success-soft text-success' : 'bg-amber-100 text-amber-600' }}">
                             {{ $order->is_paid ? __('admin/order.payment.paid') : __('admin/order.payment.unpaid') }}
                         </span>
                     </div>
@@ -80,7 +80,7 @@
 
                 <div class="flex items-baseline justify-between pt-5 mt-5 border-t border-border">
                     <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                    <span class="text-xl font-bold text-primary">{{ format_price($order->total_amount) }}</span>
+                    <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
                 </div>
             </section>
 

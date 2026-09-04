@@ -350,7 +350,7 @@
                             <div class="flex flex-wrap items-center gap-2 mb-1">
                                 <span class="font-medium text-foreground">{{ $review->user?->fullname }}</span>
                                 @if ($review->order_id)
-                                    <span class="px-2 py-0.5 text-[11px] font-medium bg-green-100 text-green-700 rounded-full">
+                                    <span class="px-2 py-0.5 text-[11px] font-medium bg-success-soft text-success rounded-full">
                                         <i class="fa-solid fa-circle-check"></i> {{ __('client.review.verified') }}
                                     </span>
                                 @endif

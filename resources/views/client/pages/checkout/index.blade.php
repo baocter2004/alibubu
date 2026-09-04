@@ -217,8 +217,8 @@
             </dl>
 
             @if ($coupon)
-                <div class="flex items-center justify-between gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg mb-4">
-                    <span class="text-xs font-semibold text-green-700 truncate">
+                <div class="flex items-center justify-between gap-2 px-3 py-2 bg-success-soft border border-success/25 rounded-lg mb-4">
+                    <span class="text-xs font-semibold text-success truncate">
                         {{ __('client.coupon.applied_label', ['code' => $coupon->code]) }}
                     </span>
                     <span class="text-sm font-medium text-success whitespace-nowrap">-{{ format_price($discount) }}</span>

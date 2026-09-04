@@ -19,6 +19,7 @@
 
     --price: 10 70% 44%;
     --success: 152 42% 34%;
+    --success-soft: 152 46% 94%;
     --warning: 38 84% 46%;
     --danger: 2 66% 47%;
 
@@ -60,6 +61,7 @@
     --color-accent-soft: hsl(var(--accent-soft));
     --color-price: hsl(var(--price));
     --color-success: hsl(var(--success));
+    --color-success-soft: hsl(var(--success-soft));
     --color-warning: hsl(var(--warning));
     --color-danger: hsl(var(--danger));
 

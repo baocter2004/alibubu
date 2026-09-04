@@ -71,7 +71,7 @@
                                         class="px-2.5 py-1 text-xs font-semibold rounded-full {{ \App\Const\OrderConst::statusBadgeClass($order->status) }}">
                                         {{ \App\Const\OrderConst::statusLabel($order->status) }}
                                     </span>
-                                    <span class="font-bold text-primary whitespace-nowrap">
+                                    <span class="price-main whitespace-nowrap">
                                         {{ format_price($order->total_amount) }}
                                     </span>
                                     <i class="fa-solid fa-chevron-right text-xs text-muted-foreground"></i>
