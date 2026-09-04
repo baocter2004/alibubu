@@ -17,7 +17,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
-            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">1</span>
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">1</span>
             <span>
                 <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.basic') }}</span>
                 <span class="block text-sm text-gray-500">{{ __('admin/user.sections.basic_hint') }}</span>
@@ -82,7 +82,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
-            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">2</span>
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">2</span>
             <span>
                 <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.personal') }}</span>
                 <span class="block text-sm text-gray-500">{{ __('admin/user.sections.personal_hint') }}</span>
@@ -129,7 +129,7 @@
         class="bg-white rounded-xl shadow-sm border overflow-hidden {{ $errors->has('user_addresses') ? 'border-red-300' : 'border-gray-100' }}">
         <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
             <span class="flex items-center gap-3">
-                <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">3</span>
+                <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">3</span>
                 <span>
                     <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.address') }}</span>
                     <span id="address-hint" class="block text-sm text-gray-500">
@@ -139,7 +139,7 @@
             </span>
 
             <button type="button" id="add-address-btn"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors">
+                class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-hover transition-colors">
                 <i class="fa-solid fa-plus"></i>
                 {{ __('admin/user.address.add') }}
             </button>
@@ -173,7 +173,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <header class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50/60">
-            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-blue-500 text-white text-sm font-semibold">4</span>
+            <span class="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-primary text-white text-sm font-semibold">4</span>
             <span>
                 <span class="block font-semibold text-gray-900">{{ __('admin/user.sections.bank') }}</span>
                 <span class="block text-sm text-gray-500">{{ __('admin/user.sections.bank_hint') }}</span>
@@ -214,7 +214,7 @@
         </a>
 
         <button type="submit"
-            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+            class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
             <i class="fa-solid fa-arrow-right"></i>
             {{ __('common.actions.confirm') }}
         </button>

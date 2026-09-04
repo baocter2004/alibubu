@@ -17,7 +17,7 @@
                 </a>
                 @if ($ward->province)
                     <a href="{{ route('admin.provinces.show', $ward->province_id) }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary-soft rounded-lg hover:bg-primary-soft transition-colors">
                         <i class="fas fa-map"></i>
                         {{ __('admin/address.ward.fields.province') }}
                     </a>

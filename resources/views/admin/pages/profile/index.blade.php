@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <section class="bg-white border border-gray-200 rounded-2xl p-5 md:p-6">
             <div class="flex items-center gap-3 mb-5">
-                <span class="w-11 h-11 shrink-0 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <span class="w-11 h-11 shrink-0 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
                     <i class="fa-solid fa-user-pen"></i>
                 </span>
                 <div class="min-w-0">
@@ -44,7 +44,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors">
+                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
                         <i class="fa-solid fa-floppy-disk"></i>
                         {{ __('common.actions.save') }}
                     </button>
@@ -93,7 +93,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors">
+                        class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
                         <i class="fa-solid fa-key"></i>
                         {{ __('admin/nav.change_password') }}
                     </button>

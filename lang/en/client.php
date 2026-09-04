@@ -15,6 +15,7 @@ return [
         'search_placeholder' => 'Search products...',
         'track_order' => 'Track order',
         'support' => 'Support',
+        'skip_to_content' => 'Skip to main content',
         'free_shipping' => 'Free shipping on orders over 500,000đ',
     ],
 

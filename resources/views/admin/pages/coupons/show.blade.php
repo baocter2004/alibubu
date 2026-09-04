@@ -70,12 +70,12 @@
                     @foreach ($coupon->users as $user)
                         <li class="flex items-center gap-3 py-3">
                             <span
-                                class="w-9 h-9 shrink-0 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold flex items-center justify-center">
+                                class="w-9 h-9 shrink-0 rounded-full bg-primary-soft text-primary text-sm font-semibold flex items-center justify-center">
                                 {{ Str::upper(Str::substr($user->fullname, 0, 1)) }}
                             </span>
                             <span class="min-w-0 flex-1">
                                 <a href="{{ route('admin.users.show', $user->id) }}"
-                                    class="block text-sm font-medium text-gray-900 truncate hover:text-blue-600 transition-colors">
+                                    class="block text-sm font-medium text-gray-900 truncate hover:text-primary transition-colors">
                                     {{ $user->fullname }}
                                 </a>
                                 <span class="block text-xs text-gray-500 truncate">{{ $user->email }}</span>

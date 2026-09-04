@@ -23,7 +23,7 @@
             <div class="max-w-[1600px] mx-auto">
                 @hasSection('breadcrumb')
                     <nav class="flex items-center gap-2 text-sm text-gray-500 mb-5">
-                        <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition-colors">
+                        <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors">
                             <i class="fa-solid fa-house"></i>
                         </a>
                         @yield('breadcrumb')
@@ -38,7 +38,7 @@
     </div>
 
     <button type="button" id="scrollToTop"
-        class="fixed z-40 bottom-6 right-6 w-12 h-12 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition-all opacity-0 pointer-events-none"
+        class="fixed z-40 bottom-6 right-6 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:bg-primary-hover transition-all opacity-0 pointer-events-none"
         aria-label="Top">
         <i class="fa-solid fa-arrow-up"></i>
     </button>

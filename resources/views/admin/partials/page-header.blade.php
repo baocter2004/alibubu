@@ -6,13 +6,13 @@
 <div class="mb-6">
     @if ($crumbs)
         <nav class="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-3">
-            <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition-colors">
+            <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors">
                 <i class="fa-solid fa-house"></i>
             </a>
             @foreach ($crumbs as $crumb)
                 <i class="fa-solid fa-chevron-right text-[9px] text-gray-300"></i>
                 @if (! empty($crumb['url']))
-                    <a href="{{ $crumb['url'] }}" class="hover:text-blue-600 transition-colors">{{ $crumb['label'] }}</a>
+                    <a href="{{ $crumb['url'] }}" class="hover:text-primary transition-colors">{{ $crumb['label'] }}</a>
                 @else
                     <span class="text-gray-700 font-medium">{{ $crumb['label'] }}</span>
                 @endif

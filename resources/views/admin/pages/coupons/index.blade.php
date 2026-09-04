@@ -17,7 +17,7 @@
                     <span class="hidden sm:inline">{{ __('common.labels.trash') }}</span>
                 </a>
                 <a href="{{ route('admin.coupons.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-plus"></i>
                     {{ __('common.actions.create') }}
                 </a>
@@ -30,14 +30,14 @@
                 <label for="keyword"
                     class="block text-sm font-medium text-gray-700 mb-1">{{ __('common.labels.keyword') }}</label>
                 <input type="search" id="keyword" name="keyword" value="{{ request('keyword') }}"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
             </div>
 
             <div>
                 <label for="discount_type"
                     class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/coupon.fields.discount_type') }}</label>
                 <select id="discount_type" name="discount_type"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                     <option value="">{{ __('common.labels.all') }}</option>
                     @foreach ($types as $key => $label)
                         <option value="{{ $key }}" @selected((string) request('discount_type') === (string) $key)>{{ $label }}</option>
@@ -50,7 +50,7 @@
                     <label for="is_active"
                         class="block text-sm font-medium text-gray-700 mb-1">{{ __('common.labels.status') }}</label>
                     <select id="is_active" name="is_active"
-                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
                         <option value="">{{ __('common.labels.all') }}</option>
                         @foreach ($statuses as $key => $label)
                             <option value="{{ $key }}" @selected(request('is_active') !== null && (string) request('is_active') === (string) $key)>
@@ -60,7 +60,7 @@
                     </select>
                 </div>
                 <button type="submit"
-                    class="self-end px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                    class="self-end px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                     <i class="fas fa-magnifying-glass"></i>
                 </button>
                 <a href="{{ route('admin.coupons.index') }}"
@@ -110,7 +110,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex justify-center gap-3">
                                     <a href="{{ route('admin.coupons.show', $coupon->id) }}"
-                                        class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                        class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.coupons.edit', $coupon->id) }}"

@@ -13,7 +13,7 @@
     @stack('styles')
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50"
+<body class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-primary-soft"
     data-success="{{ session('success') }}" data-error="{{ session('error') }}">
     <div class="absolute top-4 right-4 z-10">
         @include('components.locale-switcher')

@@ -30,7 +30,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($branches as $branch)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $branch->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $branch->id])</td>
                             <td class="px-4 py-3 truncate">{{ $branch->name }}</td>
                             <td class="px-4 py-3 text-gray-500 truncate">{{ $branch->slug }}</td>
                             <td class="px-4 py-3">{{ $branch->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>

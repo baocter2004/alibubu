@@ -20,7 +20,7 @@
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="{{ route('shop.index') }}"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
                 <i class="fa-solid fa-bag-shopping"></i> {{ __('client.thank_you.continue') }}
             </a>
             <a href="{{ route('index') }}"

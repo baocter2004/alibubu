@@ -1,13 +1,13 @@
 :root {
     --admin-sidebar-width: 268px;
     --admin-sidebar-rail: 78px;
-    --admin-sidebar-bg: #131a2b;
-    --admin-sidebar-hover: #1e2740;
-    --admin-sidebar-border: rgba(148, 163, 184, 0.12);
-    --admin-sidebar-text: #97a3b8;
+    --admin-sidebar-bg: #0e1c31;
+    --admin-sidebar-hover: #1a2d4b;
+    --admin-sidebar-border: rgba(203, 213, 225, 0.11);
+    --admin-sidebar-text: #97a5bb;
     --admin-sidebar-text-strong: #f1f5f9;
-    --admin-accent: #3b82f6;
-    --admin-surface: #f3f5f9;
+    --admin-accent: #f0821e;
+    --admin-surface: #f8f6f3;
 }
 
 #sidebar {
@@ -62,7 +62,7 @@
 }
 
 #sidebar .nav-item.is-active {
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.24), rgba(59, 130, 246, 0.05));
+    background: linear-gradient(90deg, rgba(240, 130, 30, 0.18), rgba(240, 130, 30, 0.02));
     color: var(--admin-sidebar-text-strong);
 }
 
@@ -102,7 +102,7 @@
 }
 
 #sidebar .submenu-link.is-active {
-    color: #60a5fa;
+    color: #f5a45c;
     font-weight: 600;
 }
 
@@ -161,8 +161,8 @@
 
 #sidebar.collapsed .nav-item.is-active {
     background: var(--admin-accent);
-    color: #fff;
-    box-shadow: 0 6px 16px -4px rgba(59, 130, 246, 0.55);
+    color: #1f1205;
+    box-shadow: 0 6px 16px -4px rgba(240, 130, 30, 0.5);
 }
 
 #sidebar.collapsed .nav-icon {
@@ -197,7 +197,7 @@
     transform: translateY(-50%);
     padding: 0.4rem 0.7rem;
     border-radius: 0.5rem;
-    background: #0f172a;
+    background: #0e1c31;
     color: #f1f5f9;
     font-size: 0.75rem;
     font-weight: 500;
@@ -210,7 +210,7 @@
 #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.45);
+    background: rgba(14, 28, 49, 0.5);
     backdrop-filter: blur(2px);
     z-index: 999;
     display: none;

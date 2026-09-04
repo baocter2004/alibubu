@@ -88,9 +88,9 @@
 
             <div class="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-5 mb-6">
                 <div class="flex flex-wrap items-baseline gap-3">
-                    <span id="price-display" class="text-3xl font-bold text-primary">{{ format_price($price) }}</span>
+                    <span id="price-display" class="text-3xl md:text-4xl price-main tracking-tight">{{ format_price($price) }}</span>
                     <span id="base-display"
-                        class="text-base text-muted-foreground line-through {{ $base > $price ? '' : 'hidden' }}">
+                        class="text-base text-muted-foreground line-through tabular {{ $base > $price ? '' : 'hidden' }}">
                         {{ format_price($base) }}
                     </span>
                     @if ($base > $price)
@@ -160,7 +160,7 @@
                     </div>
 
                     <button type="submit" @disabled($outOfStock)
-                        class="flex-1 min-w-44 inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white rounded-xl transition-colors {{ $outOfStock ? 'bg-muted-foreground/40 cursor-not-allowed' : 'bg-primary hover:bg-primary/90' }}">
+                        class="flex-1 min-w-44 inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold rounded-xl {{ $outOfStock ? 'text-muted-foreground bg-muted cursor-not-allowed' : 'btn-accent' }}">
                         <i class="fa-solid fa-cart-plus"></i>
                         {{ $outOfStock ? __('client.product.out_of_stock') : __('client.product.add_to_cart') }}
                     </button>
@@ -236,7 +236,7 @@
 
             @if ($canReview)
                 <button type="button" id="write-review-btn"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold btn-primary rounded-xl">
                     <i class="fa-solid fa-pen"></i>
                     {{ __('client.review.write') }}
                 </button>
@@ -316,7 +316,7 @@
 
                     <div class="flex justify-end">
                         <button type="submit"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold btn-primary rounded-xl">
                             <i class="fa-solid fa-paper-plane"></i>
                             {{ __('client.review.submit') }}
                         </button>

@@ -54,13 +54,13 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($wards as $ward)
                         <tr class="text-sm text-gray-700 transition-colors">
-                            <td class="text-center px-4 py-3">{{ $ward->id }}</td>
+                            <td class="text-center px-4 py-3">@include('components.id-badge', ['id' => $ward->id])</td>
                             <td class="px-4 py-3 truncate">{{ $ward->name }}</td>
                             <td class="text-center px-4 py-3">{{ $ward->code }}</td>
                             <td class="px-4 py-3 truncate">{{ $ward->division_type }}</td>
                             <td class="text-center px-4 py-3">
                                 <a href="{{ route('admin.wards.show', $ward->id) }}"
-                                    class="text-blue-500 hover:text-blue-700" title="{{ __('common.actions.view') }}">
+                                    class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </td>

@@ -59,7 +59,7 @@
                 </div>
 
                 <button type="submit"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
                     <i class="fa-solid fa-right-to-bracket"></i>
                     {{ __('client_auth.login.submit') }}
                 </button>

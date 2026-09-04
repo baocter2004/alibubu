@@ -26,7 +26,7 @@
             <p class="text-lg font-semibold text-foreground mb-1">{{ __('client.cart.empty_title') }}</p>
             <p class="text-sm text-muted-foreground mb-6">{{ __('client.cart.empty_description') }}</p>
             <a href="{{ route('shop.index') }}"
-                class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
                 <i class="fa-solid fa-bag-shopping"></i>
                 {{ __('client.cart.empty_cta') }}
             </a>
@@ -152,7 +152,7 @@
                 </div>
 
                 <a href="{{ route('checkout.index') }}"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors">
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold btn-accent rounded-xl">
                     {{ __('client.cart.checkout') }}
                     <i class="fa-solid fa-arrow-right"></i>
                 </a>

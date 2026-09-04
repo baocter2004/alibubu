@@ -5,7 +5,7 @@
 @section('content')
     <div class="w-full max-w-md mx-auto py-10">
         <div class="text-center mb-8">
-            <span class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 mb-4">
+            <span class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-soft text-primary mb-4">
                 <i class="fa-solid fa-lock-open text-xl"></i>
             </span>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{ __('admin/auth.reset.heading') }}</h1>
@@ -42,7 +42,7 @@
                 ])
 
                 <button type="submit"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-500 rounded-xl hover:bg-blue-600 transition-colors">
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
                     <i class="fa-solid fa-circle-check"></i>
                     {{ __('admin/auth.reset.submit') }}
                 </button>

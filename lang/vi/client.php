@@ -15,6 +15,7 @@ return [
         'search_placeholder' => 'Tìm sản phẩm...',
         'track_order' => 'Theo dõi đơn hàng',
         'support' => 'Hỗ trợ',
+        'skip_to_content' => 'Tới nội dung chính',
         'free_shipping' => 'Miễn phí vận chuyển cho đơn từ 500.000đ',
     ],
 

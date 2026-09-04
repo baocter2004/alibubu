@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\User;
 use App\Services\Client\ProductService;
 
@@ -31,7 +32,19 @@ class HomeController extends Controller
             'featuredProducts' => $this->productService->highlights('is_featured', 8),
             'trendingProducts' => $this->productService->highlights('is_trending', 4),
             'saleProducts' => $this->productService->highlights('is_sale', 4),
+            'stats' => $this->storeStats(),
         ]);
+    }
+
+    protected function storeStats(): array
+    {
+        $rating = (float) ProductReview::where('is_approved', true)->avg('rating');
+
+        return [
+            'products' => Product::where('is_active', true)->count(),
+            'customers' => User::count(),
+            'rating' => $rating > 0 ? number_format($rating, 1) : '5.0',
+        ];
     }
 
     public function about()

@@ -67,7 +67,7 @@
                                 <td colspan="3" class="px-4 py-3 text-right font-semibold text-gray-700">
                                     {{ __('admin/order.fields.total_amount') }}
                                 </td>
-                                <td class="px-4 py-3 text-right font-bold text-blue-600 whitespace-nowrap">
+                                <td class="px-4 py-3 text-right font-bold text-primary whitespace-nowrap">
                                     {{ format_price($order->total_amount) }}
                                 </td>
                             </tr>
@@ -140,7 +140,7 @@
                             <label for="status"
                                 class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.actions.select_status') }}</label>
                             <select id="status" name="status"
-                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 {{ $errors->has('status') ? 'is-invalid' : 'border-gray-300' }}">
+                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has('status') ? 'is-invalid' : 'border-gray-300' }}">
                                 @foreach ($transitions as $status)
                                     <option value="{{ $status }}">{{ \App\Const\OrderConst::statusLabel($status) }}
                                     </option>
@@ -155,14 +155,14 @@
                             <label for="cancel_reason"
                                 class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.fields.cancel_reason') }}</label>
                             <textarea id="cancel_reason" name="cancel_reason" rows="3"
-                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 {{ $errors->has('cancel_reason') ? 'is-invalid' : 'border-gray-300' }}">{{ old('cancel_reason') }}</textarea>
+                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has('cancel_reason') ? 'is-invalid' : 'border-gray-300' }}">{{ old('cancel_reason') }}</textarea>
                             @error('cancel_reason')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors">
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
                             <i class="fas fa-arrows-rotate"></i>
                             {{ __('admin/order.actions.update_status') }}
                         </button>
