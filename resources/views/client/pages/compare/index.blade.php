@@ -3,6 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.compare.title'))
 
 @section('content')
+    <span class="hidden" data-compare-page></span>
+
     <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>

@@ -84,6 +84,10 @@ return [
     ],
 
     'pagination' => [
+        'previous' => 'Trang trước',
+        'next' => 'Trang sau',
+        'first' => 'Trang đầu',
+        'last' => 'Trang cuối',
         'showing' => 'Hiển thị',
         'results' => 'kết quả',
     ],

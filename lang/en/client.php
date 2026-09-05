@@ -40,6 +40,7 @@ return [
             'badge' => 'Genuine products · Nationwide delivery',
             'search_placeholder' => 'What are you looking for today?',
             'search_cta' => 'Search',
+        'quick_links' => 'Quick picks',
             'trust_warranty' => 'Official warranty',
             'trust_shipping' => 'Free shipping over 500,000đ',
             'trust_returns' => '30-day returns',

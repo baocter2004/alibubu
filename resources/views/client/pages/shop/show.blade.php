@@ -46,7 +46,7 @@
             @if ($images->count() > 1)
                 <div class="grid grid-cols-5 gap-3 mt-3">
                     @foreach ($images as $index => $image)
-                        <button type="button"
+                        <button type="button" aria-label="{{ $product->name }} {{ $index + 1 }}"
                             class="gallery-thumb aspect-square bg-white border-2 rounded-xl overflow-hidden transition-all {{ $index === 0 ? 'border-primary' : 'border-border hover:border-primary/50' }}"
                             data-src="{{ Storage::disk('public')->url($image) }}">
                             <img src="{{ Storage::disk('public')->url($image) }}" alt="{{ $product->name }}"

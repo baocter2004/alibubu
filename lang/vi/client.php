@@ -40,6 +40,7 @@ return [
             'badge' => 'Hàng chính hãng · Giao toàn quốc',
             'search_placeholder' => 'Hôm nay bạn cần tìm gì?',
             'search_cta' => 'Tìm kiếm',
+        'quick_links' => 'Mua nhanh',
             'trust_warranty' => 'Bảo hành chính hãng',
             'trust_shipping' => 'Miễn phí ship từ 500.000đ',
             'trust_returns' => 'Đổi trả 30 ngày',

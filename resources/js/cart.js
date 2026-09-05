@@ -365,6 +365,11 @@ $(function () {
 
         request($form.attr("action"), "DELETE")
             .then((data) => {
+                if ($("[data-compare-page]").length) {
+                    window.location.reload();
+                    return;
+                }
+
                 renderCompareBar(data);
 
                 if (id) {

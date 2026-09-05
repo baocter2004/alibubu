@@ -57,12 +57,14 @@
                     </button>
                 </form>
 
-                <a href="{{ route('compare.index') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold btn-primary rounded-xl whitespace-nowrap">
-                    <i class="fa-solid fa-code-compare text-xs"></i>
-                    <span class="hidden sm:inline">{{ __('client.compare.view') }}</span>
-                    <span class="sm:hidden">{{ __('client.compare.add') }}</span>
-                </a>
+                @unless (request()->routeIs('compare.index'))
+                    <a href="{{ route('compare.index') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold btn-primary rounded-xl whitespace-nowrap">
+                        <i class="fa-solid fa-code-compare text-xs"></i>
+                        <span class="hidden sm:inline">{{ __('client.compare.view') }}</span>
+                        <span class="sm:hidden">{{ __('client.compare.add') }}</span>
+                    </a>
+                @endunless
 
                 <button type="button" data-compare-dismiss
                     class="w-9 h-9 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"

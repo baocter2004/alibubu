@@ -13,7 +13,8 @@
 @endphp
 
 <article class="group relative flex flex-col min-w-0 card-surface card-interactive overflow-hidden {{ $reveal ? 'reveal' : '' }}">
-    <a href="{{ $url }}" class="relative block aspect-square bg-white overflow-hidden">
+    <a href="{{ $url }}" aria-label="{{ $product->name }}"
+        class="relative block aspect-square bg-white overflow-hidden">
         @if ($product->thumbnail)
             <img src="{{ Storage::disk('public')->url($product->thumbnail) }}" alt="{{ $product->name }}"
                 loading="lazy" width="400" height="400"
