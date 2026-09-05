@@ -270,6 +270,7 @@ return [
         'title' => 'Order placed successfully!',
         'description' => 'Thank you for shopping at Alibubu. We will contact you shortly to confirm your order.',
         'order_code' => 'Order code',
+        'track' => 'Track my order',
         'continue' => 'Continue shopping',
         'home' => 'Back to home',
     ],

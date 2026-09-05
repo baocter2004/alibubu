@@ -62,6 +62,7 @@ class HomeController extends Controller
     {
         return view('client.pages.thank-you', [
             'orderCode' => session('order_code'),
+            'orderId' => session('order_id'),
         ]);
     }
 }

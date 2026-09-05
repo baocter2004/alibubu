@@ -68,6 +68,7 @@ class CheckoutController extends Controller
         return redirect()
             ->route('thanks-you')
             ->with('order_code', $order->code)
+            ->with('order_id', $order->id)
             ->with('success', __('client.messages.order_success'));
     }
 }

@@ -19,8 +19,15 @@
         @endif
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            @auth
+                <a href="{{ $orderId ? route('account.orders.show', $orderId) : route('account.orders') }}"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
+                    <i class="fa-solid fa-receipt"></i> {{ __('client.thank_you.track') }}
+                </a>
+            @endauth
+
             <a href="{{ route('shop.index') }}"
-                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold {{ Auth::check() ? 'btn-outline' : 'btn-primary' }} rounded-xl">
                 <i class="fa-solid fa-bag-shopping"></i> {{ __('client.thank_you.continue') }}
             </a>
             <a href="{{ route('index') }}"

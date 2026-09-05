@@ -28,8 +28,14 @@
                 </div>
 
                 <form action="{{ route('account.addresses.store') }}" method="POST" id="address-form"
+                    data-store-url="{{ route('account.addresses.store') }}"
                     class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
                     @csrf
+                    <input type="hidden" name="_method" id="address-form-method" value="POST">
+
+                    <p class="text-sm font-bold text-foreground" id="address-form-title">
+                        {{ __('client.account.addresses.add') }}
+                    </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -144,15 +150,47 @@
                                     <i class="fa-solid fa-location-dot text-muted-foreground/60 mr-1.5"></i>{{ $address->full_address }}
                                 </p>
 
-                                <form action="{{ route('account.addresses.destroy', $address->id) }}" method="POST"
-                                    onsubmit="return confirm('{{ __('client.account.messages.delete_address_confirm') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="text-xs font-medium text-muted-foreground hover:text-red-500 transition-colors">
-                                        <i class="fa-regular fa-trash-can mr-1"></i>{{ __('common.actions.delete') }}
+                                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-border/70">
+                                    <button type="button" class="edit-address text-xs font-medium text-primary hover:underline"
+                                        data-id="{{ $address->id }}"
+                                        data-url="{{ route('account.addresses.update', $address->id) }}"
+                                        data-fullname="{{ $address->fullname }}"
+                                        data-phone="{{ $address->phone_number }}"
+                                        data-province="{{ $address->province_id }}"
+                                        data-ward="{{ $address->ward_id }}"
+                                        data-address="{{ $address->address }}"
+                                        data-default="{{ $address->is_default ? 1 : 0 }}">
+                                        <i class="fa-solid fa-pen mr-1"></i>{{ __('common.actions.edit') }}
                                     </button>
-                                </form>
+
+                                    @unless ($address->is_default)
+                                        <form action="{{ route('account.addresses.update', $address->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="fullname" value="{{ $address->fullname }}">
+                                            <input type="hidden" name="phone_number" value="{{ $address->phone_number }}">
+                                            <input type="hidden" name="province_id" value="{{ $address->province_id }}">
+                                            <input type="hidden" name="ward_id" value="{{ $address->ward_id }}">
+                                            <input type="hidden" name="address" value="{{ $address->address }}">
+                                            <input type="hidden" name="is_default" value="1">
+                                            <button type="submit"
+                                                class="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
+                                                <i class="fa-regular fa-star mr-1"></i>{{ __('client.account.addresses.set_default') }}
+                                            </button>
+                                        </form>
+                                    @endunless
+
+                                    <form action="{{ route('account.addresses.destroy', $address->id) }}" method="POST"
+                                        class="ml-auto"
+                                        onsubmit="return confirm('{{ __('client.account.messages.delete_address_confirm') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="text-xs font-medium text-muted-foreground hover:text-red-500 transition-colors">
+                                            <i class="fa-regular fa-trash-can mr-1"></i>{{ __('common.actions.delete') }}
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -168,12 +206,42 @@
             const SELECT_WARD = @json(__('client.account.fields.select_ward'));
             const oldWard = @json(old('ward_id'));
 
+            const $form = $('#address-form');
+
+            function resetForm() {
+                $form[0].reset();
+                $form.attr('action', $form.data('store-url'));
+                $('#address-form-method').val('POST');
+                $('#address-form-title').text(@json(__('client.account.addresses.add')));
+                $('#ward_id').prop('disabled', true).html(`<option value="">${SELECT_WARD}</option>`);
+            }
+
             $('#toggle-address-form').on('click', function() {
-                $('#address-form').removeClass('hidden');
+                resetForm();
+                $form.removeClass('hidden');
+                $('#fullname').trigger('focus');
             });
 
             $('#cancel-address-form').on('click', function() {
-                $('#address-form').addClass('hidden');
+                $form.addClass('hidden');
+                resetForm();
+            });
+
+            $('.edit-address').on('click', function() {
+                const data = $(this).data();
+
+                $form.attr('action', data.url).removeClass('hidden');
+                $('#address-form-method').val('PATCH');
+                $('#address-form-title').text(@json(__('client.account.addresses.edit')));
+                $('#fullname').val(data.fullname);
+                $('#phone_number').val(data.phone);
+                $('#address').val(data.address);
+                $('#province_id').val(data.province);
+                $('input[name=is_default]').prop('checked', Number(data.default) === 1);
+
+                loadWards(data.province, data.ward);
+
+                $('html, body').animate({ scrollTop: $form.offset().top - 120 }, 300);
             });
 
             function loadWards(provinceId, selected) {

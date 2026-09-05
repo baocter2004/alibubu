@@ -22,7 +22,8 @@
     @stack('styles')
 </head>
 
-<body class="bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="bg-background-light min-h-screen flex flex-col" data-success="{{ session('success') }}"
+    data-error="{{ session('error') }}">
     <a href="#main" class="skip-link">{{ __('client.nav.skip_to_content') }}</a>
 
     @include('client.layouts.partials.header')
@@ -30,7 +31,7 @@
     @include('client.layouts.partials.sidebar')
 
     <main id="main"
-        class="max-w-7xl mx-auto px-4 py-6 md:py-10 {{ $compareItems->isNotEmpty() ? 'pb-48 md:pb-32' : 'pb-24 md:pb-12' }}">
+        class="w-full max-w-7xl mx-auto flex-1 px-4 py-6 md:py-10 {{ $compareItems->isNotEmpty() ? 'pb-48 md:pb-32' : 'pb-24 md:pb-12' }}">
         @yield('content')
     </main>
 

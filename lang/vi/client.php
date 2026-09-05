@@ -270,6 +270,7 @@ return [
         'title' => 'Đặt hàng thành công!',
         'description' => 'Cảm ơn bạn đã mua sắm tại Alibubu. Chúng tôi sẽ liên hệ để xác nhận đơn hàng trong thời gian sớm nhất.',
         'order_code' => 'Mã đơn hàng',
+        'track' => 'Theo dõi đơn hàng',
         'continue' => 'Tiếp tục mua sắm',
         'home' => 'Về trang chủ',
     ],

@@ -8,6 +8,7 @@
         : 1;
     $outOfStock = ! $product->inStock() || $sellableVariants === 0;
     $reveal = $reveal ?? false;
+    $quickActions = $quickActions ?? true;
     $compared = app(\App\Services\Client\CompareService::class)->has($product->id);
     $wishlisted = Auth::check() && Auth::user()->hasWishlisted($product->id);
 @endphp
@@ -45,34 +46,37 @@
         @endif
     </a>
 
-    <div class="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
-        @auth
-            <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
+    @if ($quickActions)
+        <div class="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
+            @auth
+                <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
+                    @csrf
+                    <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
+                        title="{{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}"
+                        data-wishlist-on="bg-red-50 text-red-600 border-red-200"
+                        data-wishlist-off="bg-white/95 text-muted-foreground border-border"
+                        class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-red-600 hover:border-red-200 transition-colors {{ $wishlisted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white/95 text-muted-foreground border-border' }}">
+                        <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart text-sm"></i>
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('auth.client.showFormLogin') }}" title="{{ __('client.wishlist.add') }}"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-sm hover:text-red-600 hover:border-red-200 transition-colors">
+                    <i class="fa-regular fa-heart text-sm"></i>
+                </a>
+            @endauth
+
+            <form action="{{ route('shop.compare.toggle', $product->slug) }}" method="POST" data-compare-toggle
+                data-product="{{ $product->id }}">
                 @csrf
-                <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
-                    title="{{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}"
-                    data-wishlist-on="bg-red-50 text-red-600 border-red-200"
-                    data-wishlist-off="bg-white/95 text-muted-foreground border-border"
-                    class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-red-600 hover:border-red-200 transition-colors {{ $wishlisted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white/95 text-muted-foreground border-border' }}">
-                    <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart text-sm"></i>
+                <button type="submit" aria-pressed="{{ $compared ? 'true' : 'false' }}"
+                    title="{{ $compared ? __('client.compare.remove') : __('client.compare.add') }}"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-primary hover:border-primary/40 transition-colors {{ $compared ? 'bg-primary text-white border-primary' : 'bg-white/95 text-muted-foreground border-border' }}">
+                    <i class="fa-solid fa-code-compare text-sm"></i>
                 </button>
             </form>
-        @else
-            <a href="{{ route('auth.client.showFormLogin') }}" title="{{ __('client.wishlist.add') }}"
-                class="w-9 h-9 flex items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-sm hover:text-red-600 hover:border-red-200 transition-colors">
-                <i class="fa-regular fa-heart text-sm"></i>
-            </a>
-        @endauth
-
-        <form action="{{ route('shop.compare.toggle', $product->slug) }}" method="POST" data-compare-toggle>
-            @csrf
-            <button type="submit" aria-pressed="{{ $compared ? 'true' : 'false' }}"
-                title="{{ $compared ? __('client.compare.remove') : __('client.compare.add') }}"
-                class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-primary hover:border-primary/40 transition-colors {{ $compared ? 'bg-primary text-white border-primary' : 'bg-white/95 text-muted-foreground border-border' }}">
-                <i class="fa-solid fa-code-compare text-sm"></i>
-            </button>
-        </form>
-    </div>
+        </div>
+    @endif
 
     <div class="flex flex-col flex-1 p-4 pt-3.5">
         @if ($product->branch)
