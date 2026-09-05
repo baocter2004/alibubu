@@ -76,6 +76,11 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: clip;
+}
+
+body {
+    overflow-x: clip;
 }
 
 body {
@@ -387,6 +392,176 @@ summary:focus-visible {
 .radius-right {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+}
+
+.tech-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image:
+        linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, #000 25%, transparent 78%);
+}
+
+.tech-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(64px);
+    pointer-events: none;
+}
+
+.tech-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: rgb(255 255 255 / 0.06);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: hsl(var(--accent));
+}
+
+.pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: hsl(var(--accent));
+    animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.7; }
+    70% { transform: scale(2.6); opacity: 0; }
+    100% { transform: scale(2.6); opacity: 0; }
+}
+
+.marquee {
+    display: flex;
+    gap: 2.5rem;
+    width: max-content;
+    animation: marquee 32s linear infinite;
+}
+
+.marquee-wrap:hover .marquee {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+.suggest-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    z-index: var(--z-dropdown);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.compare-scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.compare-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.compare-table th,
+.compare-table td {
+    border-bottom: 1px solid hsl(var(--border));
+    vertical-align: top;
+}
+
+.compare-table .col-label {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: hsl(var(--card));
+    border-right: 1px solid hsl(var(--border));
+    min-width: 9.5rem;
+    max-width: 11rem;
+}
+
+.compare-table thead .col-label {
+    z-index: 3;
+}
+
+.compare-table tbody tr:hover td {
+    background-color: hsl(var(--primary-soft) / 0.4);
+}
+
+.compare-table tbody tr:hover .col-label {
+    background-color: hsl(var(--primary-soft));
+}
+
+.compare-best {
+    background-color: hsl(var(--success-soft));
+    box-shadow: inset 2px 0 0 hsl(var(--success));
+}
+
+.compare-group th {
+    background: hsl(var(--primary-soft));
+    color: hsl(var(--primary));
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.buy-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    background: hsl(var(--card) / 0.97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -6px 20px -12px rgb(20 40 75 / 0.35);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.compare-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 44;
+    bottom: 3.75rem;
+    background: hsl(var(--card));
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -10px 30px -18px rgb(20 40 75 / 0.4);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+    .compare-bar {
+        bottom: 0;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

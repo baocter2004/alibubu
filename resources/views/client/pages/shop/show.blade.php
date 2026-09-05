@@ -93,12 +93,10 @@
                         class="text-base text-muted-foreground line-through tabular {{ $base > $price ? '' : 'hidden' }}">
                         {{ format_price($base) }}
                     </span>
-                    @if ($base > $price)
-                        <span id="discount-badge"
-                            class="px-2 py-0.5 text-xs font-bold bg-red-500 text-white rounded-full">
-                            -{{ (int) round((($base - $price) / $base) * 100) }}%
-                        </span>
-                    @endif
+                    <span id="discount-badge"
+                        class="px-2 py-0.5 text-xs font-bold bg-price text-white rounded-full {{ $base > $price ? '' : 'hidden' }}">
+                        {{ $base > $price ? '-' . (int) round((($base - $price) / $base) * 100) . '%' : '' }}
+                    </span>
                 </div>
 
                 <p class="mt-2 text-sm {{ $outOfStock ? 'text-red-600' : 'text-success' }}">
@@ -111,7 +109,7 @@
                 <p class="text-muted-foreground leading-relaxed mb-6">{{ $product->short_descriptions }}</p>
             @endif
 
-            <form action="{{ route('cart.store') }}" method="POST" class="space-y-5">
+            <form action="{{ route('cart.store') }}" method="POST" id="add-to-cart-form" class="space-y-5" data-cart-add>
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
@@ -142,7 +140,11 @@
                     </div>
                 @endif
 
-                <div class="flex flex-wrap items-center gap-4">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-sm font-semibold text-foreground w-full sm:w-auto sm:sr-only">
+                        {{ __('client.product.quantity') }}
+                    </span>
+
                     <div class="flex items-center border border-border rounded-xl overflow-hidden">
                         <button type="button" id="qty-minus"
                             class="w-11 h-11 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
@@ -150,7 +152,7 @@
                             <i class="fa-solid fa-minus text-xs"></i>
                         </button>
                         <input type="number" id="quantity" name="quantity" value="1" min="1"
-                            max="{{ \App\Services\Client\CartService::MAX_QUANTITY }}"
+                            max="{{ \App\Services\Client\CartService::MAX_QUANTITY }}" inputmode="numeric"
                             class="w-14 h-11 text-center border-x border-border focus:outline-none">
                         <button type="button" id="qty-plus"
                             class="w-11 h-11 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
@@ -160,24 +162,52 @@
                     </div>
 
                     <button type="submit" @disabled($outOfStock)
-                        class="flex-1 min-w-44 inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold rounded-xl {{ $outOfStock ? 'text-muted-foreground bg-muted cursor-not-allowed' : 'btn-accent' }}">
+                        class="flex-1 basis-full sm:basis-0 sm:min-w-40 inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-bold rounded-xl {{ $outOfStock ? 'text-muted-foreground bg-muted cursor-not-allowed' : 'btn-outline' }}">
                         <i class="fa-solid fa-cart-plus"></i>
                         {{ $outOfStock ? __('client.product.out_of_stock') : __('client.product.add_to_cart') }}
                     </button>
+
+                    @unless ($outOfStock)
+                        <button type="submit" name="buy_now" value="1"
+                            class="flex-1 basis-full sm:basis-0 sm:min-w-40 inline-flex items-center justify-center gap-2 px-5 py-3.5 text-sm font-bold btn-accent rounded-xl">
+                            <i class="fa-solid fa-bolt"></i>
+                            {{ __('client.product.buy_now') }}
+                        </button>
+                    @endunless
                 </div>
             </form>
 
-            @auth
-                @php $wishlisted = Auth::user()->hasWishlisted($product->id); @endphp
-                <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" class="mt-3">
+            @php $compared = app(\App\Services\Client\CompareService::class)->has($product->id); @endphp
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                @auth
+                    @php $wishlisted = Auth::user()->hasWishlisted($product->id); @endphp
+                    <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
+                        @csrf
+                        <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
+                            data-wishlist-on="border-red-200 bg-red-50 text-red-600"
+                            data-wishlist-off="border-border text-muted-foreground"
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-red-200 hover:text-red-600 {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-600' : 'border-border text-muted-foreground' }}">
+                            <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart"></i>
+                            <span data-wishlist-label>
+                                {{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}
+                            </span>
+                        </button>
+                    </form>
+                @endauth
+
+                <form action="{{ route('shop.compare.toggle', $product->slug) }}" method="POST"
+                    data-compare-toggle data-product="{{ $product->id }}">
                     @csrf
-                    <button type="submit"
-                        class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-600 hover:bg-red-100' : 'border-border text-muted-foreground hover:border-primary hover:text-primary' }}">
-                        <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart"></i>
-                        {{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}
+                    <button type="submit" aria-pressed="{{ $compared ? 'true' : 'false' }}"
+                        class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-primary hover:text-primary {{ $compared ? 'border-primary bg-primary/5 text-primary' : 'border-border text-muted-foreground' }}">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span data-compare-label>
+                            {{ $compared ? __('client.compare.added') : __('client.compare.add') }}
+                        </span>
                     </button>
                 </form>
-            @endauth
+            </div>
 
             <div class="grid grid-cols-3 gap-3 mt-7">
                 @foreach ([['fa-truck-fast', __('client.product.benefits.shipping')], ['fa-rotate-left', __('client.product.benefits.returns')], ['fa-shield-halved', __('client.product.benefits.warranty')]] as [$icon, $label])
@@ -375,6 +405,29 @@
         @endif
     </section>
 
+    @unless ($outOfStock)
+        <div class="buy-bar md:hidden">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="min-w-0">
+                    <p class="text-[11px] text-muted-foreground">{{ __('common.labels.price') }}</p>
+                    <p class="text-lg price-main truncate" data-sticky-price>{{ format_price($price) }}</p>
+                </div>
+
+                <button type="submit" form="add-to-cart-form"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold btn-outline rounded-xl">
+                    <i class="fa-solid fa-cart-plus text-xs"></i>
+                    {{ __('client.product.add_to_cart') }}
+                </button>
+
+                <button type="submit" form="add-to-cart-form" name="buy_now" value="1"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold btn-accent rounded-xl">
+                    <i class="fa-solid fa-bolt text-xs"></i>
+                    {{ __('client.product.buy_now') }}
+                </button>
+            </div>
+        </div>
+    @endunless
+
     @if ($relatedProducts->isNotEmpty())
         <section class="mb-12">
             <div class="flex items-center justify-between mb-5">
@@ -405,6 +458,11 @@
                 $qty.val(Math.min(max, parseInt($qty.val(), 10) + 1));
             });
 
+            $qty.on('change blur', function() {
+                const value = parseInt($qty.val(), 10);
+                $qty.val(Number.isNaN(value) ? 1 : Math.min(max, Math.max(1, value)));
+            });
+
             $('.gallery-thumb').on('click', function() {
                 $('#gallery-main').css('opacity', 0.4).attr('src', $(this).data('src'));
                 setTimeout(() => $('#gallery-main').css('opacity', 1), 120);
@@ -418,6 +476,7 @@
                 const base = parseFloat($(this).data('base'));
 
                 $('#price-display').text(formatPrice(price));
+                $('[data-sticky-price]').text(formatPrice(price));
 
                 if (base > price) {
                     const percent = Math.round(((base - price) / base) * 100);

@@ -4,7 +4,7 @@
     $showValue = $showValue ?? true;
 @endphp
 
-<span class="inline-flex items-center gap-1 {{ $size }}">
+<span class="inline-flex shrink-0 items-center gap-1 {{ $size }}">
     <span class="inline-flex items-center text-amber-400">
         @for ($i = 1; $i <= 5; $i++)
             @if ($value >= $i)

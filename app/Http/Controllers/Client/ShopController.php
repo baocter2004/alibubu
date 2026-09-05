@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\GetProductRequest;
+use App\Models\Product;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Services\Client\ProductService;
 use App\Services\Client\ReviewService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ShopController extends Controller
@@ -26,6 +29,22 @@ class ShopController extends Controller
             'categories' => Category::query()->where('is_active', true)->orderBy('ordinal')->get(),
             'branches' => Branch::query()->where('is_active', true)->orderBy('name')->get(),
             'filters' => $filters,
+        ]);
+    }
+
+    public function suggest(Request $request)
+    {
+        $products = $this->productService->suggest((string) $request->query('keyword', ''));
+
+        return response()->json([
+            'items' => $products->map(fn (Product $product) => [
+                'name' => $product->name,
+                'price' => format_price($product->effective_price),
+                'url' => route('shop.show', $product->slug),
+                'thumbnail' => $product->thumbnail
+                    ? Storage::disk('public')->url($product->thumbnail)
+                    : null,
+            ])->all(),
         ]);
     }
 

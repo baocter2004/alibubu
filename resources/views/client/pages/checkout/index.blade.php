@@ -38,7 +38,8 @@
         @endforeach
     </div>
 
-    <form action="{{ route('checkout.store') }}" method="POST" class="grid lg:grid-cols-3 gap-6 items-start">
+    <form action="{{ route('checkout.store') }}" method="POST" class="grid lg:grid-cols-3 gap-6 items-start"
+        data-submit-once>
         @csrf
 
         <div class="lg:col-span-2 space-y-6">
@@ -46,17 +47,61 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                     <h2 class="font-bold text-foreground">{{ __('client.checkout.shipping_info') }}</h2>
 
-                    @if ($defaultAddress)
-                        <button type="button" id="use-saved-address"
-                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
-                            data-fullname="{{ $defaultAddress->fullname }}"
-                            data-phone="{{ $defaultAddress->phone_number }}"
-                            data-address="{{ $defaultAddress->full_address }}">
-                            <i class="fa-solid fa-location-dot"></i>
-                            {{ __('client.checkout.use_saved_address') }}
-                        </button>
+                    @if ($addresses->isNotEmpty())
+                        <a href="{{ route('account.addresses') }}"
+                            class="text-xs font-medium text-primary hover:underline">
+                            <i class="fa-solid fa-plus mr-1"></i>{{ __('client.account.addresses.add') }}
+                        </a>
                     @endif
                 </div>
+
+                @if ($addresses->isNotEmpty())
+                    <div class="mb-5">
+                        <p class="text-sm font-semibold text-foreground mb-2.5">
+                            {{ __('client.checkout.saved_addresses') }}
+                        </p>
+
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            @foreach ($addresses as $address)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="saved_address" value="{{ $address->id }}"
+                                        class="peer sr-only saved-address"
+                                        data-fullname="{{ $address->fullname }}"
+                                        data-phone="{{ $address->phone_number }}"
+                                        data-address="{{ $address->full_address }}"
+                                        @checked($defaultAddress && $address->id === $defaultAddress->id)>
+                                    <span
+                                        class="flex flex-col h-full px-4 py-3 border-2 border-border rounded-xl transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                                        <span class="flex items-center gap-2 mb-1">
+                                            <span class="text-sm font-semibold text-foreground truncate">
+                                                {{ $address->fullname }}
+                                            </span>
+                                            @if ($address->is_default)
+                                                <span class="px-1.5 py-0.5 text-[10px] font-bold badge-flag bg-primary/10 text-primary">
+                                                    {{ __('client.checkout.default_badge') }}
+                                                </span>
+                                            @endif
+                                        </span>
+                                        <span class="text-xs text-muted-foreground">{{ $address->phone_number }}</span>
+                                        <span class="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                                            {{ $address->full_address }}
+                                        </span>
+                                    </span>
+                                </label>
+                            @endforeach
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="saved_address" value="" class="peer sr-only saved-address"
+                                    @checked(! $defaultAddress)>
+                                <span
+                                    class="flex items-center justify-center gap-2 h-full min-h-20 px-4 py-3 border-2 border-dashed border-border rounded-xl text-sm font-medium text-muted-foreground transition-all peer-checked:border-primary peer-checked:text-primary peer-checked:bg-primary/5">
+                                    <i class="fa-solid fa-pen"></i>
+                                    {{ __('client.checkout.new_address') }}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="grid sm:grid-cols-2 gap-4">
                     <div>
@@ -232,10 +277,10 @@
                 <span class="text-2xl price-main">{{ format_price($total) }}</span>
             </div>
 
-            <button type="submit"
+            <button type="submit" data-busy-label="{{ __('client.checkout.placing') }}"
                 class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-bold btn-accent rounded-xl">
                 <i class="fa-solid fa-circle-check"></i>
-                {{ __('client.checkout.place_order') }}
+                <span data-submit-label>{{ __('client.checkout.place_order') }}</span>
             </button>
 
             <a href="{{ route('cart.index') }}"
@@ -257,10 +302,17 @@
             $('.payment-option').on('change', toggleBank);
             toggleBank();
 
-            $('#use-saved-address').on('click', function() {
+            $('.saved-address').on('change', function() {
+                const address = $(this).data('address');
+
+                if (!$(this).val()) {
+                    $('#address').val('').focus();
+                    return;
+                }
+
                 $('#fullname').val($(this).data('fullname'));
                 $('#phone_number').val($(this).data('phone'));
-                $('#address').val($(this).data('address'));
+                $('#address').val(address);
             });
         });
     </script>

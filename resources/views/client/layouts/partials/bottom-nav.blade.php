@@ -22,12 +22,12 @@
                 @endif
                 <span class="relative">
                     <i class="fa-solid {{ $item['icon'] }} text-base"></i>
-                    @if (! empty($item['badge']) && $item['badge'] > 0)
-                        <span
-                            class="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    @isset($item['badge'])
+                        <span data-cart-count data-cart-count-cap="9"
+                            class="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center {{ $item['badge'] > 0 ? '' : 'hidden' }}">
                             {{ $item['badge'] > 9 ? '9+' : $item['badge'] }}
                         </span>
-                    @endif
+                    @endisset
                 </span>
                 {{ $item['label'] }}
             </a>

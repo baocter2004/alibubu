@@ -8,14 +8,15 @@
     @endphp
 
     <section class="grain relative overflow-hidden ink-panel rounded-[1.75rem] mb-14">
-        <div class="relative grid lg:grid-cols-12 gap-8 px-6 py-12 md:px-12 md:py-16 lg:py-20 text-white">
+        <div class="relative grid lg:grid-cols-12 gap-8 px-5 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:py-20 text-white">
             <div class="lg:col-span-7 xl:col-span-6 flex flex-col justify-center">
                 <span class="inline-flex items-center gap-2 self-start px-3 py-1.5 mb-6 text-[11px] font-semibold tracking-wider uppercase rounded-full bg-white/10 border border-white/15">
                     <i class="fa-solid fa-shield-halved text-accent"></i>
                     {{ __('client.home.hero.badge') }}
                 </span>
 
-                <h1 class="text-[2.5rem] leading-[1.05] md:text-6xl lg:text-[4.25rem] font-extrabold tracking-tight mb-5">
+                <h1
+                    class="text-[1.85rem] sm:text-[2.5rem] leading-[1.08] md:text-5xl lg:text-[4.25rem] font-extrabold tracking-tight text-balance break-words mb-5">
                     {{ __('client.home.heading') }}
                     <span class="block text-accent">{{ __('client.home.heading_highlight') }}</span>
                 </h1>

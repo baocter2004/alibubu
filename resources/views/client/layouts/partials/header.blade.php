@@ -14,10 +14,10 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center gap-4 h-16">
-            <div class="flex items-center gap-4">
+        <div class="flex justify-between items-center gap-3 h-16">
+            <div class="flex items-center gap-3 min-w-0 shrink">
                 <button id="menu-open" type="button"
-                    class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors"
+                    class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors"
                     aria-label="{{ __('client.nav.categories') }}">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
@@ -28,7 +28,7 @@
                     <span class="font-bold text-lg text-foreground tracking-tight">{{ __('common.app_name') }}</span>
                 </a>
 
-                <nav class="hidden md:flex items-center gap-1 ml-2">
+                <nav class="hidden lg:flex items-center gap-1 ml-2">
                     @php
                         $onDeals = request()->routeIs('shop.*') && request()->boolean('is_sale');
                         $navLinks = [
@@ -93,29 +93,36 @@
                 </nav>
             </div>
 
-            <form action="{{ route('shop.index') }}" method="GET" class="hidden lg:block flex-1 max-w-sm">
+            <form action="{{ route('shop.index') }}" method="GET" class="hidden md:block flex-1 max-w-sm"
+                data-search-box>
                 <div class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
-                    <input type="search" name="keyword" value="{{ request('keyword') }}"
+                    <input type="search" name="keyword" value="{{ request('keyword') }}" autocomplete="off"
                         placeholder="{{ __('client.nav.search_placeholder') }}"
+                        data-search-input="{{ route('shop.suggest') }}" data-search-all="{{ route('shop.index') }}"
                         class="w-full pl-9 pr-4 py-2 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
+                    <div class="suggest-panel hidden" data-search-panel></div>
                 </div>
             </form>
 
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 shrink-0">
                 @include('components.locale-switcher')
+
+                <a href="{{ route('compare.index') }}"
+                    class="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors"
+                    aria-label="{{ __('client.nav.compare') }}" title="{{ __('client.nav.compare') }}">
+                    <i class="fa-solid fa-code-compare text-base"></i>
+                </a>
 
                 <a href="{{ route('cart.index') }}"
                     class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors relative"
                     aria-label="{{ __('client.nav.cart') }}">
                     <i class="fa-solid fa-bag-shopping text-lg"></i>
-                    @if ($cartCount > 0)
-                        <span
-                            class="absolute -top-0.5 -right-0.5 bg-primary text-white text-[10px] font-bold min-w-4.5 h-4.5 rounded-full flex items-center justify-center px-1 border-2 border-white">
-                            {{ $cartCount > 99 ? '99+' : $cartCount }}
-                        </span>
-                    @endif
+                    <span data-cart-count
+                        class="absolute -top-0.5 -right-0.5 bg-primary text-white text-[10px] font-bold min-w-5 h-5 rounded-full flex items-center justify-center px-1 border-2 border-white {{ $cartCount > 0 ? '' : 'hidden' }}">
+                        {{ $cartCount > 99 ? '99+' : $cartCount }}
+                    </span>
                 </a>
 
                 @auth
@@ -168,5 +175,17 @@
                 @endauth
             </div>
         </div>
+
+        <form action="{{ route('shop.index') }}" method="GET" class="md:hidden pb-3" data-search-box>
+            <div class="relative">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
+                <input type="search" name="keyword" value="{{ request('keyword') }}" autocomplete="off"
+                    placeholder="{{ __('client.nav.search_placeholder') }}"
+                    data-search-input="{{ route('shop.suggest') }}" data-search-all="{{ route('shop.index') }}"
+                    class="w-full pl-9 pr-4 py-2.5 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
+                <div class="suggest-panel hidden" data-search-panel></div>
+            </div>
+        </form>
     </div>
 </header>

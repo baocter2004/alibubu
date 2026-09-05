@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Services\Client\CartService;
+use App\Services\Client\CompareService;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CartService::class);
+        $this->app->singleton(CompareService::class);
     }
 
     /**
@@ -36,8 +38,9 @@ class AppServiceProvider extends ServiceProvider
                 : route('index');
         });
 
-        View::composer('client.layouts.partials.*', function ($view) {
+        View::composer('client.layouts.*', function ($view) {
             $view->with('cartCount', app(CartService::class)->count());
+            $view->with('compareItems', app(CompareService::class)->summary());
             $view->with('navCategories', Cache::remember(
                 'nav.categories.' . app()->getLocale(),
                 now()->addMinutes(10),
