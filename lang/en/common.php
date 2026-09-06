@@ -84,6 +84,10 @@ return [
     ],
 
     'pagination' => [
+        'previous' => 'Previous page',
+        'next' => 'Next page',
+        'first' => 'First page',
+        'last' => 'Last page',
         'showing' => 'Showing',
         'results' => 'results',
     ],

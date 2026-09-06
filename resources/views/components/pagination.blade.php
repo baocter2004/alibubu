@@ -24,7 +24,8 @@
             @if ($paginator->onFirstPage())
                 <span class="{{ $disabled }}" aria-hidden="true"><i class="fa-solid fa-angle-left"></i></span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="{{ $link }}">
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.previous') }}">
                     <i class="fa-solid fa-angle-left"></i>
                 </a>
             @endif
@@ -34,7 +35,8 @@
             </span>
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="{{ $link }}">
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.next') }}">
                     <i class="fa-solid fa-angle-right"></i>
                 </a>
             @else
@@ -47,8 +49,10 @@
                 <span class="{{ $disabled }}" aria-hidden="true"><i class="fa-solid fa-angles-left"></i></span>
                 <span class="{{ $disabled }}" aria-hidden="true"><i class="fa-solid fa-angle-left"></i></span>
             @else
-                <a href="{{ $paginator->url(1) }}" class="{{ $link }}"><i class="fa-solid fa-angles-left"></i></a>
-                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="{{ $link }}">
+                <a href="{{ $paginator->url(1) }}" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.first') }}"><i class="fa-solid fa-angles-left"></i></a>
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.previous') }}">
                     <i class="fa-solid fa-angle-left"></i>
                 </a>
             @endif
@@ -83,10 +87,12 @@
             @endif
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="{{ $link }}">
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.next') }}">
                     <i class="fa-solid fa-angle-right"></i>
                 </a>
-                <a href="{{ $paginator->url($paginator->lastPage()) }}" class="{{ $link }}">
+                <a href="{{ $paginator->url($paginator->lastPage()) }}" class="{{ $link }}"
+                    aria-label="{{ __('common.pagination.last') }}">
                     <i class="fa-solid fa-angles-right"></i>
                 </a>
             @else

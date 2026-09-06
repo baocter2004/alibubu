@@ -7,15 +7,19 @@
         $heroProduct = $featuredProducts->first() ?? $trendingProducts->first() ?? $saleProducts->first();
     @endphp
 
-    <section class="grain relative overflow-hidden ink-panel rounded-[1.75rem] mb-14">
-        <div class="relative grid lg:grid-cols-12 gap-8 px-6 py-12 md:px-12 md:py-16 lg:py-20 text-white">
+    <section class="grain tech-grid relative overflow-hidden ink-panel rounded-[1.75rem] mb-14">
+        <span class="tech-orb w-72 h-72 -top-24 -right-16 bg-accent/25"></span>
+        <span class="tech-orb w-80 h-80 -bottom-32 -left-20 bg-sky-400/20"></span>
+
+        <div class="relative grid lg:grid-cols-12 gap-8 px-5 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:py-20 text-white">
             <div class="lg:col-span-7 xl:col-span-6 flex flex-col justify-center">
-                <span class="inline-flex items-center gap-2 self-start px-3 py-1.5 mb-6 text-[11px] font-semibold tracking-wider uppercase rounded-full bg-white/10 border border-white/15">
-                    <i class="fa-solid fa-shield-halved text-accent"></i>
+                <span class="inline-flex items-center gap-2.5 self-start px-3 py-1.5 mb-6 text-[11px] font-semibold tracking-wider uppercase rounded-full bg-white/10 border border-white/15">
+                    <span class="pulse-dot"></span>
                     {{ __('client.home.hero.badge') }}
                 </span>
 
-                <h1 class="text-[2.5rem] leading-[1.05] md:text-6xl lg:text-[4.25rem] font-extrabold tracking-tight mb-5">
+                <h1
+                    class="text-[1.85rem] sm:text-[2.5rem] leading-[1.08] md:text-5xl lg:text-[4.25rem] font-extrabold tracking-tight text-balance break-words mb-5">
                     {{ __('client.home.heading') }}
                     <span class="block text-accent">{{ __('client.home.heading_highlight') }}</span>
                 </h1>
@@ -40,12 +44,27 @@
                     </div>
                 </form>
 
-                <dl class="flex flex-wrap gap-x-10 gap-y-4">
+                @if ($categories->isNotEmpty())
+                    <div class="flex flex-wrap items-center gap-2 mb-7">
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45 mr-1">
+                            {{ __('client.home.hero.quick_links') }}
+                        </span>
+                        @foreach ($categories->take(4) as $category)
+                            <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
+                                class="tech-chip text-white/80 hover:bg-white/15 hover:text-white transition-colors">
+                                <i class="{{ $category->icon ?: 'fa-solid fa-tag' }} text-accent text-[11px]"></i>
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+
+                <dl class="flex flex-wrap items-end gap-x-8 gap-y-4 pt-6 border-t border-white/10">
                     @foreach ([['products', number_format($stats['products'])], ['customers', number_format($stats['customers']) . '+'], ['rating', $stats['rating']]] as [$key, $value])
-                        <div>
+                        <div class="relative pr-8 last:pr-0">
                             <dt class="sr-only">{{ __('client.home.stats.' . $key) }}</dt>
                             <dd class="text-2xl md:text-3xl font-extrabold tabular tracking-tight">{{ $value }}</dd>
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60 mt-0.5">
+                            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/55 mt-0.5">
                                 {{ __('client.home.stats.' . $key) }}
                             </p>
                         </div>
@@ -61,7 +80,10 @@
 
                         <span class="relative block bg-white rounded-[1.5rem] p-6 shadow-2xl rotate-1 transition-transform duration-500 group-hover:rotate-0 group-hover:-translate-y-1">
                             <span class="flex items-center justify-between mb-4">
-                                <span class="eyebrow">{{ __('client.home.featured.title') }}</span>
+                                <span class="eyebrow flex items-center gap-2">
+                                    <span class="pulse-dot"></span>
+                                    {{ __('client.home.featured.title') }}
+                                </span>
                                 @if ($heroProduct->discount_percent > 0)
                                     <span class="px-2 py-1 text-[11px] font-bold badge-sale">
                                         -{{ $heroProduct->discount_percent }}%

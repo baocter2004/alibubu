@@ -41,10 +41,10 @@
                     @foreach ($order->items as $item)
                         <div class="flex gap-4 pb-4 border-b border-border last:border-0 last:pb-0">
                             <span
-                                class="w-16 h-16 shrink-0 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
+                                class="w-16 h-16 shrink-0 bg-white border border-border rounded-lg overflow-hidden flex items-center justify-center">
                                 @if ($item->product?->thumbnail)
                                     <img src="{{ Storage::disk('public')->url($item->product->thumbnail) }}"
-                                        alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                        alt="{{ $item->name }}" class="w-full h-full object-contain p-1">
                                 @else
                                     <i class="fa-solid fa-box-open text-muted-foreground/30"></i>
                                 @endif

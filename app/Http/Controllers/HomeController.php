@@ -31,7 +31,7 @@ class HomeController extends Controller
                 ->get(),
             'featuredProducts' => $this->productService->highlights('is_featured', 8),
             'trendingProducts' => $this->productService->highlights('is_trending', 4),
-            'saleProducts' => $this->productService->highlights('is_sale', 4),
+            'saleProducts' => $this->productService->onSale(4),
             'stats' => $this->storeStats(),
         ]);
     }
@@ -62,6 +62,7 @@ class HomeController extends Controller
     {
         return view('client.pages.thank-you', [
             'orderCode' => session('order_code'),
+            'orderId' => session('order_id'),
         ]);
     }
 }

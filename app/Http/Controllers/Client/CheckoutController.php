@@ -30,13 +30,18 @@ class CheckoutController extends Controller
         $subtotal = $this->cartService->subtotal($items);
         $applied = $this->couponService->current($items, $subtotal, Auth::user());
 
+        $addresses = Auth::check()
+            ? Auth::user()->userAddresses()->orderByDesc('is_default')->latest('id')->get()
+            : collect();
+
         return view('client.pages.checkout.index', [
             'items' => $items,
             'subtotal' => $subtotal,
             'coupon' => $applied['coupon'] ?? null,
             'discount' => $applied['discount'] ?? 0.0,
             'total' => $subtotal - ($applied['discount'] ?? 0.0),
-            'defaultAddress' => Auth::user()?->userAddresses()->where('is_default', true)->first(),
+            'addresses' => $addresses,
+            'defaultAddress' => $addresses->firstWhere('is_default', true) ?? $addresses->first(),
         ]);
     }
 
@@ -63,6 +68,7 @@ class CheckoutController extends Controller
         return redirect()
             ->route('thanks-you')
             ->with('order_code', $order->code)
+            ->with('order_id', $order->id)
             ->with('success', __('client.messages.order_success'));
     }
 }

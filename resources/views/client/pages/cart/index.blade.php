@@ -40,7 +40,8 @@
                         $variant = $item['variant'];
                     @endphp
 
-                    <div class="flex gap-4 bg-card border border-border rounded-2xl p-4 hover:border-primary/30 transition-colors">
+                    <div class="flex flex-wrap sm:flex-nowrap gap-4 bg-card border border-border rounded-2xl p-4 hover:border-primary/30 transition-colors"
+                        data-cart-line data-cart-update="{{ route('cart.update', $item['key']) }}">
                         <a href="{{ route('shop.show', $product->slug) }}"
                             class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 bg-white border border-border rounded-xl overflow-hidden flex items-center justify-center">
                             @if ($product->thumbnail)
@@ -67,26 +68,29 @@
 
                             <div class="flex flex-wrap items-center gap-3 mt-3">
                                 <form action="{{ route('cart.update', $item['key']) }}" method="POST"
-                                    class="flex items-center border border-border rounded-lg overflow-hidden">
+                                    class="flex items-center border border-border rounded-lg overflow-hidden" data-cart-qty>
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" name="quantity" value="{{ $item['quantity'] - 1 }}"
-                                        class="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                                        data-qty-step="-1"
+                                        class="w-9 h-9 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
                                         aria-label="{{ __('client.product.decrease') }}">
                                         <i class="fa-solid fa-minus text-[10px]"></i>
                                     </button>
-                                    <span class="w-10 h-8 flex items-center justify-center text-sm font-medium border-x border-border">
-                                        {{ $item['quantity'] }}
-                                    </span>
+                                    <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1"
+                                        max="{{ \App\Services\Client\CartService::MAX_QUANTITY }}" inputmode="numeric"
+                                        aria-label="{{ __('client.product.quantity') }}"
+                                        data-qty-input data-line-quantity="{{ $item['key'] }}"
+                                        class="w-12 h-9 text-center text-sm font-medium tabular border-x border-border focus:outline-none">
                                     <button type="submit" name="quantity" value="{{ $item['quantity'] + 1 }}"
-                                        class="w-8 h-8 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40"
-                                        aria-label="{{ __('client.product.increase') }}"
-                                        @disabled($item['quantity'] >= \App\Services\Client\CartService::MAX_QUANTITY)>
+                                        data-qty-step="1"
+                                        class="w-9 h-9 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                                        aria-label="{{ __('client.product.increase') }}">
                                         <i class="fa-solid fa-plus text-[10px]"></i>
                                     </button>
                                 </form>
 
-                                <form action="{{ route('cart.destroy', $item['key']) }}" method="POST">
+                                <form action="{{ route('cart.destroy', $item['key']) }}" method="POST" data-cart-remove>
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
@@ -97,9 +101,10 @@
                             </div>
                         </div>
 
-                        <div class="text-right shrink-0">
+                        <div class="text-right shrink-0 ml-auto">
                             <p class="text-xs text-muted-foreground mb-1">{{ __('client.cart.line_total') }}</p>
-                            <p class="font-bold text-foreground whitespace-nowrap">{{ format_price($item['subtotal']) }}</p>
+                            <p class="font-bold text-foreground whitespace-nowrap"
+                                data-line-subtotal="{{ $item['key'] }}">{{ format_price($item['subtotal']) }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -110,7 +115,7 @@
                         <i class="fa-solid fa-arrow-left"></i> {{ __('client.cart.continue') }}
                     </a>
 
-                    <form action="{{ route('cart.clear') }}" method="POST">
+                    <form action="{{ route('cart.clear') }}" method="POST" data-submit-once>
                         @csrf
                         @method('DELETE')
                         <button type="submit"
@@ -127,7 +132,7 @@
                 <dl class="space-y-3 text-sm mb-4">
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">{{ __('client.cart.subtotal') }}</dt>
-                        <dd class="font-medium text-foreground">{{ format_price($subtotal) }}</dd>
+                        <dd class="font-medium text-foreground" data-cart-subtotal>{{ format_price($subtotal) }}</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-muted-foreground">{{ __('client.cart.shipping') }}</dt>
@@ -137,18 +142,16 @@
 
                 @include('components.coupon-box', ['coupon' => $coupon, 'discount' => $discount])
 
-                @if ($discount > 0)
-                    <div class="flex justify-between text-sm mb-4">
-                        <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>
-                        <span class="font-medium text-success">-{{ format_price($discount) }}</span>
-                    </div>
-                @endif
+                <div class="flex justify-between text-sm mb-4 {{ $discount > 0 ? '' : 'hidden' }}" data-cart-discount-row>
+                    <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>
+                    <span class="font-medium text-success" data-cart-discount>-{{ format_price($discount) }}</span>
+                </div>
 
                 <div class="border-t border-border my-4"></div>
 
                 <div class="flex justify-between items-baseline mb-5">
                     <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                    <span class="text-2xl price-main">{{ format_price($total) }}</span>
+                    <span class="text-2xl price-main" data-cart-total>{{ format_price($total) }}</span>
                 </div>
 
                 <a href="{{ route('checkout.index') }}"
@@ -166,6 +169,21 @@
                     @endforeach
                 </div>
             </aside>
+        </div>
+
+        <div class="buy-bar lg:hidden">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="min-w-0">
+                    <p class="text-[11px] text-muted-foreground">{{ __('client.cart.total') }}</p>
+                    <p class="text-lg price-main truncate" data-cart-total>{{ format_price($total) }}</p>
+                </div>
+
+                <a href="{{ route('checkout.index') }}"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold btn-accent rounded-xl">
+                    {{ __('client.cart.checkout') }}
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+            </div>
         </div>
     @endif
 @endsection

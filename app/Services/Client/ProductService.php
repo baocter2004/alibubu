@@ -5,11 +5,16 @@ namespace App\Services\Client;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Services\BaseCrudService;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 
 class ProductService extends BaseCrudService
 {
+    public const PER_PAGE = 12;
+
+    public const SUGGEST_MIN_LENGTH = 2;
+
     protected function getRepository(): ProductRepository
     {
         if (empty($this->repository)) {
@@ -55,22 +60,7 @@ class ProductService extends BaseCrudService
             $wheres['is_trending'] = 1;
         }
 
-        if (! empty($params['is_sale'])) {
-            $wheres['is_sale'] = 1;
-        }
-
-        if (! empty($params['keyword'])) {
-            $orWheres[] = ['name', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['short_descriptions', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['sku', 'like', '%' . $params['keyword'] . '%'];
-        }
-
-        $minPrice = $params['min_price'] ?? null;
-        $maxPrice = $params['max_price'] ?? null;
-
-        if ($minPrice !== null && $minPrice !== '' && $maxPrice !== null && $maxPrice !== '') {
-            $whereBetweens['price'] = [(float) $minPrice, (float) $maxPrice];
-        }
+        $sort = $params['sort'] ?? null;
 
         return [
             'wheres' => $wheres,
@@ -80,18 +70,52 @@ class ProductService extends BaseCrudService
             'where_ins' => $whereIns,
             'where_has' => $whereHas,
             'where_betweens' => $whereBetweens,
-            'sort' => $this->resolveSort($params),
+            'sort' => $this->resolveSort($sort),
             'relates' => $relates,
             'relates_count' => $relatesCount,
+            'keyword' => trim((string) ($params['keyword'] ?? '')),
+            'price_from' => $params['min_price'] ?? null,
+            'price_to' => $params['max_price'] ?? null,
+            'on_sale' => ! empty($params['is_sale']),
+            'price_sort' => $this->resolvePriceSort($sort),
         ];
     }
 
-    public function searchForShop(array $params = [], int $limit = 12)
+    public function searchForShop(array $params = [], int $limit = self::PER_PAGE): LengthAwarePaginator
     {
         return $this->paginate(
             array_merge($params, ['relates' => ['branch', 'variants']]),
             $limit
         );
+    }
+
+    public function suggest(string $keyword, int $limit = 6): Collection
+    {
+        if (mb_strlen(trim($keyword)) < self::SUGGEST_MIN_LENGTH) {
+            return new Collection();
+        }
+
+        return $this->filter([
+            'keyword' => $keyword,
+            'sort' => 'popular',
+            'relates' => ['variants'],
+        ])->limit($limit)->get();
+    }
+
+    public function onSale(int $limit = 4): Collection
+    {
+        return $this->filter([
+            'is_sale' => 1,
+            'relates' => ['branch', 'variants'],
+        ])->limit($limit)->get();
+    }
+
+    public function highlights(string $flag, int $limit = 8): Collection
+    {
+        return $this->filter([
+            $flag => 1,
+            'relates' => ['branch', 'variants'],
+        ])->limit($limit)->get();
     }
 
     public function findBySlug(string $slug): ?Product
@@ -132,26 +156,22 @@ class ProductService extends BaseCrudService
             ->get();
     }
 
-    public function highlights(string $flag, int $limit = 8): Collection
+    protected function resolveSort(?string $sort): string
     {
-        return $this->getRepository()
-            ->newQuery()
-            ->where('is_active', true)
-            ->where($flag, true)
-            ->with(['branch', 'variants'])
-            ->latest('id')
-            ->limit($limit)
-            ->get();
-    }
-
-    protected function resolveSort(array $params): string
-    {
-        return match ($params['sort'] ?? null) {
-            'price_asc' => 'price:asc',
-            'price_desc' => 'price:desc',
-            'popular' => 'views:desc',
+        return match ($sort) {
+            'price_asc', 'price_desc' => '',
+            'popular' => 'sold:desc',
             'oldest' => 'id:asc',
             default => 'id:desc',
+        };
+    }
+
+    protected function resolvePriceSort(?string $sort): ?string
+    {
+        return match ($sort) {
+            'price_asc' => 'asc',
+            'price_desc' => 'desc',
+            default => null,
         };
     }
 }

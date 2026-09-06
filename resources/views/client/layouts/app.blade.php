@@ -22,24 +22,33 @@
     @stack('styles')
 </head>
 
-<body class="bg-background-light" data-success="{{ session('success') }}" data-error="{{ session('error') }}">
+<body class="bg-background-light min-h-screen flex flex-col" data-success="{{ session('success') }}"
+    data-error="{{ session('error') }}">
     <a href="#main" class="skip-link">{{ __('client.nav.skip_to_content') }}</a>
 
     @include('client.layouts.partials.header')
 
     @include('client.layouts.partials.sidebar')
 
-    <main id="main" class="max-w-7xl mx-auto px-4 py-6 md:py-10 pb-24 md:pb-12">
+    <main id="main"
+        class="w-full max-w-7xl mx-auto flex-1 px-4 py-6 md:py-10 {{ $compareItems->isNotEmpty() ? 'pb-48 md:pb-32' : 'pb-24 md:pb-12' }}">
         @yield('content')
     </main>
 
     @include('client.layouts.partials.footer')
+    @include('client.layouts.partials.compare-bar')
     @include('client.layouts.partials.bottom-nav')
 
     <script>
         window.alertLabels = {
             success: @json(__('common.alerts.success')),
             error: @json(__('common.alerts.error')),
+        };
+
+        window.cartLabels = {
+            failed: @json(__('client.messages.action_failed')),
+            searchEmpty: @json(__('client.nav.search_no_result')),
+            searchAll: @json(__('client.nav.search_view_all')),
         };
     </script>
 

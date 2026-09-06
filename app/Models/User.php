@@ -82,6 +82,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return (int) $this->status === UserConst::STATUS_LOCKED;
     }
 
+    protected ?array $wishlistedProductIds = null;
+
     // Relations
     public function userAddresses(): HasMany
     {
@@ -110,6 +112,23 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasWishlisted(string $productId): bool
     {
-        return $this->wishlists()->where('product_id', $productId)->exists();
+        return in_array($productId, $this->wishlistedProductIds(), true);
+    }
+
+    public function wishlistedProductIds(): array
+    {
+        if ($this->wishlistedProductIds === null) {
+            $this->wishlistedProductIds = $this->wishlists()
+                ->pluck('product_id')
+                ->map(fn ($id) => (string) $id)
+                ->all();
+        }
+
+        return $this->wishlistedProductIds;
+    }
+
+    public function forgetWishlistCache(): void
+    {
+        $this->wishlistedProductIds = null;
     }
 }

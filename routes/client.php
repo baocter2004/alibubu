@@ -3,6 +3,7 @@
 use App\Http\Controllers\Client\AccountController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\CouponController;
 use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\Client\ShopController;
@@ -17,6 +18,7 @@ Route::get('/thanks-you', [HomeController::class, 'thankYou'])->name('thanks-you
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::controller(ShopController::class)->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('/suggest', 'suggest')->name('suggest');
         Route::get('/{slug}', 'show')->name('show');
     });
 
@@ -27,6 +29,14 @@ Route::prefix('shop')->name('shop.')->group(function () {
     Route::post('/{slug}/wishlist', [WishlistController::class, 'toggle'])
         ->middleware('auth')
         ->name('wishlist.toggle');
+
+    Route::post('/{slug}/compare', [CompareController::class, 'toggle'])->name('compare.toggle');
+});
+
+Route::prefix('compare')->name('compare.')->controller(CompareController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::delete('/', 'clear')->name('clear');
+    Route::delete('/{id}', 'destroy')->name('destroy');
 });
 
 Route::prefix('cart')->name('cart.')->controller(CartController::class)->group(function () {

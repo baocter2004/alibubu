@@ -8,10 +8,14 @@
         : 1;
     $outOfStock = ! $product->inStock() || $sellableVariants === 0;
     $reveal = $reveal ?? false;
+    $quickActions = $quickActions ?? true;
+    $compared = app(\App\Services\Client\CompareService::class)->has($product->id);
+    $wishlisted = Auth::check() && Auth::user()->hasWishlisted($product->id);
 @endphp
 
-<article class="group relative flex flex-col card-surface card-interactive overflow-hidden {{ $reveal ? 'reveal' : '' }}">
-    <a href="{{ $url }}" class="relative block aspect-square bg-white overflow-hidden">
+<article class="group relative flex flex-col min-w-0 card-surface card-interactive overflow-hidden {{ $reveal ? 'reveal' : '' }}">
+    <a href="{{ $url }}" aria-label="{{ $product->name }}"
+        class="relative block aspect-square bg-white overflow-hidden">
         @if ($product->thumbnail)
             <img src="{{ Storage::disk('public')->url($product->thumbnail) }}" alt="{{ $product->name }}"
                 loading="lazy" width="400" height="400"
@@ -42,6 +46,38 @@
         @endif
     </a>
 
+    @if ($quickActions)
+        <div class="absolute top-3 right-3 z-20 flex flex-col gap-1.5">
+            @auth
+                <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
+                    @csrf
+                    <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
+                        title="{{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}"
+                        data-wishlist-on="bg-red-50 text-red-600 border-red-200"
+                        data-wishlist-off="bg-white/95 text-muted-foreground border-border"
+                        class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-red-600 hover:border-red-200 transition-colors {{ $wishlisted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white/95 text-muted-foreground border-border' }}">
+                        <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart text-sm"></i>
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('auth.client.showFormLogin') }}" title="{{ __('client.wishlist.add') }}"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border border-border bg-white/95 text-muted-foreground shadow-sm hover:text-red-600 hover:border-red-200 transition-colors">
+                    <i class="fa-regular fa-heart text-sm"></i>
+                </a>
+            @endauth
+
+            <form action="{{ route('shop.compare.toggle', $product->slug) }}" method="POST" data-compare-toggle
+                data-product="{{ $product->id }}">
+                @csrf
+                <button type="submit" aria-pressed="{{ $compared ? 'true' : 'false' }}"
+                    title="{{ $compared ? __('client.compare.remove') : __('client.compare.add') }}"
+                    class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-primary hover:border-primary/40 transition-colors {{ $compared ? 'bg-primary text-white border-primary' : 'bg-white/95 text-muted-foreground border-border' }}">
+                    <i class="fa-solid fa-code-compare text-sm"></i>
+                </button>
+            </form>
+        </div>
+    @endif
+
     <div class="flex flex-col flex-1 p-4 pt-3.5">
         @if ($product->branch)
             <span class="text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground mb-1.5">
@@ -54,10 +90,9 @@
             {{ $product->name }}
         </a>
 
-        <div class="flex items-center gap-2 mb-3">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
             @include('components.rating', ['rating' => $product->rating, 'showValue' => true])
-            <span class="text-xs text-muted-foreground/50">·</span>
-            <span class="text-xs text-muted-foreground tabular">
+            <span class="text-xs text-muted-foreground truncate">
                 {{ __('client.product.sold', ['count' => number_format($product->sold)]) }}
             </span>
         </div>
@@ -81,7 +116,7 @@
                 {{ __('client.product.out_of_stock') }}
             </span>
         @else
-            <form action="{{ route('cart.store') }}" method="POST">
+            <form action="{{ route('cart.store') }}" method="POST" data-cart-add>
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="quantity" value="1">

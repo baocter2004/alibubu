@@ -34,14 +34,17 @@
                         @foreach ($items as $item)
                             @if ($item->product)
                                 <div class="relative">
-                                    @include('components.product-card', ['product' => $item->product])
+                                    @include('components.product-card', [
+                                        'product' => $item->product,
+                                        'quickActions' => false,
+                                    ])
 
                                     <form action="{{ route('account.wishlist.destroy', $item->id) }}" method="POST"
-                                        class="absolute top-2 right-2 z-10">
+                                        class="absolute top-3 right-3 z-20">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors"
+                                            class="w-9 h-9 rounded-full bg-white/95 border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
                                             title="{{ __('client.wishlist.remove') }}">
                                             <i class="fa-solid fa-xmark text-xs"></i>
                                         </button>

@@ -11,7 +11,7 @@
                 <div class="flex items-center gap-3">
                     @foreach (['facebook-f', 'instagram', 'tiktok', 'youtube'] as $social)
                         <a href="#" aria-label="{{ ucfirst($social) }}"
-                            class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
+                            class="w-10 h-10 shrink-0 rounded-lg bg-white/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
                             <i class="fa-brands fa-{{ $social }}"></i>
                         </a>
                     @endforeach
@@ -34,7 +34,7 @@
                     @foreach ($shopLinks as $link)
                         <li>
                             <a href="{{ $link['url'] }}"
-                                class="text-sm text-white/60 hover:text-white transition-colors">{{ $link['label'] }}</a>
+                                class="inline-block py-1.5 text-sm text-white/60 hover:text-white transition-colors">{{ $link['label'] }}</a>
                         </li>
                     @endforeach
                 </ul>
@@ -47,7 +47,7 @@
                 <ul class="space-y-3">
                     @foreach (['help_center', 'shipping', 'returns', 'warranty'] as $link)
                         <li>
-                            <a href="#" class="text-sm text-white/60 hover:text-white transition-colors">
+                            <a href="#" class="inline-block py-1.5 text-sm text-white/60 hover:text-white transition-colors">
                                 {{ __('client.footer.links.' . $link) }}
                             </a>
                         </li>
@@ -84,7 +84,7 @@
             </p>
             <div class="flex items-center gap-4">
                 @foreach (['terms', 'privacy', 'cookie'] as $link)
-                    <a href="#" class="text-xs text-white/55 hover:text-white/70 transition-colors">
+                    <a href="#" class="inline-block py-1 text-xs text-white/55 hover:text-white/70 transition-colors">
                         {{ __('client.footer.' . $link) }}
                     </a>
                 @endforeach
