@@ -123,7 +123,13 @@
                                     {{ \App\Const\UserConst::statusLabel($user->status) }}
                                 </span>
                             </td>
-                            <td class="text-center px-4 py-3">{{ number_format($user->loyalty_points ?? 0) }}</td>
+                            <td class="text-center px-4 py-3">
+                                <span class="block font-medium tabular">{{ number_format($user->loyalty_points ?? 0) }}</span>
+                                <span
+                                    class="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold rounded-full {{ \App\Const\MembershipConst::badgeClass($user->membershipTier()) }}">
+                                    {{ \App\Const\MembershipConst::label($user->membershipTier()) }}
+                                </span>
+                            </td>
                             <td class="px-4 py-3">{{ $user->created_at?->format('d/m/Y') ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-center gap-3">

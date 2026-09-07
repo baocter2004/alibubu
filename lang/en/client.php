@@ -538,6 +538,13 @@ return [
         'note' => 'Pay by credit card, approved in store.',
     ],
 
+    'membership' => [
+        'points' => 'points',
+        'to_next' => ':points points to reach :tier',
+        'max_tier' => 'You are at the highest tier.',
+        'earn_hint' => 'Earn 1 point for every 100,000đ of completed orders.',
+    ],
+
     'messages' => [
         'cart_added' => 'The product has been added to your cart.',
         'cart_updated' => 'Your cart has been updated.',

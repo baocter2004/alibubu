@@ -3,8 +3,10 @@
 namespace App\Services\Admin;
 
 use App\Const\OrderConst;
+use App\Const\MembershipConst;
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Repositories\OrderRepository;
@@ -104,6 +106,8 @@ class OrderService extends BaseCrudService
                 if ($status === OrderConst::STATUS_COMPLETED) {
                     $attributes['completed_at'] = now();
                     $attributes['is_paid'] = true;
+
+                    $this->awardLoyaltyPoints($order);
                 }
 
                 if ($status === OrderConst::STATUS_CANCELLED) {
@@ -126,6 +130,21 @@ class OrderService extends BaseCrudService
 
             throw $th;
         }
+    }
+
+    protected function awardLoyaltyPoints(Order $order): void
+    {
+        if (! $order->user_id || $order->status === OrderConst::STATUS_COMPLETED) {
+            return;
+        }
+
+        $points = MembershipConst::pointsFor((float) $order->total_amount);
+
+        if ($points < 1) {
+            return;
+        }
+
+        User::whereKey($order->user_id)->increment('loyalty_points', $points);
     }
 
     protected function releaseCoupon(Order $order): void

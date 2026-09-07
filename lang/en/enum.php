@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'membership' => [
+        'tier' => [
+            'member' => 'Member',
+            'silver' => 'Silver',
+            'gold' => 'Gold',
+            'diamond' => 'Diamond',
+        ],
+    ],
     'admin' => [
         'role' => [
             1 => 'Super administrator',

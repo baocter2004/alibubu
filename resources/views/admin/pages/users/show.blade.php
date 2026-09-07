@@ -54,7 +54,7 @@
                     ['label' => __('admin/user.fields.phone_number'), 'value' => $user->phone_number ?: '-'],
                     ['label' => __('admin/user.fields.gender'), 'value' => \App\Const\UserConst::genderLabel($user->gender)],
                     ['label' => __('admin/user.fields.birthday'), 'value' => $user->birthday?->format('d/m/Y') ?? '-'],
-                    ['label' => __('admin/user.fields.loyalty_points'), 'value' => number_format($user->loyalty_points ?? 0)],
+                    ['label' => __('admin/user.fields.loyalty_points'), 'value' => number_format($user->loyalty_points ?? 0) . ' · ' . \App\Const\MembershipConst::label($user->membershipTier())],
                     ['label' => __('admin/user.fields.bank_name'), 'value' => \App\Const\BankConst::getOptions()[$user->bank_name] ?? '-'],
                     ['label' => __('admin/user.fields.user_bank_name'), 'value' => $user->user_bank_name ?: '-'],
                     ['label' => __('admin/user.fields.bank_account'), 'value' => $user->bank_account ?: '-'],

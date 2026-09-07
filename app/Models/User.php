@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Const\MembershipConst;
 use App\Const\UserConst;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -108,6 +109,38 @@ class User extends Authenticatable implements MustVerifyEmail
     public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function membershipTier(): string
+    {
+        return MembershipConst::tierFor((int) $this->loyalty_points);
+    }
+
+    public function nextMembershipTier(): ?string
+    {
+        return MembershipConst::nextTier((int) $this->loyalty_points);
+    }
+
+    public function pointsToNextTier(): int
+    {
+        $next = $this->nextMembershipTier();
+
+        return $next ? max(0, MembershipConst::threshold($next) - (int) $this->loyalty_points) : 0;
+    }
+
+    public function tierProgress(): int
+    {
+        $next = $this->nextMembershipTier();
+
+        if (! $next) {
+            return 100;
+        }
+
+        $current = MembershipConst::threshold($this->membershipTier());
+        $target = MembershipConst::threshold($next);
+        $span = max(1, $target - $current);
+
+        return (int) min(100, max(0, round(((int) $this->loyalty_points - $current) / $span * 100)));
     }
 
     public function hasWishlisted(string $productId): bool

@@ -112,7 +112,7 @@
                         {{ $product->branch->name }}
                     </a>
                 @endif
-                @foreach ($product->tags as $tag)
+                @foreach ($product->tags->reject(fn ($tag) => Str::slug(Str::ascii($tag->name)) === Str::slug(Str::ascii($product->branch?->name ?? ''))) as $tag)
                     <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-muted text-muted-foreground">
                         {{ $tag->name }}
                     </span>

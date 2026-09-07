@@ -538,6 +538,13 @@ return [
         'note' => 'Trả góp qua thẻ tín dụng, duyệt nhanh tại cửa hàng.',
     ],
 
+    'membership' => [
+        'points' => 'điểm',
+        'to_next' => 'Còn :points điểm để lên hạng :tier',
+        'max_tier' => 'Bạn đang ở hạng cao nhất.',
+        'earn_hint' => 'Mỗi 100.000đ giá trị đơn hoàn thành được cộng 1 điểm.',
+    ],
+
     'messages' => [
         'cart_added' => 'Đã thêm sản phẩm vào giỏ hàng.',
         'cart_updated' => 'Đã cập nhật giỏ hàng.',

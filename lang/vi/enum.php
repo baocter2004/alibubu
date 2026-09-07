@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'membership' => [
+        'tier' => [
+            'member' => 'Thành viên',
+            'silver' => 'Bạc',
+            'gold' => 'Vàng',
+            'diamond' => 'Kim cương',
+        ],
+    ],
     'admin' => [
         'role' => [
             1 => 'Quản trị cấp cao',

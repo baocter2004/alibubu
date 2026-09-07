@@ -605,13 +605,37 @@ summary:focus-visible {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 3.75rem;
     z-index: 45;
     background: hsl(var(--card) / 0.97);
     backdrop-filter: blur(8px);
     border-top: 1px solid hsl(var(--border));
     box-shadow: 0 -6px 20px -12px rgb(20 40 75 / 0.35);
     padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+    .buy-bar {
+        bottom: 0;
+    }
+}
+
+body:has(.buy-bar) #main {
+    padding-bottom: 11rem;
+}
+
+body:has(.buy-bar) .compare-bar {
+    bottom: 9rem;
+}
+
+@media (min-width: 768px) {
+    body:has(.buy-bar) #main {
+        padding-bottom: 7rem;
+    }
+
+    body:has(.buy-bar) .compare-bar {
+        bottom: 5.25rem;
+    }
 }
 
 .compare-bar {
