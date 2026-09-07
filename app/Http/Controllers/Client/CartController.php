@@ -100,6 +100,7 @@ class CartController extends Controller
             'coupon' => $applied['coupon'] ?? null,
             'discount' => $applied['discount'] ?? 0.0,
             'total' => $subtotal - ($applied['discount'] ?? 0.0),
+            'availableCoupons' => $this->couponService->availableFor($items, $subtotal, Auth::user()),
         ];
     }
 

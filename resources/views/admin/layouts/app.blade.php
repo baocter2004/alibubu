@@ -31,7 +31,9 @@
                     </nav>
                 @endif
 
-                @yield('content')
+                @include('components.form-errors')
+
+        @yield('content')
             </div>
         </main>
 

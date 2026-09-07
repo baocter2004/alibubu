@@ -81,7 +81,9 @@ class PostProductRequest extends FormRequest
             'sale_price_start_at' => ['nullable', 'date', 'required_with:sale_price'],
             'sale_price_end_at' => ['nullable', 'date', 'after:sale_price_start_at'],
 
-            'variants' => [Rule::requiredIf($isVariable), 'array', 'min:1', 'max:20'],
+            'variants' => $isVariable
+                ? ['required', 'array', 'min:1', 'max:20']
+                : ['nullable', 'array', 'max:20'],
             'variants.*.id' => ['nullable', 'uuid', $variantIdRule],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['required_with:variants.*', 'nullable', 'numeric', 'min:0', 'max:99999999999'],

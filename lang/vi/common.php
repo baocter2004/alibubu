@@ -3,6 +3,10 @@
 return [
     'app_name' => 'Alibubu',
 
+    'validation' => [
+        'summary' => 'Vui lòng kiểm tra lại các thông tin sau:',
+    ],
+
     'actions' => [
         'toggle_password' => 'Hiện/ẩn mật khẩu',
         'create' => 'Thêm mới',

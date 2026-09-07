@@ -222,6 +222,9 @@ return [
     'coupon' => [
         'title' => 'Discount code',
         'placeholder' => 'Enter your code',
+        'available' => 'Vouchers available for you',
+        'use' => 'Use',
+        'expires' => 'Expires :date',
         'apply' => 'Apply',
         'remove' => 'Remove',
         'discount' => 'Discount',

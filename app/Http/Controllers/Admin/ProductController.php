@@ -31,12 +31,14 @@ class ProductController extends Controller
     {
         session()->forget('product_data');
 
-        return view('admin.pages.products.index', array_merge($this->formOptions(), [
+        return view('admin.pages.products.index', [
             'products' => $this->productService->search(
-                array_merge($request->validated(), ['relates' => ['branch', 'categories']])
+                array_merge($request->validated(), ['relates' => ['branch', 'categories', 'variants']])
             ),
             'statuses' => GlobalConst::statuses(),
-        ]));
+            'branches' => Branch::orderBy('name')->pluck('name', 'id'),
+            'categories' => Category::orderBy('name')->pluck('name', 'id'),
+        ]);
     }
 
     public function trash(GetProductRequest $request)
@@ -228,16 +230,21 @@ class ProductController extends Controller
             ->with('success', __('admin/product.messages.restored'));
     }
 
+    protected function accessoryOptions()
+    {
+        return Product::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'sku'])
+            ->mapWithKeys(fn (Product $item) => [$item->id => $item->name . ' — ' . ($item->sku ?: '-')]);
+    }
+
     protected function formOptions(): array
     {
         return [
             'branches' => Branch::orderBy('name')->pluck('name', 'id'),
             'categories' => Category::orderBy('name')->pluck('name', 'id'),
-            'accessoryOptions' => Product::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(['id', 'name', 'sku'])
-                ->mapWithKeys(fn (Product $item) => [$item->id => $item->name . ' — ' . ($item->sku ?: '-')]),
+            'accessoryOptions' => $this->accessoryOptions(),
             'attributeGroups' => Attribute::with(['values' => fn ($query) => $query->where('is_active', true)])
                 ->orderBy('name')
                 ->get()

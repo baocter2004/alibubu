@@ -22,7 +22,7 @@
                         {{ __('client.tracking.fields.code') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="tracking-code" name="code" value="{{ old('code') }}"
-                        placeholder="{{ __('client.tracking.placeholders.code') }}" autocomplete="off" required
+                        placeholder="{{ __('client.tracking.placeholders.code') }}" autocomplete="off"
                         class="w-full px-4 py-2.5 text-sm uppercase border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('code') ? 'is-invalid' : 'border-border' }}">
                     @error('code')
                         <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
@@ -34,7 +34,7 @@
                         {{ __('client.tracking.fields.phone_number') }} <span class="text-red-500">*</span>
                     </label>
                     <input type="tel" id="tracking-phone" name="phone_number" value="{{ old('phone_number') }}"
-                        placeholder="{{ __('client.tracking.placeholders.phone_number') }}" autocomplete="tel" required
+                        placeholder="{{ __('client.tracking.placeholders.phone_number') }}" autocomplete="tel"
                         class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('phone_number') ? 'is-invalid' : 'border-border' }}">
                     @error('phone_number')
                         <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>

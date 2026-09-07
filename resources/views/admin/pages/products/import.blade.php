@@ -39,7 +39,7 @@
                         </span>
                         <span class="text-sm font-semibold text-gray-800">{{ __('admin/product.import.choose_file') }}</span>
                         <span class="text-xs text-gray-500">{{ __('admin/product.import.upload_hint') }}</span>
-                        <input id="product-import-file" type="file" name="file" accept=".xlsx,.csv,.txt" required class="sr-only">
+                        <input id="product-import-file" type="file" name="file" accept=".xlsx,.csv,.txt" class="sr-only">
                     </label>
                     @error('file')
                         <div class="mt-3 space-y-1 text-sm text-red-600">

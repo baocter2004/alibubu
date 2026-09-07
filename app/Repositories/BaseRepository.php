@@ -243,7 +243,7 @@ abstract class BaseRepository
         return $query;
     }
 
-    protected function applyKeyword(Builder $query, ?string $keyword, array $columns, array $relations = [], array $asciiColumns = []): void
+    protected function applyKeyword(Builder $query, ?string $keyword, array $columns, array $relations = [], array $asciiColumns = [], array $asciiRelations = []): void
     {
         $words = $this->keywordWords((string) $keyword);
 
@@ -256,7 +256,7 @@ abstract class BaseRepository
             $folded = Str::slug(Str::ascii($word));
             $ascii = $folded === '' ? null : $this->likeValue($folded);
 
-            $query->where(function (Builder $group) use ($columns, $relations, $asciiColumns, $like, $ascii) {
+            $query->where(function (Builder $group) use ($columns, $relations, $asciiColumns, $asciiRelations, $like, $ascii) {
                 foreach (array_values($columns) as $index => $column) {
                     $this->whereLike($group, $column, $like, $index > 0);
                 }
@@ -267,6 +267,10 @@ abstract class BaseRepository
 
                 foreach ($relations as $relation => $column) {
                     $group->orWhereHas($relation, fn (Builder $sub) => $this->whereLike($sub, $column, $like, false));
+                }
+
+                foreach ($ascii === null ? [] : $asciiRelations as $relation => $column) {
+                    $group->orWhereHas($relation, fn (Builder $sub) => $this->whereLike($sub, $column, $ascii, false));
                 }
             });
         }

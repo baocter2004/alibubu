@@ -222,6 +222,9 @@ return [
     'coupon' => [
         'title' => 'Mã giảm giá',
         'placeholder' => 'Nhập mã giảm giá',
+        'available' => 'Mã giảm giá dành cho bạn',
+        'use' => 'Dùng mã',
+        'expires' => 'HSD :date',
         'apply' => 'Áp dụng',
         'remove' => 'Bỏ chọn',
         'discount' => 'Giảm giá',

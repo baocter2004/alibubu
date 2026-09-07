@@ -140,7 +140,11 @@
                     </div>
                 </dl>
 
-                @include('components.coupon-box', ['coupon' => $coupon, 'discount' => $discount])
+                @include('components.coupon-box', [
+                    'coupon' => $coupon,
+                    'discount' => $discount,
+                    'availableCoupons' => $availableCoupons,
+                ])
 
                 <div class="flex justify-between text-sm mb-4 {{ $discount > 0 ? '' : 'hidden' }}" data-cart-discount-row>
                     <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>

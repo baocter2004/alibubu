@@ -62,6 +62,8 @@ class ProductService extends BaseCrudService
             $wheres['is_active'] = (int) $params['is_active'];
         }
 
+        $saleState = $params['sale_state'] ?? null;
+
 
         return [
             'wheres' => $wheres,
@@ -74,6 +76,7 @@ class ProductService extends BaseCrudService
             'relates' => $relates,
             'relates_count' => $relatesCount,
             'keyword' => trim((string) ($params['keyword'] ?? '')),
+            'sale_state' => in_array($saleState, ['active', 'scheduled', 'expired', 'none'], true) ? $saleState : null,
         ];
     }
 
@@ -377,7 +380,7 @@ class ProductService extends BaseCrudService
 
     protected function productAttributes(array $params): array
     {
-        $attributes = Arr::except($params, ['id', 'category_ids', 'persisted_thumbnail', 'variants', 'specifications']);
+        $attributes = Arr::except($params, ['id', 'category_ids', 'accessory_ids', 'persisted_thumbnail', 'variants', 'specifications']);
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {

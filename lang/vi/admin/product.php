@@ -23,6 +23,15 @@ return [
         'visibility' => 'Hiển thị',
     ],
 
+    'filters' => [
+        'sale_state' => 'Khuyến mãi',
+        'sale_states' => [
+            'active' => 'Đang giảm giá',
+            'scheduled' => 'Sắp diễn ra',
+            'expired' => 'Đã hết hạn',
+            'none' => 'Không giảm giá',
+        ],
+    ],
     'fields' => [
         'accessories' => 'Phụ kiện bán kèm',
         'name' => 'Tên sản phẩm',

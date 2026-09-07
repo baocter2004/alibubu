@@ -23,6 +23,15 @@ return [
         'visibility' => 'Visibility',
     ],
 
+    'filters' => [
+        'sale_state' => 'Promotion',
+        'sale_states' => [
+            'active' => 'On sale now',
+            'scheduled' => 'Scheduled',
+            'expired' => 'Expired',
+            'none' => 'No promotion',
+        ],
+    ],
     'fields' => [
         'accessories' => 'Suggested accessories',
         'name' => 'Product name',

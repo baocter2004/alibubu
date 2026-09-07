@@ -73,9 +73,9 @@
             </div>
 
             @if ($heroProduct)
-                <div class="lg:col-span-5 xl:col-span-6 flex items-center lg:justify-end">
+                <div class="lg:col-span-5 xl:col-span-6 flex items-center justify-center lg:justify-end">
                     <a href="{{ route('shop.show', $heroProduct->slug) }}"
-                        class="group relative w-full max-w-sm lg:max-w-md">
+                        class="group relative w-full max-w-sm sm:max-w-md lg:max-w-md">
                         <span class="absolute -inset-4 rounded-[2rem] bg-white/5 -rotate-2 transition-transform duration-500 group-hover:-rotate-3"></span>
 
                         <span class="relative block bg-white rounded-[1.5rem] p-6 shadow-2xl rotate-1 transition-transform duration-500 group-hover:rotate-0 group-hover:-translate-y-1">
