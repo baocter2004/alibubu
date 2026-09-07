@@ -29,13 +29,13 @@
                 </p>
 
                 <form action="{{ route('shop.index') }}" method="GET" class="max-w-lg mb-8" data-search-history>
-                    <div class="flex items-center gap-2 p-1.5 bg-white rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-2 p-1.5 bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="relative flex-1 min-w-0">
                             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
                             <input type="search" name="keyword" value="{{ request('keyword') }}"
                                 aria-label="{{ __('client.home.hero.search_placeholder') }}"
                                 placeholder="{{ __('client.home.hero.search_placeholder') }}"
-                                class="w-full pl-11 pr-3 py-3 text-sm text-foreground bg-transparent placeholder:text-muted-foreground focus:outline-none">
+                                class="w-full pl-11 pr-3 py-3 text-sm text-foreground bg-transparent appearance-none rounded-xl placeholder:text-muted-foreground focus:outline-none">
                         </div>
                         <button type="submit"
                             class="shrink-0 px-5 md:px-7 py-3 text-sm font-bold btn-accent rounded-xl whitespace-nowrap">
@@ -46,7 +46,7 @@
 
                 @if ($categories->isNotEmpty())
                     <div class="flex flex-wrap items-center gap-2 mb-7">
-                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45 mr-1">
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70 mr-1">
                             {{ __('client.home.hero.quick_links') }}
                         </span>
                         @foreach ($categories->take(4) as $category)
@@ -73,9 +73,9 @@
             </div>
 
             @if ($heroProduct)
-                <div class="lg:col-span-5 xl:col-span-6 flex items-center lg:justify-end">
+                <div class="lg:col-span-5 xl:col-span-6 flex items-center justify-center lg:justify-end">
                     <a href="{{ route('shop.show', $heroProduct->slug) }}"
-                        class="group relative w-full max-w-sm lg:max-w-md">
+                        class="group relative w-full max-w-sm sm:max-w-md lg:max-w-md">
                         <span class="absolute -inset-4 rounded-[2rem] bg-white/5 -rotate-2 transition-transform duration-500 group-hover:-rotate-3"></span>
 
                         <span class="relative block bg-white rounded-[1.5rem] p-6 shadow-2xl rotate-1 transition-transform duration-500 group-hover:rotate-0 group-hover:-translate-y-1">
@@ -148,7 +148,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index') }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>
@@ -209,11 +209,24 @@
                         </h2>
                     </div>
                 </div>
-                <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
-                    {{ __('common.actions.view_all') }}
-                    <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
-                </a>
+                <div class="flex items-center gap-4 self-end pb-1">
+                    @if ($saleDeadline)
+                        <div class="flex items-center gap-2" data-countdown="{{ $saleDeadline->toIso8601String() }}">
+                            <span class="hidden sm:inline text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                {{ __('client.home.deals.ends_in') }}
+                            </span>
+                            @foreach (['days', 'hours', 'minutes', 'seconds'] as $unit)
+                                <span class="countdown-cell" data-countdown-{{ $unit }}>00</span>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
+                        class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary">
+                        {{ __('common.actions.view_all') }}
+                        <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5" data-reveal-group>
@@ -234,7 +247,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index') }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>
@@ -282,7 +295,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index', ['sort' => 'popular']) }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>

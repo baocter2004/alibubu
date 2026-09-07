@@ -5,10 +5,10 @@
 @section('content')
     <span class="hidden" data-compare-page></span>
 
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
+        <a href="{{ route('shop.index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.compare.breadcrumb') }}</span>
     </nav>

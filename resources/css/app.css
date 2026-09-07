@@ -117,6 +117,19 @@ textarea {
     font-variant-numeric: tabular-nums;
 }
 
+input[type="search"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: transparent;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+}
+
 ::selection {
     background: hsl(var(--accent) / 0.22);
 }
@@ -412,6 +425,33 @@ summary:focus-visible {
     background-color: hsl(var(--primary-soft));
 }
 
+.countdown-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 0.25rem 0.4rem;
+    border-radius: var(--radius-sm);
+    background: hsl(var(--price));
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.countdown-cell + .countdown-cell {
+    position: relative;
+    margin-left: 0.55rem;
+}
+
+.countdown-cell + .countdown-cell::before {
+    content: ":";
+    position: absolute;
+    left: -0.42rem;
+    color: hsl(var(--price));
+    font-weight: 700;
+}
+
 .radius-left {
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);
@@ -565,13 +605,52 @@ summary:focus-visible {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 3.75rem;
     z-index: 45;
     background: hsl(var(--card) / 0.97);
     backdrop-filter: blur(8px);
     border-top: 1px solid hsl(var(--border));
     box-shadow: 0 -6px 20px -12px rgb(20 40 75 / 0.35);
     padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+    .buy-bar {
+        bottom: 0;
+    }
+}
+
+body:has(.buy-bar) #main {
+    padding-bottom: 11rem;
+}
+
+body:has(.buy-bar) .compare-bar {
+    bottom: 9rem;
+}
+
+@media (min-width: 768px) {
+    body:has(.buy-bar) #main {
+        padding-bottom: 7rem;
+    }
+
+    body:has(.buy-bar) .compare-bar {
+        bottom: 5.25rem;
+    }
+}
+
+body:has(.bottom-nav) > footer {
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom));
+}
+
+body:has(.bottom-nav):has(.buy-bar) > footer {
+    padding-bottom: calc(9.75rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+    body:has(.bottom-nav) > footer,
+    body:has(.bottom-nav):has(.buy-bar) > footer {
+        padding-bottom: 0;
+    }
 }
 
 .compare-bar {

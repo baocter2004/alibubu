@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Client;
 
+use App\Services\Client\ReviewService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,6 +27,8 @@ class StoreReviewRequest extends FormRequest
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'title' => ['nullable', 'string', 'max:120'],
             'comment' => ['nullable', 'string', 'max:1000'],
+            'images' => ['nullable', 'array', 'max:' . ReviewService::MAX_IMAGES],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 

@@ -11,7 +11,7 @@
     ];
 @endphp
 
-<nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)]">
+<nav class="bottom-nav md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom)]">
     <div class="grid grid-cols-5">
         @foreach ($items as $item)
             @php $isActive = $item['active']; @endphp

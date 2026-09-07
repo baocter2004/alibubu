@@ -3,8 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.account.nav.orders'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.account.nav.orders') }}</span>
     </nav>
@@ -28,7 +28,7 @@
                             class="w-full pl-9 pr-4 py-2.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                     </div>
 
-                    <select name="status" onchange="this.form.submit()"
+                    <select name="status" aria-label="{{ __('client.account.orders.filter_status') }}" onchange="this.form.submit()"
                         class="px-4 py-2.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                         <option value="">{{ __('common.labels.all') }}</option>
                         @foreach ($statuses as $key => $label)

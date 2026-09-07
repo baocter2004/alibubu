@@ -84,7 +84,10 @@ class TagController extends Controller
 
     public function show(int|string $id)
     {
-        $tag = $this->tagService->filter(['relates' => ['products'], 'relates_count' => ['products']])->find($id);
+        $tag = $this->tagService->filter([
+            'relates' => ['products.branch', 'products.variants'],
+            'relates_count' => ['products'],
+        ])->find($id);
 
         abort_if(! $tag, 404);
 

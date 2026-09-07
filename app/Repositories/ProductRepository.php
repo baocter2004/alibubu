@@ -18,6 +18,12 @@ class ProductRepository extends BaseRepository
         'tags' => 'tags.name',
     ];
 
+    protected const KEYWORD_ASCII_RELATIONS = [
+        'branch' => 'branches.slug',
+        'categories' => 'categories.slug',
+        'tags' => 'tags.slug',
+    ];
+
     protected const MONEY_PLACEHOLDER = 'CAST(? AS DECIMAL(11, 2))';
 
     public function getModel(): Product
@@ -38,7 +44,8 @@ class ProductRepository extends BaseRepository
             $params['keyword'] ?? null,
             self::KEYWORD_COLUMNS,
             self::KEYWORD_RELATIONS,
-            self::KEYWORD_ASCII_COLUMNS
+            self::KEYWORD_ASCII_COLUMNS,
+            self::KEYWORD_ASCII_RELATIONS
         );
         $this->applyPriceRange($query, $params['price_from'] ?? null, $params['price_to'] ?? null);
 
@@ -46,6 +53,7 @@ class ProductRepository extends BaseRepository
             $this->applyOnSale($query);
         }
 
+        $this->applySaleState($query, $params['sale_state'] ?? null);
         $this->applyPriceSort($query, $params['price_sort'] ?? null);
 
         return $query;
@@ -109,6 +117,33 @@ class ProductRepository extends BaseRepository
                             ->whereColumn('sale_price', '<', 'price'));
                 });
         });
+    }
+
+    protected function applySaleState(Builder $query, ?string $state): void
+    {
+        if ($state === null) {
+            return;
+        }
+
+        $now = now()->toDateTimeString();
+
+        match ($state) {
+            'active' => $query
+                ->where('products.is_sale', true)
+                ->whereNotNull('products.sale_price')
+                ->where(fn (Builder $w) => $w->whereNull('products.sale_price_start_at')->orWhere('products.sale_price_start_at', '<=', $now))
+                ->where(fn (Builder $w) => $w->whereNull('products.sale_price_end_at')->orWhere('products.sale_price_end_at', '>=', $now)),
+            'scheduled' => $query
+                ->where('products.is_sale', true)
+                ->whereNotNull('products.sale_price_start_at')
+                ->where('products.sale_price_start_at', '>', $now),
+            'expired' => $query
+                ->where('products.is_sale', true)
+                ->whereNotNull('products.sale_price_end_at')
+                ->where('products.sale_price_end_at', '<', $now),
+            'none' => $query->where(fn (Builder $w) => $w->where('products.is_sale', false)->orWhereNull('products.sale_price')),
+            default => $query,
+        };
     }
 
     protected function applyPriceSort(Builder $query, ?string $direction): void

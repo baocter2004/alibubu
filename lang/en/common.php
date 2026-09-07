@@ -3,6 +3,10 @@
 return [
     'app_name' => 'Alibubu',
 
+    'validation' => [
+        'summary' => 'Please check the following:',
+    ],
+
     'actions' => [
         'toggle_password' => 'Show or hide password',
         'create' => 'Create',
@@ -77,6 +81,7 @@ return [
     'alerts' => [
         'success' => 'Success!',
         'error' => 'Something went wrong!',
+        'warning' => 'Heads up',
     ],
 
     'locale' => [

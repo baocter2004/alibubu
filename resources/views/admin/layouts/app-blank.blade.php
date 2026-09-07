@@ -27,6 +27,7 @@
         window.alertLabels = {
             success: @json(__('common.alerts.success')),
             error: @json(__('common.alerts.error')),
+            warning: @json(__('common.alerts.warning')),
         };
     </script>
 

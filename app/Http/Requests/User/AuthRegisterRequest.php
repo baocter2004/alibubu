@@ -38,9 +38,9 @@ class AuthRegisterRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'fullname' => 'họ và tên',
-            'email' => 'email',
-            'password' => 'mật khẩu',
+            'fullname' => __('client_auth.register.fullname'),
+            'email' => __('client_auth.register.email'),
+            'password' => __('client_auth.register.password'),
         ];
     }
 }

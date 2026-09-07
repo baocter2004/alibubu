@@ -94,6 +94,23 @@ class CouponService
         ];
     }
 
+    public function availableFor(Collection $items, float $subtotal, ?User $user = null, int $limit = 6): Collection
+    {
+        $now = now();
+
+        return Coupon::query()
+            ->with('restriction')
+            ->where('is_active', true)
+            ->where(fn ($query) => $query->whereNull('start_date')->orWhere('start_date', '<=', $now))
+            ->where(fn ($query) => $query->whereNull('end_date')->orWhere('end_date', '>=', $now->copy()->startOfDay()))
+            ->orderBy('end_date')
+            ->limit(30)
+            ->get()
+            ->reject(fn (Coupon $coupon) => $this->rejectionReason($coupon, $items, $subtotal, $user) !== null)
+            ->take($limit)
+            ->values();
+    }
+
     public function discountFor(Coupon $coupon, float $subtotal): float
     {
         $value = (float) $coupon->discount_value;

@@ -23,6 +23,7 @@ class ProductReview extends Model
         'rating',
         'title',
         'comment',
+        'images',
         'is_approved',
         'approved_at',
     ];
@@ -37,6 +38,7 @@ class ProductReview extends Model
         return [
             'rating' => 'integer',
             'is_approved' => 'boolean',
+            'images' => 'array',
             'approved_at' => 'datetime',
         ];
     }

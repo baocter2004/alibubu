@@ -23,7 +23,26 @@ return [
         'visibility' => 'Hiển thị',
     ],
 
+    'promotion' => [
+        'section' => 'Khuyến mãi kèm theo',
+        'hint' => 'Hiển thị ngay dưới giá trên trang sản phẩm.',
+        'add' => 'Thêm khuyến mãi',
+        'remove' => 'Xoá khuyến mãi',
+        'empty' => 'Chưa có khuyến mãi nào.',
+        'icon_placeholder' => 'fa-solid fa-gift',
+        'content_placeholder' => 'Ví dụ: Tặng ốp lưng chính hãng',
+    ],
+    'filters' => [
+        'sale_state' => 'Khuyến mãi',
+        'sale_states' => [
+            'active' => 'Đang giảm giá',
+            'scheduled' => 'Sắp diễn ra',
+            'expired' => 'Đã hết hạn',
+            'none' => 'Không giảm giá',
+        ],
+    ],
     'fields' => [
+        'accessories' => 'Phụ kiện bán kèm',
         'name' => 'Tên sản phẩm',
         'slug' => 'Đường dẫn',
         'sku' => 'Mã SKU',
@@ -79,6 +98,18 @@ return [
     ],
 
     'import' => [
+        'preview_title' => 'Xem trước dữ liệu nhập',
+        'preview_subtitle' => 'Kiểm tra kỹ trước khi ghi vào hệ thống. Chưa có gì được lưu.',
+        'preview_file' => 'Tệp',
+        'preview_create' => 'Sẽ tạo mới',
+        'preview_update' => 'Sẽ cập nhật',
+        'preview_variants' => 'Biến thể',
+        'preview_specifications' => 'Thông số',
+        'preview_confirm' => 'Xác nhận nhập dữ liệu',
+        'preview_cancel' => 'Chọn tệp khác',
+        'preview_action' => 'Thao tác',
+        'preview_new' => 'Tạo mới',
+        'preview_existing' => 'Cập nhật',
         'title' => 'Nhập sản phẩm từ Excel',
         'subtitle' => 'Thêm mới hoặc cập nhật sản phẩm theo SKU, kèm biến thể và thông số kỹ thuật.',
         'file' => 'Tệp Excel/CSV',
@@ -133,6 +164,7 @@ return [
     ],
 
     'messages' => [
+        'validation_failed' => 'Vui lòng kiểm tra lại các thông tin sau:',
         'created' => 'Thêm sản phẩm thành công.',
         'updated' => 'Cập nhật sản phẩm thành công.',
         'deleted' => 'Xoá sản phẩm thành công.',

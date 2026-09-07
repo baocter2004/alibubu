@@ -62,6 +62,15 @@ return [
     ],
 
     'actions' => [
+        'move_to' => [
+            2 => 'Confirm order',
+            3 => 'Start shipping',
+            4 => 'Complete order',
+            5 => 'Cancel order',
+        ],
+        'cancel_hint' => 'Tell the customer why the order was cancelled.',
+        'cancel_confirm' => 'Confirm cancellation',
+        'cancel_back' => 'Back',
         'update_status' => 'Update status',
         'select_status' => 'Select a new status',
         'no_transition' => 'This order has reached a final status.',

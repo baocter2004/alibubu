@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewSeeder extends Seeder
 {
@@ -16,7 +17,7 @@ class ReviewSeeder extends Seeder
     public function run(): void
     {
         $users = User::query()->limit(4)->get();
-        $products = Product::query()->limit(20)->get();
+        $products = Product::query()->with('galleries')->limit(20)->get();
 
         if ($users->isEmpty() || $products->isEmpty()) {
             return;
@@ -41,6 +42,7 @@ class ReviewSeeder extends Seeder
                         'rating' => $rating,
                         'title' => $rating >= 4 ? 'Rất hài lòng' : 'Ổn trong tầm giá',
                         'comment' => $comments[max($rating, 3)][($index + $offset) % 2],
+                        'images' => $rating >= 4 && $offset === 0 ? $this->storeImages($product) : null,
                         'is_approved' => ($index + $offset) % 4 !== 0,
                         'approved_at' => ($index + $offset) % 4 !== 0 ? now() : null,
                     ]
@@ -49,5 +51,32 @@ class ReviewSeeder extends Seeder
 
             $product->refreshRating();
         }
+    }
+
+    protected function storeImages(Product $product): ?array
+    {
+        $sources = $product->galleries->pluck('image')->take(2);
+
+        if ($sources->isEmpty()) {
+            return null;
+        }
+
+        $disk = Storage::disk('public');
+
+        $paths = $sources->map(function (string $source) use ($disk) {
+            if (! $disk->exists($source)) {
+                return null;
+            }
+
+            $target = 'reviews/' . basename($source);
+
+            if (! $disk->exists($target)) {
+                $disk->put($target, $disk->get($source));
+            }
+
+            return $target;
+        })->filter()->values()->all();
+
+        return $paths ?: null;
     }
 }

@@ -3,12 +3,14 @@
 namespace App\Services\Admin;
 
 use App\Const\OrderConst;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Repositories\OrderRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
+use App\Services\Client\MembershipService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -103,6 +105,8 @@ class OrderService extends BaseCrudService
                 if ($status === OrderConst::STATUS_COMPLETED) {
                     $attributes['completed_at'] = now();
                     $attributes['is_paid'] = true;
+
+                    $this->awardLoyaltyPoints($order);
                 }
 
                 if ($status === OrderConst::STATUS_CANCELLED) {
@@ -110,6 +114,7 @@ class OrderService extends BaseCrudService
                     $attributes['cancel_reason'] = $reason;
 
                     $this->restoreStock($order);
+                    $this->releaseCoupon($order);
                 }
 
                 $order->update($attributes);
@@ -123,6 +128,33 @@ class OrderService extends BaseCrudService
             Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id, 'status' => $status]);
 
             throw $th;
+        }
+    }
+
+    protected function awardLoyaltyPoints(Order $order): void
+    {
+        if ($order->status === OrderConst::STATUS_COMPLETED) {
+            return;
+        }
+
+        app(MembershipService::class)->awardForOrder($order);
+    }
+
+    protected function releaseCoupon(Order $order): void
+    {
+        if (! $order->coupon_id) {
+            return;
+        }
+
+        Coupon::whereKey($order->coupon_id)
+            ->where('usage_count', '>', 0)
+            ->decrement('usage_count');
+
+        if ($order->user_id) {
+            DB::table('coupon_user')
+                ->where('coupon_id', $order->coupon_id)
+                ->where('user_id', $order->user_id)
+                ->delete();
         }
     }
 

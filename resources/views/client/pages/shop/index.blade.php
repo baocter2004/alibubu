@@ -3,8 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.shop.title'))
 
 @section('content')
-    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.shop.breadcrumb') }}</span>
     </nav>
@@ -172,7 +172,7 @@
                     @endforeach
 
                     <a href="{{ route('shop.index') }}"
-                        class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        class="inline-flex items-center min-h-8 px-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                         {{ __('common.actions.clear_filter') }}
                     </a>
                 </div>

@@ -52,6 +52,7 @@ return [
             'subtitle' => 'Authorised retailers only',
         ],
         'deals' => [
+            'ends_in' => 'Ends in',
             'title' => 'Deals of the week',
             'subtitle' => 'Limited stock at these prices',
         ],
@@ -133,9 +134,16 @@ return [
     ],
 
     'product' => [
+        'label' => 'Product',
+        'variant_label' => 'Variant',
         'views' => ':count views',
         'sku' => 'SKU',
         'select_variant' => 'Choose a version',
+        'accessories' => [
+            'title' => 'Frequently bought together',
+            'subtitle' => 'Add matching accessories and save on a single order.',
+        ],
+        'recently_viewed' => 'Recently viewed',
         'add_to_cart' => 'Add to cart',
         'buy_now' => 'Buy now',
         'quantity' => 'Quantity',
@@ -175,6 +183,8 @@ return [
             'title_placeholder' => 'Sum up your experience',
             'comment' => 'Your review',
             'comment_placeholder' => 'What did you like or dislike?',
+            'images' => 'Photos',
+            'images_hint' => 'Up to :max photos, 2MB each.',
         ],
         'messages' => [
             'submitted' => 'Thank you! Your review was submitted and is awaiting approval.',
@@ -216,6 +226,9 @@ return [
     'coupon' => [
         'title' => 'Discount code',
         'placeholder' => 'Enter your code',
+        'available' => 'Vouchers available for you',
+        'use' => 'Use',
+        'expires' => 'Expires :date',
         'apply' => 'Apply',
         'remove' => 'Remove',
         'discount' => 'Discount',
@@ -255,6 +268,8 @@ return [
         'cod_description' => 'You pay in cash when the order arrives.',
         'method_cod_desc' => 'Pay in cash when the order arrives.',
         'method_bank_desc' => 'Transfer to our bank account, we ship after confirmation.',
+        'method_vnpay_desc' => 'Pay by card or banking app, confirmed instantly.',
+        'method_momo_desc' => 'Scan the QR or open the MoMo app, confirmed instantly.',
         'bank_details' => 'Transfer details',
         'bank_name' => 'Bank',
         'bank_account' => 'Account number',
@@ -274,6 +289,7 @@ return [
         'title' => 'Order placed successfully!',
         'description' => 'Thank you for shopping at Alibubu. We will contact you shortly to confirm your order.',
         'order_code' => 'Order code',
+        'guest_hint' => 'Save this order code. Use it with your phone number to track the order.',
         'track' => 'Track my order',
         'continue' => 'Continue shopping',
         'home' => 'Back to home',
@@ -310,6 +326,7 @@ return [
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',
+            'filter_status' => 'Filter by status',
             'cancel' => 'Cancel order',
             'cancel_title' => 'Cancel this order?',
             'cancel_hint' => 'You can only cancel an order before it ships. The items will be returned to stock.',
@@ -480,6 +497,61 @@ return [
         ],
     ],
 
+    'payment' => [
+        'order_info' => 'Payment for order :code',
+        'messages' => [
+            'paid' => 'Payment successful. Thank you!',
+            'failed' => 'The payment did not go through. Please try again or pick another method.',
+            'invalid_signature' => 'The transaction signature is invalid.',
+            'order_not_found' => 'No order matches this transaction.',
+            'amount_mismatch' => 'The paid amount does not match the order total.',
+            'already_confirmed' => 'This order has already been paid.',
+            'gateway_disabled' => 'The online payment gateway is not configured.',
+            'gateway_unavailable' => 'Could not reach the payment gateway. Your order was created, please pay again later.',
+        ],
+    ],
+
+    'question' => [
+        'title' => 'Questions about this product',
+        'subtitle' => 'Ask anything, our team will answer shortly.',
+        'ask' => 'Ask a question',
+        'submit' => 'Send question',
+        'empty' => 'No questions for this product yet.',
+        'answered_by' => 'Answered by Alibubu',
+        'pending' => 'Awaiting an answer',
+        'fields' => [
+            'question' => 'Question',
+            'fullname' => 'Your name',
+            'question_placeholder' => 'For example: does this support fast charging?',
+        ],
+        'messages' => [
+            'received' => 'Question sent. We will answer as soon as we can.',
+            'too_fast' => 'You just asked about this product, please wait a moment.',
+        ],
+    ],
+
+    'promotion' => [
+        'title' => 'Included promotions',
+        'subtitle' => 'Offers that apply when you buy this product.',
+    ],
+
+    'installment' => [
+        'title' => '0% installment',
+        'monthly' => 'From :amount/month',
+        'term' => ':months months',
+        'note' => 'Pay by credit card, approved in store.',
+    ],
+
+    'membership' => [
+        'discount_label' => ':tier member discount (:rate%)',
+        'period_ends' => 'Tier reviewed on :date',
+        'earn_window' => 'Your tier reflects points earned this period; falling short at review means a lower tier.',
+        'points' => 'points',
+        'to_next' => ':points points to reach :tier',
+        'max_tier' => 'You are at the highest tier.',
+        'earn_hint' => 'Earn 1 point for every 100,000đ of completed orders.',
+    ],
+
     'messages' => [
         'cart_added' => 'The product has been added to your cart.',
         'cart_updated' => 'Your cart has been updated.',
@@ -489,6 +561,7 @@ return [
         'product_unavailable' => 'This product is no longer available.',
         'variant_invalid' => 'The selected version is invalid.',
         'variant_required' => 'Please choose a product version.',
+        'phone_invalid' => 'The phone number format is invalid.',
         'order_success' => 'Your order has been placed!',
         'order_failed' => 'Could not place the order. Please try again.',
         'product_not_found' => 'This product does not exist.',

@@ -24,7 +24,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <section class="xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5 md:p-7">
-            <form action="{{ route('admin.products.import.store') }}" method="POST" enctype="multipart/form-data"
+            <form action="{{ route('admin.products.import.preview') }}" method="POST" enctype="multipart/form-data"
                 class="space-y-6" data-submit-once>
                 @csrf
 
@@ -39,7 +39,7 @@
                         </span>
                         <span class="text-sm font-semibold text-gray-800">{{ __('admin/product.import.choose_file') }}</span>
                         <span class="text-xs text-gray-500">{{ __('admin/product.import.upload_hint') }}</span>
-                        <input id="product-import-file" type="file" name="file" accept=".xlsx,.csv,.txt" required class="sr-only">
+                        <input id="product-import-file" type="file" name="file" accept=".xlsx,.csv,.txt" class="sr-only">
                     </label>
                     @error('file')
                         <div class="mt-3 space-y-1 text-sm text-red-600">

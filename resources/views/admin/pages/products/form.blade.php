@@ -4,6 +4,9 @@
     $selectedCategories = $isEdit
         ? $product->categories->pluck('id')->all()
         : ($values['category_ids'] ?? []);
+    $selectedAccessories = $isEdit
+        ? $product->accessories->pluck('id')->all()
+        : ($values['accessory_ids'] ?? []);
     $currentType = (int) old('type', $values['type'] ?? \App\Const\ProductConst::SINGLE);
     $existingVariants = $isEdit
         ? $product->variants->map(fn($variant) => [
@@ -21,12 +24,22 @@
         ? $product->specifications->map(fn($sp) => ['id' => $sp->id, 'group' => $sp->group, 'name' => $sp->name, 'value' => $sp->value])->all()
         : ($values['specifications'] ?? []);
     $specRows = old('specifications', $existingSpecs);
+    $existingPromotions = $isEdit
+        ? $product->promotions->map(fn($promotion) => [
+            'id' => $promotion->id,
+            'icon' => $promotion->icon,
+            'content' => $promotion->content,
+        ])->all()
+        : ($values['promotions'] ?? []);
+    $promotionRows = old('promotions', $existingPromotions);
 @endphp
 
 <form
     action="{{ $isEdit ? route('admin.products.confirm', $product->id) : route('admin.products.confirm') }}"
     method="POST" enctype="multipart/form-data" class="space-y-8">
     @csrf
+
+
 
     <section>
         <h2 class="text-base font-semibold text-gray-900 pb-2 mb-5 border-b border-gray-200">
@@ -79,6 +92,35 @@
             </div>
 
             @error('category_ids')
+                <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mt-5">
+            <label for="accessory-filter" class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
+                <i class="fa-solid fa-plug-circle-plus"></i>
+                {{ __('admin/product.fields.accessories') }}
+            </label>
+
+            <input type="search" id="accessory-filter" autocomplete="off"
+                placeholder="{{ __('common.actions.search') }}"
+                class="w-full mb-2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30">
+
+            <div id="accessory-list"
+                class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-3 border rounded-lg {{ $errors->has('accessory_ids') ? 'is-invalid' : 'border-gray-300' }}">
+                @foreach ($accessoryOptions as $id => $label)
+                    @continue($isEdit && (string) $id === (string) $product->id)
+                    <label class="flex items-center gap-2 cursor-pointer accessory-option"
+                        data-label="{{ Str::lower($label) }}">
+                        <input type="checkbox" name="accessory_ids[]" value="{{ $id }}"
+                            @checked(in_array($id, old('accessory_ids', $selectedAccessories), false))
+                            class="h-4 w-4 rounded accent-accent">
+                        <span class="text-sm text-gray-700 truncate">{{ $label }}</span>
+                    </label>
+                @endforeach
+            </div>
+
+            @error('accessory_ids')
                 <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
             @enderror
         </div>
@@ -242,6 +284,34 @@
     </section>
 
     <section>
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-2 mb-5 border-b border-gray-200">
+            <div>
+                <h2 class="text-base font-semibold text-gray-900">{{ __('admin/product.promotion.section') }}</h2>
+                <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/product.promotion.hint') }}</p>
+            </div>
+            <button type="button" id="add-promotion-btn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
+                <i class="fa-solid fa-plus"></i>
+                {{ __('admin/product.promotion.add') }}
+            </button>
+        </div>
+
+        <div id="promotion-list" class="space-y-3">
+            @foreach ($promotionRows as $index => $promotion)
+                @include('admin.pages.products.promotion-row', ['index' => $index, 'promotion' => $promotion])
+            @endforeach
+        </div>
+
+        <p id="promotion-empty" class="{{ count($promotionRows) ? 'hidden' : '' }} py-8 text-center text-sm text-gray-500">
+            {{ __('admin/product.promotion.empty') }}
+        </p>
+
+        <template id="promotion-template">
+            @include('admin.pages.products.promotion-row', ['index' => 'INDEX', 'promotion' => []])
+        </template>
+    </section>
+
+    <section>
         <h2 class="text-base font-semibold text-gray-900 pb-2 mb-5 border-b border-gray-200">
             {{ __('admin/product.sections.media') }}
         </h2>
@@ -303,6 +373,14 @@
 @push('scripts')
     <script>
         $(function() {
+            $('#accessory-filter').on('input', function() {
+                const term = $(this).val().trim().toLowerCase();
+
+                $('#accessory-list .accessory-option').each(function() {
+                    $(this).toggle(term === '' || String($(this).data('label')).includes(term));
+                });
+            });
+
             const VARIANT_LABEL = @json(__('admin/product.fields.variant_number', ['number' => ':n']));
             let variantIndex = {{ count($variantRows) }};
 
@@ -359,6 +437,25 @@
             });
 
             refreshSpecState();
+
+            let promotionIndex = {{ count($promotionRows) }};
+
+            function refreshPromotionState() {
+                $('#promotion-empty').toggleClass('hidden', $('#promotion-list .promotion-item').length > 0);
+            }
+
+            $('#add-promotion-btn').on('click', function() {
+                $('#promotion-list').append($('#promotion-template').html().replace(/INDEX/g, promotionIndex));
+                promotionIndex += 1;
+                refreshPromotionState();
+            });
+
+            $(document).on('click', '.remove-promotion-btn', function() {
+                $(this).closest('.promotion-item').remove();
+                refreshPromotionState();
+            });
+
+            refreshPromotionState();
         });
     </script>
 @endpush

@@ -1,6 +1,7 @@
 @php
     $coupon = $coupon ?? null;
     $discount = $discount ?? 0;
+    $availableCoupons = $availableCoupons ?? collect();
 @endphp
 
 <div class="border-t border-border pt-4 mb-4">
@@ -41,5 +42,35 @@
         @error('code')
             <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
         @enderror
+
+        @if ($availableCoupons->isNotEmpty())
+            <p class="text-xs text-muted-foreground mt-3 mb-2">{{ __('client.coupon.available') }}</p>
+            <div class="space-y-2">
+                @foreach ($availableCoupons as $available)
+                    <form action="{{ route('coupon.store') }}" method="POST" data-submit-once>
+                        @csrf
+                        <input type="hidden" name="code" value="{{ $available->code }}">
+                        <button type="submit"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 text-left border border-dashed border-primary/35 rounded-xl hover:border-primary hover:bg-primary-soft/50 transition-colors">
+                            <span class="w-9 h-9 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                <i class="fa-solid fa-ticket text-xs"></i>
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-sm font-semibold text-foreground truncate">{{ $available->code }}</span>
+                                @if ($available->title)
+                                    <span class="block text-xs text-muted-foreground truncate">{{ $available->title }}</span>
+                                @endif
+                                @if ($available->end_date)
+                                    <span class="block text-[11px] text-muted-foreground/80">
+                                        {{ __('client.coupon.expires', ['date' => $available->end_date->format('d/m/Y')]) }}
+                                    </span>
+                                @endif
+                            </span>
+                            <span class="text-xs font-bold text-primary shrink-0">{{ __('client.coupon.use') }}</span>
+                        </button>
+                    </form>
+                @endforeach
+            </div>
+        @endif
     @endif
 </div>

@@ -52,6 +52,7 @@ return [
             'subtitle' => 'Chỉ phân phối chính hãng',
         ],
         'deals' => [
+            'ends_in' => 'Kết thúc sau',
             'title' => 'Ưu đãi trong tuần',
             'subtitle' => 'Số lượng có hạn',
         ],
@@ -133,9 +134,16 @@ return [
     ],
 
     'product' => [
+        'label' => 'sản phẩm',
+        'variant_label' => 'phiên bản',
         'views' => ':count lượt xem',
         'sku' => 'Mã SKU',
         'select_variant' => 'Chọn phiên bản',
+        'accessories' => [
+            'title' => 'Phụ kiện mua kèm',
+            'subtitle' => 'Chọn thêm để dùng trọn bộ, tiết kiệm hơn khi mua cùng lúc.',
+        ],
+        'recently_viewed' => 'Sản phẩm bạn vừa xem',
         'add_to_cart' => 'Thêm vào giỏ hàng',
         'buy_now' => 'Mua ngay',
         'quantity' => 'Số lượng',
@@ -175,6 +183,8 @@ return [
             'title_placeholder' => 'Tóm tắt trải nghiệm của bạn',
             'comment' => 'Nội dung đánh giá',
             'comment_placeholder' => 'Bạn thích hoặc chưa hài lòng điều gì?',
+            'images' => 'Ảnh thực tế',
+            'images_hint' => 'Tối đa :max ảnh, mỗi ảnh dưới 2MB.',
         ],
         'messages' => [
             'submitted' => 'Cảm ơn bạn! Đánh giá đã được gửi và đang chờ duyệt.',
@@ -216,6 +226,9 @@ return [
     'coupon' => [
         'title' => 'Mã giảm giá',
         'placeholder' => 'Nhập mã giảm giá',
+        'available' => 'Mã giảm giá dành cho bạn',
+        'use' => 'Dùng mã',
+        'expires' => 'HSD :date',
         'apply' => 'Áp dụng',
         'remove' => 'Bỏ chọn',
         'discount' => 'Giảm giá',
@@ -255,6 +268,8 @@ return [
         'cod_description' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
         'method_cod_desc' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
         'method_bank_desc' => 'Chuyển khoản tới tài khoản của shop, hàng được gửi sau khi xác nhận.',
+        'method_vnpay_desc' => 'Thanh toán qua thẻ/ứng dụng ngân hàng, xác nhận ngay lập tức.',
+        'method_momo_desc' => 'Quét QR hoặc mở ứng dụng MoMo, xác nhận tức thì.',
         'bank_details' => 'Thông tin chuyển khoản',
         'bank_name' => 'Ngân hàng',
         'bank_account' => 'Số tài khoản',
@@ -274,6 +289,7 @@ return [
         'title' => 'Đặt hàng thành công!',
         'description' => 'Cảm ơn bạn đã mua sắm tại Alibubu. Chúng tôi sẽ liên hệ để xác nhận đơn hàng trong thời gian sớm nhất.',
         'order_code' => 'Mã đơn hàng',
+        'guest_hint' => 'Hãy lưu lại mã đơn này. Bạn dùng mã cùng số điện thoại đặt hàng để tra cứu đơn.',
         'track' => 'Theo dõi đơn hàng',
         'continue' => 'Tiếp tục mua sắm',
         'home' => 'Về trang chủ',
@@ -310,6 +326,7 @@ return [
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',
+            'filter_status' => 'Lọc theo trạng thái',
             'cancel' => 'Huỷ đơn hàng',
             'cancel_title' => 'Huỷ đơn hàng này?',
             'cancel_hint' => 'Bạn chỉ có thể huỷ đơn khi đơn chưa được giao đi. Sản phẩm sẽ được hoàn lại kho.',
@@ -480,6 +497,61 @@ return [
         ],
     ],
 
+    'payment' => [
+        'order_info' => 'Thanh toan don hang :code',
+        'messages' => [
+            'paid' => 'Thanh toán thành công. Cảm ơn bạn!',
+            'failed' => 'Giao dịch chưa thành công. Vui lòng thử lại hoặc chọn phương thức khác.',
+            'invalid_signature' => 'Chữ ký giao dịch không hợp lệ.',
+            'order_not_found' => 'Không tìm thấy đơn hàng tương ứng với giao dịch.',
+            'amount_mismatch' => 'Số tiền giao dịch không khớp với đơn hàng.',
+            'already_confirmed' => 'Đơn hàng này đã được thanh toán trước đó.',
+            'gateway_disabled' => 'Cổng thanh toán online chưa được cấu hình.',
+            'gateway_unavailable' => 'Không kết nối được cổng thanh toán. Đơn hàng đã được tạo, vui lòng thanh toán lại sau.',
+        ],
+    ],
+
+    'question' => [
+        'title' => 'Hỏi đáp về sản phẩm',
+        'subtitle' => 'Đặt câu hỏi, đội ngũ Alibubu sẽ trả lời sớm nhất.',
+        'ask' => 'Đặt câu hỏi',
+        'submit' => 'Gửi câu hỏi',
+        'empty' => 'Chưa có câu hỏi nào cho sản phẩm này.',
+        'answered_by' => 'Alibubu trả lời',
+        'pending' => 'Đang chờ trả lời',
+        'fields' => [
+            'question' => 'Câu hỏi',
+            'fullname' => 'Tên của bạn',
+            'question_placeholder' => 'Ví dụ: Máy này có hỗ trợ sạc nhanh không?',
+        ],
+        'messages' => [
+            'received' => 'Đã gửi câu hỏi. Chúng tôi sẽ trả lời sớm nhất.',
+            'too_fast' => 'Bạn vừa gửi câu hỏi cho sản phẩm này, vui lòng chờ một lát.',
+        ],
+    ],
+
+    'promotion' => [
+        'title' => 'Khuyến mãi kèm theo',
+        'subtitle' => 'Ưu đãi áp dụng khi mua sản phẩm này.',
+    ],
+
+    'installment' => [
+        'title' => 'Trả góp 0%',
+        'monthly' => 'Chỉ từ :amount/tháng',
+        'term' => ':months tháng',
+        'note' => 'Trả góp qua thẻ tín dụng, duyệt nhanh tại cửa hàng.',
+    ],
+
+    'membership' => [
+        'discount_label' => 'Ưu đãi hạng :tier (:rate%)',
+        'period_ends' => 'Xét hạng lại vào :date',
+        'earn_window' => 'Hạng tính theo điểm tích được trong kỳ, hết kỳ không đủ điểm sẽ hạ bậc.',
+        'points' => 'điểm',
+        'to_next' => 'Còn :points điểm để lên hạng :tier',
+        'max_tier' => 'Bạn đang ở hạng cao nhất.',
+        'earn_hint' => 'Mỗi 100.000đ giá trị đơn hoàn thành được cộng 1 điểm.',
+    ],
+
     'messages' => [
         'cart_added' => 'Đã thêm sản phẩm vào giỏ hàng.',
         'cart_updated' => 'Đã cập nhật giỏ hàng.',
@@ -489,6 +561,7 @@ return [
         'product_unavailable' => 'Sản phẩm không còn khả dụng.',
         'variant_invalid' => 'Phiên bản sản phẩm không hợp lệ.',
         'variant_required' => 'Vui lòng chọn phiên bản sản phẩm.',
+        'phone_invalid' => 'Số điện thoại không đúng định dạng.',
         'order_success' => 'Đặt hàng thành công!',
         'order_failed' => 'Đặt hàng thất bại. Vui lòng thử lại.',
         'product_not_found' => 'Sản phẩm không tồn tại.',

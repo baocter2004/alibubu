@@ -37,9 +37,9 @@ class StoreCartItemRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'product_id' => 'sản phẩm',
-            'product_variant_id' => 'phiên bản',
-            'quantity' => 'số lượng',
+            'product_id' => __('client.product.label'),
+            'product_variant_id' => __('client.product.variant_label'),
+            'quantity' => __('client.product.quantity'),
         ];
     }
 }

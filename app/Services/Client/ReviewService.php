@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 class ReviewService
@@ -52,6 +53,8 @@ class ReviewService
         return $this->purchasedOrder($product, $user) !== null;
     }
 
+    public const MAX_IMAGES = 4;
+
     public function store(Product $product, User $user, array $params): array
     {
         if ($product->reviews()->where('user_id', $user->id)->exists()) {
@@ -64,7 +67,9 @@ class ReviewService
             return ['status' => false, 'message' => __('client.review.messages.not_purchased')];
         }
 
-        DB::transaction(function () use ($product, $user, $order, $params) {
+        $images = $this->storeImages($params['images'] ?? []);
+
+        DB::transaction(function () use ($product, $user, $order, $params, $images) {
             ProductReview::create([
                 'product_id' => $product->id,
                 'user_id' => $user->id,
@@ -72,11 +77,27 @@ class ReviewService
                 'rating' => (int) $params['rating'],
                 'title' => $params['title'] ?? null,
                 'comment' => $params['comment'] ?? null,
+                'images' => $images ?: null,
                 'is_approved' => false,
             ]);
         });
 
         return ['status' => true, 'message' => __('client.review.messages.submitted')];
+    }
+
+    protected function storeImages(array $files): array
+    {
+        $paths = [];
+
+        foreach (array_slice($files, 0, self::MAX_IMAGES) as $file) {
+            if (! $file instanceof UploadedFile || ! $file->isValid()) {
+                continue;
+            }
+
+            $paths[] = $file->store('reviews', 'public');
+        }
+
+        return array_values(array_filter($paths));
     }
 
     protected function purchasedOrder(Product $product, User $user): ?Order

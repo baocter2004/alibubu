@@ -3,10 +3,10 @@
 @section('title', __('common.app_name') . ' - ' . __('client.checkout.title'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('cart.index') }}" class="hover:text-primary transition-colors">{{ __('client.cart.breadcrumb') }}</a>
+        <a href="{{ route('cart.index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.cart.breadcrumb') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.checkout.title') }}</span>
     </nav>
@@ -171,6 +171,8 @@
 
                 <div class="space-y-3">
                     @foreach (\App\Const\PaymentConst::methods() as $value => $label)
+                        @continue((int) $value === \App\Const\PaymentConst::METHOD_VNPAY && ! $vnpayEnabled)
+                        @continue((int) $value === \App\Const\PaymentConst::METHOD_MOMO && ! $momoEnabled)
                         <label class="block cursor-pointer">
                             <input type="radio" name="payment_method" value="{{ $value }}"
                                 @checked((int) old('payment_method', \App\Const\PaymentConst::METHOD_COD) === (int) $value)
@@ -183,7 +185,22 @@
                                 <span class="flex-1">
                                     <span class="block text-sm font-semibold text-foreground">{{ $label }}</span>
                                     <span class="block text-xs text-muted-foreground mt-0.5">
-                                        {{ (int) $value === \App\Const\PaymentConst::METHOD_BANK_TRANSFER ? __('client.checkout.method_bank_desc') : __('client.checkout.method_cod_desc') }}
+                                        @switch((int) $value)
+                                            @case(\App\Const\PaymentConst::METHOD_BANK_TRANSFER)
+                                                {{ __('client.checkout.method_bank_desc') }}
+                                            @break
+
+                                            @case(\App\Const\PaymentConst::METHOD_VNPAY)
+                                                {{ __('client.checkout.method_vnpay_desc') }}
+                                            @break
+
+                                            @case(\App\Const\PaymentConst::METHOD_MOMO)
+                                                {{ __('client.checkout.method_momo_desc') }}
+                                            @break
+
+                                            @default
+                                                {{ __('client.checkout.method_cod_desc') }}
+                                        @endswitch
                                     </span>
                                 </span>
                                 <i class="fa-solid fa-circle-check text-primary opacity-0 peer-checked:opacity-100 mt-2.5"></i>
@@ -270,6 +287,18 @@
                 </div>
             @endif
 
+            @if ($membershipDiscount > 0)
+                <div class="flex justify-between text-sm mb-4">
+                    <span class="text-muted-foreground">
+                        <i class="fa-solid fa-crown text-accent mr-1"></i>
+                        {{ __('client.membership.discount_label', [
+                            'tier' => \App\Const\MembershipConst::label($membershipTier),
+                            'rate' => \App\Const\MembershipConst::discountRate($membershipTier),
+                        ]) }}
+                    </span>
+                    <span class="font-medium text-success">-{{ format_price($membershipDiscount) }}</span>
+                </div>
+            @endif
             <div class="border-t border-border my-4"></div>
 
             <div class="flex justify-between items-baseline mb-5">

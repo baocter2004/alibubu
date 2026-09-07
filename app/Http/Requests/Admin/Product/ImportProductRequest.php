@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ImportProductRequest extends FormRequest
 {
@@ -14,7 +15,14 @@ class ImportProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'mimes:xlsx,csv,txt', 'extensions:xlsx,csv,txt', 'max:10240'],
+            'file' => [
+                Rule::requiredIf(! $this->filled('token')),
+                'file',
+                'mimes:xlsx,csv,txt',
+                'extensions:xlsx,csv,txt',
+                'max:10240',
+            ],
+            'token' => ['nullable', 'uuid'],
         ];
     }
 

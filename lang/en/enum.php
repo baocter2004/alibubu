@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'membership' => [
+        'tier' => [
+            'member' => 'Member',
+            'silver' => 'Silver',
+            'gold' => 'Gold',
+            'diamond' => 'Diamond',
+        ],
+    ],
     'admin' => [
         'role' => [
             1 => 'Super administrator',
@@ -47,6 +55,8 @@ return [
         'method' => [
             1 => 'Cash on delivery (COD)',
             2 => 'Bank transfer',
+                    3 => 'Pay online with VNPay',
+                    4 => 'MoMo wallet',
         ],
     ],
 

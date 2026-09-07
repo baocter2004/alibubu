@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'membership' => [
+        'tier' => [
+            'member' => 'Thành viên',
+            'silver' => 'Bạc',
+            'gold' => 'Vàng',
+            'diamond' => 'Kim cương',
+        ],
+    ],
     'admin' => [
         'role' => [
             1 => 'Quản trị cấp cao',
@@ -47,6 +55,8 @@ return [
         'method' => [
             1 => 'Thanh toán khi nhận hàng (COD)',
             2 => 'Chuyển khoản ngân hàng',
+                    3 => 'Thanh toán online qua VNPay',
+                    4 => 'Ví MoMo',
         ],
     ],
 

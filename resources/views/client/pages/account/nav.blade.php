@@ -18,6 +18,42 @@
                 <span class="block text-xs text-muted-foreground truncate">{{ Auth::user()->email }}</span>
             </span>
         </div>
+
+        @php
+            $user = Auth::user();
+            $tier = $user->membershipTier();
+            $next = $user->nextMembershipTier();
+        @endphp
+
+        <div class="mt-4 pt-4 border-t border-border">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="px-2.5 py-1 text-xs font-bold rounded-full {{ \App\Const\MembershipConst::badgeClass($tier) }}">
+                    <i class="fa-solid fa-crown mr-1"></i>{{ \App\Const\MembershipConst::label($tier) }}
+                </span>
+                <span class="text-sm font-semibold text-foreground tabular">
+                    {{ number_format($user->loyalty_points) }} {{ __('client.membership.points') }}
+                </span>
+            </div>
+
+            <div class="h-1.5 rounded-full bg-muted overflow-hidden">
+                <span class="block h-full rounded-full bg-accent" style="width: {{ $user->tierProgress() }}%"></span>
+            </div>
+
+            <p class="text-xs text-muted-foreground mt-1.5">
+                {{ __('client.membership.period_ends', ['date' => $user->tierPeriodEndsAt()->format('d/m/Y')]) }}
+            </p>
+
+            <p class="text-xs text-muted-foreground mt-1">
+                @if ($next)
+                    {{ __('client.membership.to_next', [
+                        'points' => number_format($user->pointsToNextTier()),
+                        'tier' => \App\Const\MembershipConst::label($next),
+                    ]) }}
+                @else
+                    {{ __('client.membership.max_tier') }}
+                @endif
+            </p>
+        </div>
     </div>
 
     <nav class="bg-card border border-border rounded-2xl p-2">

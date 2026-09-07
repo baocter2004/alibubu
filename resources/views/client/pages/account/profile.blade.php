@@ -3,8 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.account.nav.profile'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.account.nav.profile') }}</span>
     </nav>
@@ -35,10 +35,10 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-foreground mb-1.5">
+                            <label for="account-email" class="block text-sm font-medium text-foreground mb-1.5">
                                 {{ __('client.account.fields.email') }}
                             </label>
-                            <input type="email" value="{{ $user->email }}" disabled
+                            <input type="email" id="account-email" value="{{ $user->email }}" disabled
                                 class="w-full px-4 py-2.5 text-sm border border-border rounded-lg bg-muted text-muted-foreground">
                         </div>
 

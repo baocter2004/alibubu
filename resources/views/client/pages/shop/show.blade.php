@@ -66,13 +66,13 @@
         data-recent-price="{{ format_price($product->effective_price) }}"></span>
 
     <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
+        <a href="{{ route('shop.index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
         @if ($category = $product->categories->first())
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
-                class="hover:text-primary transition-colors">{{ $category->name }}</a>
+                class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ $category->name }}</a>
         @endif
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium line-clamp-1">{{ $product->name }}</span>
@@ -112,7 +112,7 @@
                         {{ $product->branch->name }}
                     </a>
                 @endif
-                @foreach ($product->tags as $tag)
+                @foreach ($product->tags->reject(fn ($tag) => Str::slug(Str::ascii($tag->name)) === Str::slug(Str::ascii($product->branch?->name ?? ''))) as $tag)
                     <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-muted text-muted-foreground">
                         {{ $tag->name }}
                     </span>
@@ -151,6 +151,46 @@
                     {{ $outOfStock ? __('client.product.out_of_stock') : __('client.product.stock_left', ['count' => number_format($product->stock)]) }}
                 </p>
             </div>
+
+            @if ($product->promotions->isNotEmpty())
+                <div class="rounded-2xl border border-accent/25 bg-accent-soft/60 p-4 mb-6">
+                    <p class="flex items-center gap-2 text-sm font-bold text-foreground mb-2.5">
+                        <i class="fa-solid fa-gift text-accent"></i>
+                        {{ __('client.promotion.title') }}
+                    </p>
+                    <ul class="space-y-1.5">
+                        @foreach ($product->promotions as $promotion)
+                            <li class="flex items-start gap-2 text-sm text-foreground">
+                                <i class="fa-solid {{ $promotion->icon ?: 'fa-circle-check' }} text-accent text-xs mt-1"></i>
+                                <span>{{ $promotion->content }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if ($product->supportsInstallment())
+                <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-muted/40 p-4 mb-6">
+                    <span class="w-10 h-10 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold text-foreground">{{ __('client.installment.title') }}</p>
+                        <p class="text-sm text-muted-foreground">
+                            {{ __('client.installment.monthly', ['amount' => format_price($product->installmentMonthly())]) }}
+                            · {{ __('client.installment.term', ['months' => config('installment.default_term')]) }}
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach (config('installment.terms') as $term)
+                            <span class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-card border border-border text-muted-foreground">
+                                {{ __('client.installment.term', ['months' => $term]) }}:
+                                {{ format_price($product->installmentMonthly($term)) }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
             @if ($product->short_descriptions)
                 <p class="text-muted-foreground leading-relaxed mb-6">{{ $product->short_descriptions }}</p>
@@ -199,7 +239,7 @@
                             aria-label="{{ __('client.product.decrease') }}">
                             <i class="fa-solid fa-minus text-xs"></i>
                         </button>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1"
+                        <input type="number" id="quantity" name="quantity" aria-label="{{ __('client.product.quantity') }}" value="1" min="1"
                             max="{{ \App\Services\Client\CartService::MAX_QUANTITY }}" inputmode="numeric"
                             class="w-14 h-11 text-center border-x border-border focus:outline-none">
                         <button type="button" id="qty-plus"
@@ -233,9 +273,9 @@
                     <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
                         @csrf
                         <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
-                            data-wishlist-on="border-red-200 bg-red-50 text-red-600"
+                            data-wishlist-on="border-red-200 bg-red-50 text-red-700"
                             data-wishlist-off="border-border text-muted-foreground"
-                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-red-200 hover:text-red-600 {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-600' : 'border-border text-muted-foreground' }}">
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-red-200 hover:text-red-700 {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-700' : 'border-border text-muted-foreground' }}">
                             <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart"></i>
                             <span data-wishlist-label>
                                 {{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}
@@ -343,8 +383,8 @@
 
         @auth
             @if ($canReview)
-                <form action="{{ route('shop.reviews.store', $product->slug) }}" method="POST"
-                    id="review-form" data-submit-once class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
+                <form action="{{ route('shop.reviews.store', $product->slug) }}" method="POST" enctype="multipart/form-data"
+                    id="review-form" data-submit-once class="{{ $errors->has('rating') || $errors->has('comment') || $errors->has('images') ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
                     @csrf
 
                     <div>
@@ -390,6 +430,20 @@
                         @enderror
                     </div>
 
+                    <div>
+                        <label for="review-images" class="block text-sm font-medium text-foreground mb-1.5">
+                            {{ __('client.review.fields.images') }}
+                            <span class="text-muted-foreground font-normal">({{ __('common.labels.optional') }})</span>
+                        </label>
+                        <input type="file" id="review-images" name="images[]" accept="image/*" multiple
+                            class="w-full text-sm text-muted-foreground file:mr-3 file:px-4 file:py-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-soft file:text-primary hover:file:bg-primary/15">
+                        <p class="text-xs text-muted-foreground mt-1">
+                            {{ __('client.review.fields.images_hint', ['max' => \App\Services\Client\ReviewService::MAX_IMAGES]) }}
+                        </p>
+                        @error('images.*')
+                            <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
                     <p class="text-xs text-muted-foreground">{{ __('client.review.pending_note') }}</p>
 
                     <div class="flex justify-end">
@@ -444,6 +498,18 @@
                             @if ($review->comment)
                                 <p class="text-sm text-muted-foreground mt-1 leading-relaxed">{{ $review->comment }}</p>
                             @endif
+
+                            @if ($review->images)
+                                <div class="flex flex-wrap gap-2 mt-2.5">
+                                    @foreach ($review->images as $image)
+                                        <a href="{{ Storage::disk('public')->url($image) }}" target="_blank" rel="noopener"
+                                            class="block w-16 h-16 rounded-lg overflow-hidden border border-border bg-white">
+                                            <img src="{{ Storage::disk('public')->url($image) }}" loading="lazy"
+                                                alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -475,6 +541,150 @@
             </div>
         </div>
     @endunless
+
+    <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div>
+                <h2 class="text-lg font-bold text-foreground">{{ __('client.question.title') }}</h2>
+                <p class="text-sm text-muted-foreground mt-0.5">{{ __('client.question.subtitle') }}</p>
+            </div>
+            <button type="button" id="ask-question-btn"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold btn-primary rounded-xl">
+                <i class="fa-solid fa-circle-question"></i>
+                {{ __('client.question.ask') }}
+            </button>
+        </div>
+
+        <form action="{{ route('shop.questions.store', $product->slug) }}" method="POST" id="question-form"
+            class="{{ $errors->has('question') || $errors->has('fullname') ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
+            @csrf
+
+            @guest
+                <div>
+                    <label for="question-fullname" class="block text-sm font-medium text-foreground mb-1.5">
+                        {{ __('client.question.fields.fullname') }} <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="question-fullname" name="fullname" value="{{ old('fullname') }}"
+                        class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('fullname') ? 'is-invalid' : 'border-border' }}">
+                    @error('fullname')
+                        <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                    @enderror
+                </div>
+            @endguest
+
+            <div>
+                <label for="question-body" class="block text-sm font-medium text-foreground mb-1.5">
+                    {{ __('client.question.fields.question') }} <span class="text-red-500">*</span>
+                </label>
+                <textarea id="question-body" name="question" rows="3"
+                    placeholder="{{ __('client.question.fields.question_placeholder') }}"
+                    class="w-full px-4 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all {{ $errors->has('question') ? 'is-invalid' : 'border-border' }}">{{ old('question') }}</textarea>
+                @error('question')
+                    <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-bold btn-primary rounded-xl">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    {{ __('client.question.submit') }}
+                </button>
+            </div>
+        </form>
+
+        @if ($ownPendingQuestions->isNotEmpty())
+            <div class="space-y-3 mb-6">
+                @foreach ($ownPendingQuestions as $pending)
+                    <div class="flex gap-3 rounded-xl border border-dashed border-primary/30 bg-primary-soft/40 p-4">
+                        <span class="w-9 h-9 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                            <i class="fa-solid fa-hourglass-half text-xs"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-primary">{{ __('client.question.pending') }}</p>
+                            <p class="text-sm text-foreground mt-0.5">{{ $pending->question }}</p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                {{ $pending->created_at?->format('d/m/Y H:i') }}
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if ($questions->isEmpty())
+            <p class="py-10 text-center text-sm text-muted-foreground">{{ __('client.question.empty') }}</p>
+        @else
+            <div class="space-y-5">
+                @foreach ($questions as $question)
+                    <div class="pb-5 border-b border-border last:border-0 last:pb-0">
+                        <div class="flex gap-3">
+                            <span class="w-9 h-9 shrink-0 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
+                                <i class="fa-solid fa-user text-xs"></i>
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium text-foreground">
+                                    {{ $question->user?->fullname ?: ($question->fullname ?: '—') }}
+                                    <span class="ml-1 text-xs font-normal text-muted-foreground">
+                                        {{ $question->created_at?->format('d/m/Y') }}
+                                    </span>
+                                </p>
+                                <p class="text-sm text-muted-foreground mt-0.5">{{ $question->question }}</p>
+                            </div>
+                        </div>
+
+                        @if ($question->isAnswered())
+                            <div class="flex gap-3 mt-3 ml-6 pl-5 border-l-2 border-primary/25">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-primary">
+                                        <i class="fa-solid fa-circle-check mr-1"></i>{{ __('client.question.answered_by') }}
+                                    </p>
+                                    <p class="text-sm text-foreground mt-0.5">{{ $question->answer }}</p>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+
+            @include('components.pagination', ['paginator' => $questions->withQueryString()])
+        @endif
+    </section>
+
+    @if ($recentlyViewed->isNotEmpty())
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-xl font-bold text-foreground">{{ __('client.product.recently_viewed') }}</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach ($recentlyViewed as $viewed)
+                    @include('components.product-card', ['product' => $viewed])
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @if ($product->accessories->isNotEmpty())
+        <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 shrink-0 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+                        <i class="fa-solid fa-plug-circle-plus"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-lg font-bold text-foreground">{{ __('client.product.accessories.title') }}</h2>
+                        <p class="text-sm text-muted-foreground">{{ __('client.product.accessories.subtitle') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach ($product->accessories as $accessory)
+                    @include('components.product-card', ['product' => $accessory])
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     @if ($relatedProducts->isNotEmpty())
         <section class="mb-12">
@@ -560,6 +770,11 @@
                     $('#base-display').addClass('hidden');
                     $('#discount-badge').addClass('hidden');
                 }
+            });
+
+            $('#ask-question-btn').on('click', function() {
+                $('#question-form').removeClass('hidden');
+                $('html, body').animate({ scrollTop: $('#question-form').offset().top - 100 }, 300);
             });
 
             $('#write-review-btn').on('click', function() {

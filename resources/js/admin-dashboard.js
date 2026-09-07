@@ -79,7 +79,7 @@ $(function () {
         resizeDelay: 100,
         animation: { duration: 350, easing: "easeOutQuart" },
         interaction: { mode: "index", intersect: false },
-        layout: { padding: { top: 8, right: 16, bottom: 0, left: 20 } },
+        layout: { padding: { top: 18, right: 18, bottom: 0, left: 6 } },
         normalized: true,
         spanGaps: true,
         plugins: {
@@ -92,6 +92,15 @@ $(function () {
             },
         },
     };
+    const compactMoney = (value) => {
+        const n = Number(value || 0);
+
+        if (n >= 1000000000) return formatNumber.format(Math.round(n / 100000000) / 10) + " tỷ";
+        if (n >= 1000000) return formatNumber.format(Math.round(n / 100000) / 10) + " tr";
+        if (n >= 1000) return formatNumber.format(Math.round(n / 1000)) + "k";
+
+        return formatNumber.format(n);
+    };
     const axis = (config = {}, money = false) => ({
         beginAtZero: true,
         min: Number(config.min ?? 0),
@@ -101,7 +110,7 @@ $(function () {
             padding: 8,
             stepSize: Number(config.step ?? 1),
             precision: Number.isInteger(Number(config.step ?? 1)) ? 0 : 2,
-            callback: (value) => money ? formatMoney(value) : formatNumber.format(value),
+            callback: (value) => money ? compactMoney(value) : formatNumber.format(value),
         },
         grid: { color: "rgba(148, 163, 184, 0.18)" },
     });
@@ -112,11 +121,12 @@ $(function () {
         },
         y: axis(config, money),
     });
+    const denseSeries = data.labels.length > 14;
     const lineElements = {
-        pointRadius: 3,
+        pointRadius: denseSeries ? 0 : 3,
         pointStyle: "circle",
         pointHoverRadius: 7,
-        pointHitRadius: 16,
+        pointHitRadius: 18,
         pointBorderColor: "#FFFFFF",
         pointBorderWidth: 2,
         pointHoverBackgroundColor: "#FFFFFF",
@@ -125,7 +135,8 @@ $(function () {
         borderWidth: 3,
         borderJoinStyle: "round",
         borderCapStyle: "round",
-        tension: 0.35,
+        tension: 0.3,
+        cubicInterpolationMode: "monotone",
         fill: false,
         showLine: true,
         clip: 8,
@@ -202,14 +213,14 @@ $(function () {
                     data: data.revenue,
                     yAxisID: "revenue",
                     money: true,
-                    backgroundColor: "rgba(23, 59, 103, 0.78)",
+                    backgroundColor: "rgba(23, 59, 103, 0.85)",
                     borderColor: "#173B67",
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderSkipped: false,
-                    categoryPercentage: 0.76,
-                    barPercentage: 0.78,
-                    maxBarThickness: 18,
+                    borderWidth: 0,
+                    borderRadius: 3,
+                    borderSkipped: "bottom",
+                    categoryPercentage: 0.9,
+                    barPercentage: 0.9,
+                    maxBarThickness: 34,
                 },
                 {
                     type: "line",
@@ -232,7 +243,10 @@ $(function () {
                     grid: { display: false },
                     ticks: { maxTicksLimit: 8, maxRotation: 0, autoSkip: true },
                 },
-                revenue: axis(data.config.revenue, true),
+                revenue: {
+                    ...axis(data.config.revenue, true),
+                    position: "left",
+                },
                 orders: {
                     ...axis(data.config.orders),
                     position: "right",
@@ -300,11 +314,11 @@ $(function () {
                 data: data.topProducts.data,
                 money: true,
                 backgroundColor: "#F4B740",
-                borderRadius: 6,
-                borderSkipped: false,
-                barPercentage: 0.72,
-                categoryPercentage: 0.78,
-                maxBarThickness: 28,
+                borderRadius: 4,
+                borderSkipped: "start",
+                barPercentage: 0.82,
+                categoryPercentage: 0.86,
+                maxBarThickness: 26,
             }],
         },
         options: {

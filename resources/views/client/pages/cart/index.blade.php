@@ -3,8 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.cart.breadcrumb'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.cart.breadcrumb') }}</span>
     </nav>
@@ -140,12 +140,29 @@
                     </div>
                 </dl>
 
-                @include('components.coupon-box', ['coupon' => $coupon, 'discount' => $discount])
+                @include('components.coupon-box', [
+                    'coupon' => $coupon,
+                    'discount' => $discount,
+                    'availableCoupons' => $availableCoupons,
+                ])
 
                 <div class="flex justify-between text-sm mb-4 {{ $discount > 0 ? '' : 'hidden' }}" data-cart-discount-row>
                     <span class="text-muted-foreground">{{ __('client.coupon.discount') }}</span>
                     <span class="font-medium text-success" data-cart-discount>-{{ format_price($discount) }}</span>
                 </div>
+
+                @if ($membershipDiscount > 0)
+                    <div class="flex justify-between text-sm mb-4">
+                        <span class="text-muted-foreground">
+                            <i class="fa-solid fa-crown text-accent mr-1"></i>
+                            {{ __('client.membership.discount_label', [
+                                'tier' => \App\Const\MembershipConst::label($membershipTier),
+                                'rate' => \App\Const\MembershipConst::discountRate($membershipTier),
+                            ]) }}
+                        </span>
+                        <span class="font-medium text-success">-{{ format_price($membershipDiscount) }}</span>
+                    </div>
+                @endif
 
                 <div class="border-t border-border my-4"></div>
 

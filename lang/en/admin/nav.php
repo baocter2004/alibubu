@@ -20,6 +20,7 @@ return [
     'attributes' => 'Attributes',
     'tags' => 'Tags',
     'reviews' => 'Reviews',
+    'questions' => 'Questions',
     'orders' => 'Orders',
     'users' => 'Users',
     'administrators' => 'Admin accounts',

@@ -30,6 +30,7 @@ class GetProductRequest extends FormRequest
             'branch_id' => ['nullable', 'uuid', 'exists:branches,id'],
             'category_id' => ['nullable', 'uuid', 'exists:categories,id'],
             'is_active' => ['nullable', Rule::in(array_keys(GlobalConst::statuses()))],
+            'sale_state' => ['nullable', Rule::in(['active', 'scheduled', 'expired', 'none'])],
         ];
     }
 }

@@ -41,7 +41,7 @@ class PlaceOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone_number.regex' => 'Số điện thoại không đúng định dạng.',
+            'phone_number.regex' => __('client.messages.phone_invalid'),
         ];
     }
 
@@ -53,11 +53,11 @@ class PlaceOrderRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'fullname' => 'họ và tên',
-            'phone_number' => 'số điện thoại',
-            'email' => 'email',
-            'address' => 'địa chỉ',
-            'note' => 'ghi chú',
+            'fullname' => __('client.checkout.fullname'),
+            'phone_number' => __('client.checkout.phone_number'),
+            'email' => __('client.checkout.email'),
+            'address' => __('client.checkout.address'),
+            'note' => __('client.checkout.note'),
         ];
     }
 }

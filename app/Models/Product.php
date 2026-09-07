@@ -99,6 +99,21 @@ class Product extends Model
         return $this->hasMany(ProductSpecification::class)->orderBy('ordinal');
     }
 
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(ProductPromotion::class)->orderBy('ordinal');
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(ProductQuestion::class)->latest('id');
+    }
+
+    public function publishedQuestions(): HasMany
+    {
+        return $this->questions()->where('is_published', true);
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
@@ -149,6 +164,23 @@ class Product extends Model
         }
 
         return (int) round((($base - $effective) / $base) * 100);
+    }
+
+    public function supportsInstallment(): bool
+    {
+        return config('installment.enabled')
+            && (float) $this->effective_price >= (float) config('installment.min_amount');
+    }
+
+    public function installmentMonthly(?int $term = null): ?float
+    {
+        if (! $this->supportsInstallment()) {
+            return null;
+        }
+
+        $term = $term ?: (int) config('installment.default_term');
+
+        return $term > 0 ? ceil((float) $this->effective_price / $term / 1000) * 1000 : null;
     }
 
     public function refreshRating(): void

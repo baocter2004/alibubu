@@ -75,6 +75,21 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div>
+                    <label for="sale_state" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ __('admin/product.filters.sale_state') }}
+                    </label>
+                    <select id="sale_state" name="sale_state"
+                        class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30">
+                        <option value="">{{ __('common.labels.all') }}</option>
+                        @foreach (['active', 'scheduled', 'expired', 'none'] as $state)
+                            <option value="{{ $state }}" @selected(request('sale_state') === $state)>
+                                {{ __('admin/product.filters.sale_states.' . $state) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div class="flex justify-end gap-2">
@@ -134,6 +149,13 @@
                                 @if ($product->discount_percent > 0)
                                     <span
                                         class="block text-xs text-gray-400 line-through">{{ format_price($product->base_price) }}</span>
+                                @endif
+                                @if ($product->is_sale && $product->sale_price_end_at)
+                                    <span
+                                        class="block mt-0.5 text-[11px] font-medium {{ $product->onSale() ? 'text-emerald-600' : 'text-red-500' }}">
+                                        <i class="fa-regular fa-clock"></i>
+                                        {{ $product->sale_price_end_at->format('d/m/Y') }}
+                                    </span>
                                 @endif
                             </td>
                             <td class="text-center px-4 py-3">{{ number_format($product->views) }}</td>

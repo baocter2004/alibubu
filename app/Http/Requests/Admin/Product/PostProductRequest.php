@@ -24,15 +24,31 @@ class PostProductRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $variants = array_map(function ($variant) {
+            if (isset($variant['attribute_value_ids']) && is_array($variant['attribute_value_ids'])) {
+                $variant['attribute_value_ids'] = array_values(array_filter(
+                    $variant['attribute_value_ids'],
+                    fn ($value) => is_string($value) && trim($value) !== ''
+                ));
+            }
+
+            return $variant;
+        }, $this->input('variants', []));
+
         $this->merge([
             'type' => (int) $this->input('type', ProductConst::SINGLE),
+            'accessory_ids' => array_values(array_filter((array) $this->input('accessory_ids', []))),
             'variants' => array_values(array_filter(
-                $this->input('variants', []),
+                $variants,
                 fn ($variant) => ! empty($variant['price']) || ! empty($variant['sku']) || ! empty($variant['attribute_value_ids'])
             )),
             'specifications' => array_values(array_filter(
                 $this->input('specifications', []),
                 fn ($spec) => ! empty($spec['name']) || ! empty($spec['value'])
+            )),
+            'promotions' => array_values(array_filter(
+                $this->input('promotions', []),
+                fn ($promotion) => ! empty($promotion['content'])
             )),
         ]);
     }
@@ -58,6 +74,8 @@ class PostProductRequest extends FormRequest
             'branch_id' => ['required', 'uuid', Rule::exists('branches', 'id')->where('is_active', true)],
             'category_ids' => ['required', 'array', 'min:1'],
             'category_ids.*' => ['uuid', Rule::exists('categories', 'id')->where('is_active', true)],
+            'accessory_ids' => ['nullable', 'array', 'max:12'],
+            'accessory_ids.*' => ['uuid', Rule::exists('products', 'id')],
             'short_descriptions' => ['nullable', 'string', 'max:255'],
             'descriptions' => ['nullable', 'string', 'max:5000'],
             'thumbnail' => [$id ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
@@ -67,7 +85,9 @@ class PostProductRequest extends FormRequest
             'sale_price_start_at' => ['nullable', 'date', 'required_with:sale_price'],
             'sale_price_end_at' => ['nullable', 'date', 'after:sale_price_start_at'],
 
-            'variants' => [Rule::requiredIf($isVariable), 'array', 'min:1', 'max:20'],
+            'variants' => $isVariable
+                ? ['required', 'array', 'min:1', 'max:20']
+                : ['nullable', 'array', 'max:20'],
             'variants.*.id' => ['nullable', 'uuid', $variantIdRule],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['required_with:variants.*', 'nullable', 'numeric', 'min:0', 'max:99999999999'],
@@ -78,6 +98,10 @@ class PostProductRequest extends FormRequest
             'variants.*.attribute_value_ids.*' => ['uuid', Rule::exists('attribute_values', 'id')->where('is_active', true)],
 
             'specifications' => ['nullable', 'array', 'max:40'],
+            'promotions' => ['nullable', 'array', 'max:10'],
+            'promotions.*.id' => ['nullable', 'uuid'],
+            'promotions.*.icon' => ['nullable', 'string', 'max:60'],
+            'promotions.*.content' => ['required', 'string', 'max:180'],
             'specifications.*.id' => ['nullable', 'uuid', 'exists:product_specifications,id'],
             'specifications.*.group' => ['nullable', 'string', 'max:100'],
             'specifications.*.name' => ['required_with:specifications.*.value', 'nullable', 'string', 'max:120'],
@@ -100,6 +124,7 @@ class PostProductRequest extends FormRequest
             'sku' => __('admin/product.fields.sku'),
             'branch_id' => __('admin/product.fields.branch'),
             'category_ids' => __('admin/product.fields.categories'),
+            'accessory_ids' => __('admin/product.fields.accessories'),
             'short_descriptions' => __('admin/product.fields.short_descriptions'),
             'descriptions' => __('admin/product.fields.descriptions'),
             'thumbnail' => __('admin/product.fields.thumbnail'),

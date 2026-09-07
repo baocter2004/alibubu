@@ -4,10 +4,10 @@
 
 @section('content')
     <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <a href="{{ route('account.orders') }}"
-            class="hover:text-primary transition-colors">{{ __('client.account.nav.orders') }}</a>
+            class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.account.nav.orders') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ $order->code }}</span>
     </nav>

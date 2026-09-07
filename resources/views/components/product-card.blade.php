@@ -26,7 +26,7 @@
             </span>
         @endif
 
-        <span class="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10">
+        <span class="absolute top-3 left-3 flex flex-wrap gap-1.5 items-start max-w-[60%] z-10">
             @if ($discount > 0)
                 <span class="px-2 py-1 text-[11px] font-bold badge-sale tabular">-{{ $discount }}%</span>
             @endif
@@ -53,9 +53,9 @@
                     @csrf
                     <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
                         title="{{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}"
-                        data-wishlist-on="bg-red-50 text-red-600 border-red-200"
+                        data-wishlist-on="bg-red-50 text-red-700 border-red-200"
                         data-wishlist-off="bg-white/95 text-muted-foreground border-border"
-                        class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-red-600 hover:border-red-200 transition-colors {{ $wishlisted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white/95 text-muted-foreground border-border' }}">
+                        class="w-9 h-9 flex items-center justify-center rounded-full border shadow-sm hover:text-red-700 hover:border-red-200 transition-colors {{ $wishlisted ? 'bg-red-50 text-red-700 border-red-200' : 'bg-white/95 text-muted-foreground border-border' }}">
                         <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart text-sm"></i>
                     </button>
                 </form>

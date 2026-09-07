@@ -2,18 +2,22 @@
 
 namespace App\Services\Client;
 
+use App\Const\MembershipConst;
 use App\Const\OrderConst;
 use App\Const\PaymentConst;
 use App\Mail\OrderPlaced;
+use App\Models\Admin;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Notifications\NewOrderPlaced;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -40,6 +44,9 @@ class OrderService
             $coupon = $applied['coupon'] ?? null;
             $discount = (float) ($applied['discount'] ?? 0);
 
+            $tier = $user?->membershipTier();
+            $membershipDiscount = $tier ? MembershipConst::discountFor($tier, $subtotal) : 0.0;
+
             $order = Order::create(array_merge([
                 'code' => $this->generateCode(),
                 'user_id' => $userId,
@@ -48,7 +55,9 @@ class OrderService
                 'email' => $params['email'] ?? null,
                 'address' => $params['address'],
                 'note' => $params['note'] ?? null,
-                'total_amount' => max($subtotal - $discount, 0),
+                'membership_tier' => $tier,
+                'membership_discount' => $membershipDiscount,
+                'total_amount' => max($subtotal - $discount - $membershipDiscount, 0),
                 'status' => OrderConst::STATUS_PENDING,
                 'payment_method' => (int) ($params['payment_method'] ?? PaymentConst::METHOD_COD),
                 'is_paid' => false,
@@ -65,8 +74,27 @@ class OrderService
         });
 
         $this->sendConfirmationMail($order, $user);
+        $this->notifyAdmins($order);
 
         return $order;
+    }
+
+    protected function notifyAdmins(Order $order): void
+    {
+        try {
+            $admins = Admin::query()->get();
+
+            if ($admins->isEmpty()) {
+                return;
+            }
+
+            Notification::send($admins, new NewOrderPlaced($order));
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, [
+                'message' => $th->getMessage(),
+                'order_code' => $order->code,
+            ]);
+        }
     }
 
     protected function sendConfirmationMail(Order $order, ?User $user = null): void
@@ -154,6 +182,7 @@ class OrderService
 
         if ($userId) {
             $coupon->users()->attach($userId, [
+                'id' => (string) Str::uuid(),
                 'times_used' => 1,
                 'used_at' => now(),
             ]);

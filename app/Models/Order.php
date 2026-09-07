@@ -40,6 +40,8 @@ class Order extends Model
         'coupon_description',
         'coupon_discount_type',
         'coupon_discount_value',
+        'membership_tier',
+        'membership_discount',
         'max_discount_value',
     ];
 
@@ -52,6 +54,7 @@ class Order extends Model
     {
         return [
             'total_amount' => 'decimal:2',
+            'membership_discount' => 'decimal:2',
             'status' => 'integer',
             'confirmed_at' => 'datetime',
             'completed_at' => 'datetime',

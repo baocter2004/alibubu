@@ -35,7 +35,7 @@ class UpdateCartItemRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'quantity' => 'số lượng',
+            'quantity' => __('client.product.quantity'),
         ];
     }
 }
