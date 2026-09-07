@@ -41,6 +41,8 @@ $(function () {
 // Mobile menu
 function openMenu() {
     $("#mobile-menu").removeClass("hidden");
+    $("#mobile-menu").attr("aria-hidden", "false");
+    $("#menu-open").attr("aria-expanded", "true");
     requestAnimationFrame(() =>
         $("#menu-panel").removeClass("-translate-x-full"),
     );
@@ -51,6 +53,8 @@ function closeMenu() {
     $("#menu-panel").addClass("-translate-x-full");
     setTimeout(() => {
         $("#mobile-menu").addClass("hidden");
+        $("#mobile-menu").attr("aria-hidden", "true");
+        $("#menu-open").attr("aria-expanded", "false");
         $("body").css("overflow", "");
     }, 300);
 }
@@ -61,7 +65,11 @@ $(document).ready(function () {
     $("#menu-backdrop").on("click", closeMenu);
 
     $(document).on("keydown", function (e) {
-        if (e.key === "Escape") closeMenu();
+        if (e.key === "Escape") {
+            closeMenu();
+            $("#account-dropdown, #category-dropdown, [data-locale-menu]").addClass("hidden");
+            $("#account-menu-toggle, #category-menu-toggle, [data-locale-toggle]").attr("aria-expanded", "false");
+        }
     });
 });
 
@@ -102,23 +110,47 @@ $(document).on("click", function () {
     $("[data-locale-toggle]").attr("aria-expanded", "false");
 });
 
-$(document).on("click", "#account-menu button", function (e) {
+$(document).on("click", "#account-menu-toggle", function (e) {
     e.stopPropagation();
-    $("#account-dropdown").toggleClass("hidden");
+    const $menu = $("#account-dropdown");
+    const expanded = $menu.hasClass("hidden");
+
+    $menu.toggleClass("hidden", !expanded);
+    $(this).attr("aria-expanded", expanded ? "true" : "false");
+    $("#category-dropdown").addClass("hidden");
+    $("#category-menu-toggle").attr("aria-expanded", "false");
 });
 
 $(document).on("click", function () {
     $("#account-dropdown").addClass("hidden");
+    $("#account-menu-toggle").attr("aria-expanded", "false");
 });
 
 $(document).on("click", "#category-menu button", function (e) {
     e.stopPropagation();
-    $("#category-dropdown").toggleClass("hidden");
+    const $menu = $("#category-dropdown");
+    const expanded = $menu.hasClass("hidden");
+
+    $menu.toggleClass("hidden", !expanded);
+    $(this).attr("aria-expanded", expanded ? "true" : "false");
     $("#account-dropdown").addClass("hidden");
+    $("#account-menu-toggle").attr("aria-expanded", "false");
 });
 
 $(document).on("click", function () {
     $("#category-dropdown").addClass("hidden");
+    $("#category-menu-toggle").attr("aria-expanded", "false");
+});
+
+$(document).on("input", "[data-search-input]", function () {
+    $(this).siblings("[data-search-clear]").toggleClass("hidden", !$(this).val().trim());
+});
+
+$(document).on("click", "[data-search-clear]", function () {
+    const $input = $(this).siblings("[data-search-input]");
+
+    $input.val("").trigger("input").focus();
+    $input.closest("[data-search-box]").find("[data-search-panel]").addClass("hidden").empty();
 });
 
 $(function () {
@@ -172,4 +204,72 @@ $(function () {
     );
 
     targets.forEach((el) => observer.observe(el));
+});
+
+// Keep a small, private browsing history to help shoppers return to products.
+const RECENT_PRODUCTS_KEY = "alibubu.recent-products";
+
+function readRecentProducts() {
+    try {
+        const data = JSON.parse(window.localStorage.getItem(RECENT_PRODUCTS_KEY) || "[]");
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function writeRecentProducts(items) {
+    try {
+        window.localStorage.setItem(RECENT_PRODUCTS_KEY, JSON.stringify(items));
+    } catch (error) {
+        // Private browsing or blocked storage must not affect shopping.
+    }
+}
+
+$(function () {
+    const $source = $("[data-recent-product]");
+    const $section = $("[data-recently-viewed]");
+    const $list = $section.find("[data-recent-list]");
+
+    if (!$source.length || !$section.length || !$list.length) return;
+
+    const current = {
+        id: $source.data("recent-id"),
+        name: $source.data("recent-name"),
+        url: $source.data("recent-url"),
+        thumbnail: $source.data("recent-thumbnail"),
+        price: $source.data("recent-price"),
+    };
+    const items = [current, ...readRecentProducts().filter((item) => String(item.id) !== String(current.id))].slice(0, 6);
+
+    writeRecentProducts(items);
+
+    items.slice(1, 5).forEach((item) => {
+        const $card = $("<a>", {
+            href: item.url,
+            class: "group flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:border-primary/30 hover:shadow-md transition-all",
+            "aria-label": item.name,
+        });
+        const $media = $("<span>", {
+            class: "w-16 h-16 shrink-0 rounded-lg bg-white border border-border overflow-hidden flex items-center justify-center",
+        });
+
+        $media.append(item.thumbnail
+            ? $("<img>", { src: item.thumbnail, alt: item.name, loading: "lazy", class: "w-full h-full object-contain p-1" })
+            : $("<i>", { class: "fa-solid fa-box-open text-muted-foreground/25", "aria-hidden": "true" }));
+        $card.append($media, $("<span>", { class: "min-w-0" }).append(
+            $("<span>", { class: "block text-sm font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors", text: item.name }),
+            $("<span>", { class: "block mt-1 text-sm price-main", text: item.price }),
+        ));
+        $list.append($card);
+    });
+
+    if ($list.children().length) {
+        $section.removeClass("hidden");
+    }
+
+    $section.on("click", "[data-clear-recent]", function () {
+        writeRecentProducts([current]);
+        $section.addClass("hidden");
+    });
 });

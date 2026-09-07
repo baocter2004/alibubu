@@ -31,6 +31,8 @@ return [
     'coming_soon' => 'Coming soon',
 
     'search_placeholder' => 'Search...',
+    'menu' => 'Open menu',
+    'close_menu' => 'Close menu',
     'notifications' => 'Notifications',
     'role' => 'Administrator',
     'profile' => 'My profile',

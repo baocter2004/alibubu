@@ -3,7 +3,7 @@
 @section('title', __('common.app_name') . ' - ' . __('client.shop.title'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.shop.breadcrumb') }}</span>
@@ -12,12 +12,14 @@
     <div class="flex flex-col lg:flex-row gap-6">
         <aside class="lg:w-64 shrink-0">
             <button type="button" id="filter-toggle"
+                aria-controls="filter-panel" aria-expanded="false"
                 class="lg:hidden w-full flex items-center justify-between px-4 py-3 bg-card border border-border rounded-xl font-medium mb-3">
                 <span><i class="fa-solid fa-sliders mr-2 text-primary"></i>{{ __('client.shop.filters') }}</span>
                 <i class="fa-solid fa-chevron-down text-xs"></i>
             </button>
 
             <form action="{{ route('shop.index') }}" method="GET" id="filter-panel"
+                aria-label="{{ __('client.shop.filters') }}"
                 class="hidden lg:block bg-card border border-border rounded-xl p-5 space-y-6 lg:sticky lg:top-24">
                 <div>
                     <label for="keyword"
@@ -176,7 +178,7 @@
                 </div>
             @endif
 
-            @if ($products->isEmpty())
+                @if ($products->isEmpty())
                 <div class="bg-card border border-dashed border-border rounded-xl py-20 text-center">
                     <i class="fa-solid fa-magnifying-glass text-5xl text-muted-foreground/25 mb-4"></i>
                     <p class="text-lg font-semibold text-foreground mb-1">{{ __('client.shop.empty_title') }}</p>
@@ -203,7 +205,11 @@
     <script>
         $(function() {
             $('#filter-toggle').on('click', function() {
-                $('#filter-panel').toggleClass('hidden');
+                const $panel = $('#filter-panel');
+                const expanded = $panel.hasClass('hidden');
+
+                $panel.toggleClass('hidden', !expanded);
+                $(this).attr('aria-expanded', expanded ? 'true' : 'false');
                 $(this).find('.fa-chevron-down').toggleClass('rotate-180');
             });
         });

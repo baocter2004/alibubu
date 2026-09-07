@@ -61,6 +61,7 @@
         </a>
 
         <button type="button" id="sidebarClose"
+            aria-label="{{ __('admin/nav.close_menu') }}"
             class="brand-text lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -85,13 +86,17 @@
                 @else
                     <div class="sidebar-dropdown {{ $isActive ? 'active' : '' }}">
                         <a href="{{ route($item['base'] . '.index') }}" data-tooltip="{{ $item['label'] }}"
+                            id="sidebar-toggle-{{ str_replace('.', '-', $item['base']) }}"
+                            aria-controls="sidebar-submenu-{{ str_replace('.', '-', $item['base']) }}"
+                            aria-expanded="{{ $isActive ? 'true' : 'false' }}"
                             class="dropdown-toggle nav-item {{ $isActive ? 'is-active' : '' }}">
                             <i class="fa-solid {{ $item['icon'] }} nav-icon"></i>
                             <span class="sidebar-label flex-1">{{ $item['label'] }}</span>
                             <i class="fa-solid fa-chevron-right text-[10px] arrow-icon"></i>
                         </a>
 
-                        <div class="submenu hidden mx-3 mt-1 mb-1 pl-4 border-l border-white/10 space-y-0.5">
+                        <div id="sidebar-submenu-{{ str_replace('.', '-', $item['base']) }}"
+                            class="submenu hidden mx-3 mt-1 mb-1 pl-4 border-l border-white/10 space-y-0.5">
                             @foreach ($childLinks as $child)
                                 @php $childRoute = $item['base'] . '.' . $child['suffix']; @endphp
                                 <a href="{{ route($childRoute) }}"

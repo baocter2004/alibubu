@@ -3,7 +3,7 @@
 @section('title', __('common.app_name') . ' - ' . $order->code)
 
 @section('content')
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
         <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <a href="{{ route('account.orders') }}"
@@ -82,6 +82,53 @@
                     <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
                     <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
                 </div>
+            </section>
+
+            @php
+                $orderSteps = [
+                    ['status' => \App\Const\OrderConst::STATUS_PENDING, 'icon' => 'fa-clock'],
+                    ['status' => \App\Const\OrderConst::STATUS_CONFIRMED, 'icon' => 'fa-clipboard-check'],
+                    ['status' => \App\Const\OrderConst::STATUS_SHIPPING, 'icon' => 'fa-truck-fast'],
+                    ['status' => \App\Const\OrderConst::STATUS_COMPLETED, 'icon' => 'fa-circle-check'],
+                ];
+                $isCancelled = $order->status === \App\Const\OrderConst::STATUS_CANCELLED;
+            @endphp
+
+            <section class="bg-card border border-border rounded-2xl p-5 md:p-6" aria-labelledby="order-tracking-title">
+                <h2 id="order-tracking-title" class="font-bold text-foreground mb-6">
+                    {{ __('client.account.orders.timeline_title') }}
+                </h2>
+
+                @if ($isCancelled)
+                    <div class="flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-700" role="status">
+                        <span class="w-10 h-10 shrink-0 rounded-full bg-red-100 flex items-center justify-center">
+                            <i class="fa-solid fa-ban"></i>
+                        </span>
+                        <div>
+                            <p class="font-semibold">{{ \App\Const\OrderConst::statusLabel($order->status) }}</p>
+                            <p class="text-sm text-red-600">{{ __('client.messages.stock_restored') }}</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="relative grid grid-cols-4 gap-2" role="list" aria-label="{{ __('client.account.orders.timeline_title') }}">
+                        <div class="absolute left-[12.5%] right-[12.5%] top-5 h-0.5 bg-border" aria-hidden="true"></div>
+                        @foreach ($orderSteps as $step)
+                            @php
+                                $stepDone = $order->status >= $step['status'];
+                                $stepCurrent = $order->status === $step['status'];
+                            @endphp
+                            <div class="relative z-10 flex flex-col items-center text-center" role="listitem"
+                                @if ($stepCurrent) aria-current="step" @endif>
+                                <span class="w-10 h-10 rounded-full flex items-center justify-center border-4 border-card {{ $stepDone ? 'bg-primary text-white' : 'bg-muted text-muted-foreground' }}">
+                                    <i class="fa-solid {{ $step['icon'] }} text-sm" aria-hidden="true"></i>
+                                </span>
+                                <span class="mt-2 text-[11px] sm:text-xs font-semibold leading-tight {{ $stepCurrent ? 'text-primary' : ($stepDone ? 'text-foreground' : 'text-muted-foreground') }}">
+                                    {{ \App\Const\OrderConst::statusLabel($step['status']) }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </section>
 
             <section class="bg-card border border-border rounded-2xl p-5 md:p-6">

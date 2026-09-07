@@ -19,6 +19,7 @@
     <script>document.documentElement.classList.add('js-reveal');</script>
 
     @include('client.layouts.partials.common.css')
+    @stack('head')
     @stack('styles')
 </head>
 

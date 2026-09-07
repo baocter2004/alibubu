@@ -145,6 +145,8 @@ return [
         'stock_left' => 'Còn :count sản phẩm',
         'description' => 'Mô tả sản phẩm',
         'related' => 'Sản phẩm liên quan',
+        'recently_viewed' => 'Đã xem gần đây',
+        'clear_recently_viewed' => 'Xoá lịch sử',
         'increase' => 'Tăng số lượng',
         'decrease' => 'Giảm số lượng',
         'benefits' => [
@@ -302,6 +304,7 @@ return [
             'empty' => 'Bạn chưa có đơn hàng nào.',
             'empty_cta' => 'Mua sắm ngay',
             'detail' => 'Chi tiết đơn hàng',
+            'timeline_title' => 'Theo dõi đơn hàng',
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',

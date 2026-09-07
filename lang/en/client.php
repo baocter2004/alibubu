@@ -145,6 +145,8 @@ return [
         'stock_left' => ':count left',
         'description' => 'Product description',
         'related' => 'Related products',
+        'recently_viewed' => 'Recently viewed',
+        'clear_recently_viewed' => 'Clear history',
         'increase' => 'Increase quantity',
         'decrease' => 'Decrease quantity',
         'benefits' => [
@@ -302,6 +304,7 @@ return [
             'empty' => 'You have not placed any order yet.',
             'empty_cta' => 'Start shopping',
             'detail' => 'Order detail',
+            'timeline_title' => 'Order tracking',
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',

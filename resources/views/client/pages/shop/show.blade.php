@@ -2,6 +2,45 @@
 
 @section('title', $product->name . ' - ' . __('common.app_name'))
 
+@php
+    $productUrl = route('shop.show', $product->slug);
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->short_descriptions ?: $product->descriptions,
+        'image' => $product->thumbnail ? [url(Storage::disk('public')->url($product->thumbnail))] : [],
+        'sku' => $product->sku,
+        'url' => $productUrl,
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $productUrl,
+            'priceCurrency' => 'VND',
+            'price' => $product->effective_price,
+            'availability' => $product->inStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        ],
+    ];
+
+    if ($product->branch) {
+        $productSchema['brand'] = [
+            '@type' => 'Brand',
+            'name' => $product->branch->name,
+        ];
+    }
+
+    if ($product->reviews_count > 0 && $product->rating > 0) {
+        $productSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => $product->rating,
+            'reviewCount' => $product->reviews_count,
+        ];
+    }
+@endphp
+
+@push('head')
+    <script type="application/ld+json">@json($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)</script>
+@endpush
+
 @section('content')
     @php
         $variants = $product->variants->where('is_active', true)->values();
@@ -18,7 +57,14 @@
         $outOfStock = ! $product->inStock() || $noSellableVariant;
     @endphp
 
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
+    <span data-recent-product class="hidden"
+        data-recent-id="{{ $product->id }}"
+        data-recent-name="{{ $product->name }}"
+        data-recent-url="{{ $productUrl }}"
+        data-recent-thumbnail="{{ $product->thumbnail ? Storage::disk('public')->url($product->thumbnail) : '' }}"
+        data-recent-price="{{ format_price($product->effective_price) }}"></span>
+
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
         <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
@@ -442,6 +488,22 @@
             </div>
         </section>
     @endif
+
+    <section data-recently-viewed class="hidden mb-12" aria-labelledby="recently-viewed-title">
+        <div class="flex items-center justify-between gap-4 mb-5">
+            <div>
+                <p class="eyebrow mb-1">{{ __('client.product.recently_viewed') }}</p>
+                <h2 id="recently-viewed-title" class="text-xl font-bold text-foreground">
+                    {{ __('client.product.recently_viewed') }}
+                </h2>
+            </div>
+            <button type="button" data-clear-recent
+                class="shrink-0 text-xs font-semibold text-muted-foreground hover:text-danger transition-colors">
+                {{ __('client.product.clear_recently_viewed') }}
+            </button>
+        </div>
+        <div data-recent-list class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </section>
 @endsection
 
 @push('scripts')

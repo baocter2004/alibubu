@@ -16,6 +16,7 @@ return [
         'back' => 'Quay lại',
         'confirm' => 'Xác nhận',
         'search' => 'Tìm kiếm',
+        'clear_search' => 'Xoá tìm kiếm',
         'filter' => 'Bộ lọc',
         'reset' => 'Đặt lại',
         'apply' => 'Áp dụng',

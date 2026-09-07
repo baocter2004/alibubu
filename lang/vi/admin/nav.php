@@ -31,6 +31,8 @@ return [
     'coming_soon' => 'Sắp ra mắt',
 
     'search_placeholder' => 'Tìm kiếm...',
+    'menu' => 'Mở menu',
+    'close_menu' => 'Đóng menu',
     'notifications' => 'Thông báo',
     'role' => 'Quản trị viên',
     'profile' => 'Tài khoản của tôi',
