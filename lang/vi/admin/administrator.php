@@ -31,5 +31,9 @@ return [
         'cannot_demote_self' => 'Bạn không thể tự bỏ quyền Quản trị cấp cao của mình.',
         'cannot_delete_last_super_admin' => 'Không thể xoá tài khoản Quản trị cấp cao cuối cùng.',
     ],
+    'confirm' => [
+        'delete_title' => 'Xoá tài khoản quản trị này?',
+        'delete_text' => 'Tài khoản này sẽ mất quyền truy cập trang quản trị.',
+    ],
     'empty' => 'Chưa có tài khoản quản trị nào.',
 ];

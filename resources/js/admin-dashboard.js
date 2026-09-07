@@ -7,7 +7,15 @@ function numberFormatter(locale, options = {}) {
 function createChart(canvas, config) {
     if (!canvas) return;
 
-    return new Chart(canvas, config);
+    try {
+        return new Chart(canvas, config);
+    } catch (error) {
+        console.error("Dashboard chart failed to render", error);
+        const fallback = document.createElement("div");
+        fallback.className = "flex h-full items-center justify-center text-center text-sm text-slate-500";
+        fallback.textContent = document.querySelector("[data-admin-dashboard]")?.dataset.chartError || "Chart unavailable";
+        canvas.replaceWith(fallback);
+    }
 }
 
 const centerTextPlugin = {
@@ -40,6 +48,15 @@ $(function () {
     if (!root) return;
 
     const data = JSON.parse(root.dataset.chartData || "{}");
+    data.labels = Array.isArray(data.labels) ? data.labels : [];
+    data.revenue = Array.isArray(data.revenue) ? data.revenue : [];
+    data.cumulativeRevenue = Array.isArray(data.cumulativeRevenue) ? data.cumulativeRevenue : [];
+    data.orders = Array.isArray(data.orders) ? data.orders : [];
+    data.status = data.status || { labels: [], data: [] };
+    data.payment = data.payment || { labels: [], data: [] };
+    data.inventory = data.inventory || { labels: [], data: [] };
+    data.topProducts = data.topProducts || { labels: [], data: [], quantities: [] };
+    data.config = data.config || {};
     const locale = root.dataset.locale || "vi-VN";
     const currency = root.dataset.currency || "VND";
     const formatNumber = numberFormatter(locale);
@@ -59,7 +76,7 @@ $(function () {
         resizeDelay: 100,
         animation: { duration: 350, easing: "easeOutQuart" },
         interaction: { mode: "index", intersect: false },
-        layout: { padding: { top: 4, right: 8, bottom: 0, left: 0 } },
+        layout: { padding: { top: 8, right: 16, bottom: 0, left: 20 } },
         normalized: true,
         spanGaps: true,
         plugins: {
@@ -72,14 +89,15 @@ $(function () {
             },
         },
     };
-    const axis = (config, money = false) => ({
+    const axis = (config = {}, money = false) => ({
         beginAtZero: true,
-        min: Number(config.min),
-        max: Number(config.max),
+        min: Number(config.min ?? 0),
+        max: Number(config.max ?? 4),
         grace: 0,
         ticks: {
-            stepSize: Number(config.step),
-            precision: Number.isInteger(Number(config.step)) ? 0 : 2,
+            padding: 8,
+            stepSize: Number(config.step ?? 1),
+            precision: Number.isInteger(Number(config.step ?? 1)) ? 0 : 2,
             callback: (value) => money ? formatMoney(value) : formatNumber.format(value),
         },
         grid: { color: "rgba(148, 163, 184, 0.18)" },
@@ -92,10 +110,10 @@ $(function () {
         y: axis(config, money),
     });
     const lineElements = {
-        pointRadius: 2,
+        pointRadius: 3,
         pointStyle: "circle",
-        pointHoverRadius: 5,
-        pointHitRadius: 12,
+        pointHoverRadius: 7,
+        pointHitRadius: 16,
         pointBorderColor: "#FFFFFF",
         pointBorderWidth: 2,
         pointHoverBackgroundColor: "#FFFFFF",
@@ -105,7 +123,7 @@ $(function () {
         borderJoinStyle: "round",
         borderCapStyle: "round",
         tension: 0.35,
-        fill: true,
+        fill: false,
         showLine: true,
         clip: 8,
     };
@@ -146,6 +164,27 @@ $(function () {
         options: {
             ...common,
             scales: lineScales(data.config.orders, false),
+        },
+    });
+
+    createChart(document.getElementById("sales-area-chart"), {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: root.dataset.areaLabel,
+                data: data.cumulativeRevenue,
+                borderColor: "#F4B740",
+                backgroundColor: "rgba(244, 183, 64, 0.2)",
+                pointBackgroundColor: "#F4B740",
+                money: true,
+                ...lineElements,
+                fill: true,
+            }],
+        },
+        options: {
+            ...common,
+            scales: lineScales(data.config.cumulative_revenue, true),
         },
     });
 
@@ -269,7 +308,7 @@ $(function () {
             ...common,
             indexAxis: "y",
             scales: {
-                x: axis(data.config.top_products),
+                x: axis(data.config.top_products, true),
                 y: { grid: { display: false }, ticks: { autoSkip: false } },
             },
             plugins: {
@@ -324,7 +363,7 @@ $(function () {
     });
 
     createChart(document.getElementById("payment-chart"), {
-        type: "doughnut",
+        type: "pie",
         data: {
             labels: data.payment.labels,
             datasets: [{
@@ -339,7 +378,6 @@ $(function () {
         },
         options: {
             ...common,
-            cutout: "64%",
             plugins: {
                 ...common.plugins,
                 legend: {
@@ -352,13 +390,7 @@ $(function () {
                         label: (context) => `${context.label}: ${formatNumber.format(context.parsed)}${percentage(context.parsed, data.payment.data)}`,
                     },
                 },
-                dashboardCenterText: {
-                    value: data.payment.data.reduce((sum, item) => sum + Number(item || 0), 0),
-                    label: root.dataset.paymentTotalLabel || "Total",
-                    locale,
-                },
             },
         },
-        plugins: [centerTextPlugin],
     });
 });

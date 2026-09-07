@@ -54,6 +54,12 @@ class DashboardController extends Controller
 
         $revenueValues = array_values($revenue);
         $orderValues = array_values($orderCounts);
+        $cumulativeRevenue = [];
+        $runningRevenue = 0.0;
+        foreach ($revenueValues as $value) {
+            $runningRevenue += (float) $value;
+            $cumulativeRevenue[] = $runningRevenue;
+        }
         $paidOrders = $orders->filter(fn ($order) => $order->is_paid && $order->status !== OrderConst::STATUS_CANCELLED);
         $periodRevenue = (float) array_sum($revenueValues);
         $periodOrders = $orders->count();
@@ -80,6 +86,7 @@ class DashboardController extends Controller
         $statusConfig = $this->axisConfig((float) max(array_values($statusCounts) ?: [0]), true);
         $inventoryConfig = $this->axisConfig((float) max(array_values($inventory) ?: [0]), true);
         $revenueConfig = $this->axisConfig(max($revenueValues ?: [0]));
+        $cumulativeRevenueConfig = $this->axisConfig(max($cumulativeRevenue ?: [0]));
         $ordersConfig = $this->axisConfig(max($orderValues ?: [0]), true);
         $topProductsConfig = $this->axisConfig((float) ($topProducts->max('revenue') ?? 0));
         $paymentConfig = $this->axisConfig((float) max(array_values($paymentCounts) ?: [0]), true);
@@ -110,6 +117,7 @@ class DashboardController extends Controller
             'chart' => [
                 'labels' => $labels,
                 'revenue' => $revenueValues,
+                'cumulative_revenue' => $cumulativeRevenue,
                 'orders' => $orderValues,
                 'max_revenue' => max($revenueValues ?: [0]),
                 'max_orders' => max($orderValues ?: [0]),
@@ -121,6 +129,7 @@ class DashboardController extends Controller
             'inventory' => $inventory,
             'chartConfig' => [
                 'revenue' => $revenueConfig,
+                'cumulative_revenue' => $cumulativeRevenueConfig,
                 'orders' => $ordersConfig,
                 'top_products' => $topProductsConfig,
                 'status' => $statusConfig,

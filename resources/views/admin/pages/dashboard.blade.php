@@ -5,14 +5,18 @@
 @section('content')
     @php
         $admin = Auth::guard('admin')->user();
-        $cards = [
-            ['key' => 'revenue', 'icon' => 'fa-sack-dollar', 'tone' => 'rose', 'value' => format_price($stats['revenue']), 'route' => 'admin.orders.index', 'wide' => true],
-            ['key' => 'orders', 'icon' => 'fa-receipt', 'tone' => 'sky', 'value' => number_format($stats['orders']), 'route' => 'admin.orders.index'],
-            ['key' => 'products', 'icon' => 'fa-mobile-screen-button', 'tone' => 'purple', 'value' => number_format($stats['products']), 'route' => 'admin.products.index'],
-            ['key' => 'users', 'icon' => 'fa-user-group', 'tone' => 'blue', 'value' => number_format($stats['users']), 'route' => 'admin.users.index'],
-            ['key' => 'categories', 'icon' => 'fa-sitemap', 'tone' => 'amber', 'value' => number_format($stats['categories']), 'route' => 'admin.categories.index'],
-            ['key' => 'branches', 'icon' => 'fa-award', 'tone' => 'emerald', 'value' => number_format($stats['branches']), 'route' => 'admin.branches.index'],
-        ];
+        $adminRole = (int) ($admin?->role ?? 0);
+        $managementRoles = \App\Const\AdminConst::managementRoleIds();
+        $canManageUsers = in_array($adminRole, $managementRoles, true);
+        $cards = collect([
+            ['key' => 'revenue', 'icon' => 'fa-sack-dollar', 'tone' => 'rose', 'value' => format_price($stats['revenue']), 'route' => 'admin.orders.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
+            ['key' => 'orders', 'icon' => 'fa-receipt', 'tone' => 'sky', 'value' => number_format($stats['orders']), 'route' => 'admin.orders.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
+            ['key' => 'products', 'icon' => 'fa-mobile-screen-button', 'tone' => 'purple', 'value' => number_format($stats['products']), 'route' => 'admin.products.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
+            ['key' => 'users', 'icon' => 'fa-user-group', 'tone' => 'blue', 'value' => number_format($stats['users']), 'route' => 'admin.users.index', 'roles' => $managementRoles],
+            ['key' => 'categories', 'icon' => 'fa-sitemap', 'tone' => 'amber', 'value' => number_format($stats['categories']), 'route' => 'admin.categories.index', 'roles' => $managementRoles],
+            ['key' => 'branches', 'icon' => 'fa-award', 'tone' => 'emerald', 'value' => number_format($stats['branches']), 'route' => 'admin.branches.index', 'roles' => $managementRoles],
+        ])->filter(fn ($card) => in_array($adminRole, $card['roles'], true))->values();
+        $cardGridClass = $cards->count() >= 6 ? 'grid-cols-2 md:grid-cols-3 xl:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 xl:grid-cols-3';
         $tones = [
             'blue' => ['bg-primary-soft', 'text-primary'],
             'purple' => ['bg-primary-soft', 'text-primary'],
@@ -30,6 +34,7 @@
         $dashboardChartData = [
             'labels' => $chart['labels'],
             'revenue' => $chart['revenue'],
+            'cumulativeRevenue' => $chart['cumulative_revenue'],
             'orders' => $chart['orders'],
             'status' => [
                 'labels' => array_values(\App\Const\OrderConst::statuses()),
@@ -120,17 +125,19 @@
         data-locale="{{ app()->getLocale() === 'vi' ? 'vi-VN' : 'en-US' }}" data-currency="VND"
         data-revenue-label="{{ __('admin/dashboard.charts.revenue') }}"
         data-orders-label="{{ __('admin/dashboard.charts.orders') }}"
+        data-area-label="{{ __('admin/dashboard.charts.area') }}"
         data-quantity-label="{{ __('admin/dashboard.charts.quantity') }}"
         data-status-total-label="{{ __('admin/dashboard.charts.total') }}"
         data-inventory-total-label="{{ __('admin/dashboard.charts.total') }}"
-        data-payment-total-label="{{ __('admin/dashboard.charts.total') }}">
+        data-payment-total-label="{{ __('admin/dashboard.charts.total') }}"
+        data-chart-error="{{ __('admin/dashboard.charts.render_error') }}">
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6 items-stretch">
         <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-revenue-title">
             <div class="mb-4">
                 <h2 id="dashboard-revenue-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.revenue') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.revenue_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="revenue-chart" role="img" aria-label="{{ __('admin/dashboard.charts.revenue_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="revenue-chart" role="img" aria-label="{{ __('admin/dashboard.charts.revenue_accessible') }}"></canvas></div>
             <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                 <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
                 <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
@@ -143,7 +150,7 @@
                 <h2 id="dashboard-orders-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.orders') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.orders_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="orders-chart" role="img" aria-label="{{ __('admin/dashboard.charts.orders_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="orders-chart" role="img" aria-label="{{ __('admin/dashboard.charts.orders_accessible') }}"></canvas></div>
             <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                 <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['orders']['min']) }}</span>
                 <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['orders']['step']) }}</span>
@@ -152,17 +159,32 @@
         </section>
     </div>
 
+    <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6" aria-labelledby="dashboard-area-title">
+        <div class="mb-4">
+            <h2 id="dashboard-area-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.area') }}</h2>
+            <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.area_hint') }}</p>
+        </div>
+        <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="sales-area-chart" role="img" aria-label="{{ __('admin/dashboard.charts.area_accessible') }}"></canvas></div>
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
+            <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['cumulative_revenue']['min']) }}</span>
+            <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['cumulative_revenue']['step']) }}</span>
+            <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['cumulative_revenue']['max']) }}</span>
+        </div>
+    </section>
+
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6 items-stretch">
         <section class="flex min-w-0 flex-col xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-mixed-title">
             <div class="mb-4">
                 <h2 id="dashboard-mixed-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.mixed') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.mixed_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="mixed-performance-chart" role="img" aria-label="{{ __('admin/dashboard.charts.mixed_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="mixed-performance-chart" role="img" aria-label="{{ __('admin/dashboard.charts.mixed_accessible') }}"></canvas></div>
             <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
                 <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
                 <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
                 <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['revenue']['max']) }}</span>
+                <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['orders']['min']) }}</span>
+                <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['orders']['step']) }}</span>
                 <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['orders']['max']) }}</span>
             </div>
         </section>
@@ -172,9 +194,10 @@
                 <h2 id="dashboard-payment-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.payment') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.payment_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="payment-chart" role="img" aria-label="{{ __('admin/dashboard.charts.payment_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="payment-chart" role="img" aria-label="{{ __('admin/dashboard.charts.payment_accessible') }}"></canvas></div>
             <div class="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-500">
                 <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['payment']['min']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['payment']['step']) }}</span>
                 <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['payment']['max']) }}</span>
                 <span>{{ __('admin/dashboard.charts.total') }}: {{ number_format(array_sum($paymentCounts)) }}</span>
             </div>
@@ -187,9 +210,10 @@
                 <h2 id="dashboard-status-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.status') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.status_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="status-chart" role="img" aria-label="{{ __('admin/dashboard.charts.status_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="status-chart" role="img" aria-label="{{ __('admin/dashboard.charts.status_accessible') }}"></canvas></div>
             <div class="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-500">
                 <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['status']['min']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['status']['step']) }}</span>
                 <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['status']['max']) }}</span>
                 <span>{{ __('admin/dashboard.charts.total') }}: {{ number_format(array_sum($statusCounts)) }}</span>
             </div>
@@ -203,7 +227,7 @@
             @if ($topProducts->isEmpty())
                 <p class="py-10 text-center text-sm text-gray-500">{{ __('admin/dashboard.charts.no_data') }}</p>
             @else
-                <div class="relative h-64 sm:h-72"><canvas id="top-products-chart" role="img" aria-label="{{ __('admin/dashboard.charts.top_products_accessible') }}"></canvas></div>
+                <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="top-products-chart" role="img" aria-label="{{ __('admin/dashboard.charts.top_products_accessible') }}"></canvas></div>
                 <div class="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-500">
                     <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['top_products']['min']) }}</span>
                     <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['top_products']['step']) }}</span>
@@ -217,9 +241,10 @@
                 <h2 id="dashboard-inventory-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.inventory') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.inventory_hint') }}</p>
             </div>
-            <div class="relative h-64 sm:h-72"><canvas id="inventory-chart" role="img" aria-label="{{ __('admin/dashboard.charts.inventory_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="inventory-chart" role="img" aria-label="{{ __('admin/dashboard.charts.inventory_accessible') }}"></canvas></div>
             <div class="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-500">
                 <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['inventory']['min']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['inventory']['step']) }}</span>
                 <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['inventory']['max']) }}</span>
                 <span>{{ __('admin/dashboard.charts.total') }}: {{ number_format(array_sum($inventory)) }}</span>
             </div>
@@ -232,11 +257,11 @@
 
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-3 mb-6">
+    <div class="grid {{ $cardGridClass }} gap-3 mb-6">
         @foreach ($cards as $card)
             @php [$bg, $fg] = $tones[$card['tone']]; @endphp
             <a href="{{ route($card['route']) }}"
-                class="group {{ !empty($card['wide']) ? 'col-span-2' : '' }} bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md hover:border-primary/25 transition-all">
+                class="group flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md hover:border-primary/25 transition-all">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center {{ $bg }} {{ $fg }}">
                         <i class="fa-solid {{ $card['icon'] }} text-sm"></i>
@@ -252,7 +277,7 @@
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm">
+        <div class="{{ $canManageUsers ? 'xl:col-span-2' : 'xl:col-span-3' }} bg-white rounded-xl border border-gray-100 shadow-sm">
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h2 class="font-semibold text-gray-900">{{ __('admin/dashboard.sections.latest_orders') }}</h2>
                 <a href="{{ route('admin.orders.index') }}"
@@ -297,6 +322,7 @@
             @endif
         </div>
 
+        @if ($canManageUsers)
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
             <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h2 class="font-semibold text-gray-900">{{ __('admin/dashboard.sections.latest_users') }}</h2>
@@ -326,5 +352,6 @@
                 </ul>
             @endif
         </div>
+        @endif
     </div>
 @endsection

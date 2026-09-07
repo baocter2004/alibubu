@@ -48,8 +48,8 @@
                                     </a>
                                     @if ((string) $administrator->id !== (string) Auth::guard('admin')->id())
                                         <form action="{{ route('admin.administrators.destroy', $administrator->id) }}" method="POST"
-                                            data-confirm="{{ __('common.confirm.delete_text') }}"
-                                            data-confirm-title="{{ __('common.confirm.delete_title') }}">
+                                            data-confirm="{{ __('admin/administrator.confirm.delete_text') }}"
+                                            data-confirm-title="{{ __('admin/administrator.confirm.delete_title') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-500 hover:text-red-700" title="{{ __('common.actions.delete') }}">

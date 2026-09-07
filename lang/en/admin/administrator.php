@@ -31,5 +31,9 @@ return [
         'cannot_demote_self' => 'You cannot remove Super Admin access from your own account.',
         'cannot_delete_last_super_admin' => 'The last Super Admin account cannot be removed.',
     ],
+    'confirm' => [
+        'delete_title' => 'Remove this admin account?',
+        'delete_text' => 'This account will lose access to the admin panel.',
+    ],
     'empty' => 'No admin accounts found.',
 ];

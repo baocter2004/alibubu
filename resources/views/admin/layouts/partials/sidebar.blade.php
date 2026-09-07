@@ -73,15 +73,20 @@
 
     <nav class="sidebar-scroll py-3">
         @foreach ($navGroups as $group)
+            @php
+                $visibleItems = collect($group['items'])->filter(
+                    fn ($item) => empty($item['roles']) || in_array($adminRole, $item['roles'], true)
+                );
+            @endphp
+            @if ($visibleItems->isEmpty())
+                @continue
+            @endif
             <span class="group-divider"></span>
             <p class="group-label px-5 pt-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                 {{ $group['label'] }}
             </p>
 
-            @foreach ($group['items'] as $item)
-                @if (! empty($item['roles']) && ! in_array($adminRole, $item['roles'], true))
-                    @continue
-                @endif
+            @foreach ($visibleItems as $item)
                 @php $isActive = request()->routeIs($item['active']); @endphp
 
                 @if ($item['type'] === 'link')
