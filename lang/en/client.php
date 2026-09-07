@@ -324,6 +324,7 @@ return [
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',
+            'filter_status' => 'Filter by status',
             'cancel' => 'Cancel order',
             'cancel_title' => 'Cancel this order?',
             'cancel_hint' => 'You can only cancel an order before it ships. The items will be returned to stock.',

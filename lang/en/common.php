@@ -81,6 +81,7 @@ return [
     'alerts' => [
         'success' => 'Success!',
         'error' => 'Something went wrong!',
+        'warning' => 'Heads up',
     ],
 
     'locale' => [

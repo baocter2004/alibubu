@@ -81,6 +81,7 @@ return [
     'alerts' => [
         'success' => 'Thành công!',
         'error' => 'Thất bại!',
+        'warning' => 'Lưu ý',
     ],
 
     'locale' => [

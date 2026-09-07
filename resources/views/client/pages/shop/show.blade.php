@@ -66,13 +66,13 @@
         data-recent-price="{{ format_price($product->effective_price) }}"></span>
 
     <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
+        <a href="{{ route('shop.index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
         @if ($category = $product->categories->first())
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
-                class="hover:text-primary transition-colors">{{ $category->name }}</a>
+                class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ $category->name }}</a>
         @endif
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium line-clamp-1">{{ $product->name }}</span>
@@ -239,7 +239,7 @@
                             aria-label="{{ __('client.product.decrease') }}">
                             <i class="fa-solid fa-minus text-xs"></i>
                         </button>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1"
+                        <input type="number" id="quantity" name="quantity" aria-label="{{ __('client.product.quantity') }}" value="1" min="1"
                             max="{{ \App\Services\Client\CartService::MAX_QUANTITY }}" inputmode="numeric"
                             class="w-14 h-11 text-center border-x border-border focus:outline-none">
                         <button type="button" id="qty-plus"
@@ -273,9 +273,9 @@
                     <form action="{{ route('shop.wishlist.toggle', $product->slug) }}" method="POST" data-wishlist-toggle>
                         @csrf
                         <button type="submit" aria-pressed="{{ $wishlisted ? 'true' : 'false' }}"
-                            data-wishlist-on="border-red-200 bg-red-50 text-red-600"
+                            data-wishlist-on="border-red-200 bg-red-50 text-red-700"
                             data-wishlist-off="border-border text-muted-foreground"
-                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-red-200 hover:text-red-600 {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-600' : 'border-border text-muted-foreground' }}">
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold rounded-xl border transition-colors hover:border-red-200 hover:text-red-700 {{ $wishlisted ? 'border-red-200 bg-red-50 text-red-700' : 'border-border text-muted-foreground' }}">
                             <i class="fa-{{ $wishlisted ? 'solid' : 'regular' }} fa-heart"></i>
                             <span data-wishlist-label>
                                 {{ $wishlisted ? __('client.wishlist.remove') : __('client.wishlist.add') }}

@@ -3,8 +3,8 @@
 @section('title', __('common.app_name') . ' - ' . __('client.account.nav.addresses'))
 
 @section('content')
-    <nav class="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground mb-6">
+        <a href="{{ route('index') }}" class="inline-flex items-center min-h-7 py-0.5 hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <span class="text-foreground font-medium">{{ __('client.account.nav.addresses') }}</span>
     </nav>
@@ -151,7 +151,7 @@
                                 </p>
 
                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-border/70">
-                                    <button type="button" class="edit-address text-xs font-medium text-primary hover:underline"
+                                    <button type="button" class="edit-address inline-flex items-center min-h-9 py-1.5 text-xs font-medium text-primary hover:underline"
                                         data-id="{{ $address->id }}"
                                         data-url="{{ route('account.addresses.update', $address->id) }}"
                                         data-fullname="{{ $address->fullname }}"
@@ -174,7 +174,7 @@
                                             <input type="hidden" name="address" value="{{ $address->address }}">
                                             <input type="hidden" name="is_default" value="1">
                                             <button type="submit"
-                                                class="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
+                                                class="inline-flex items-center min-h-9 py-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
                                                 <i class="fa-regular fa-star mr-1"></i>{{ __('client.account.addresses.set_default') }}
                                             </button>
                                         </form>
@@ -186,7 +186,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="text-xs font-medium text-muted-foreground hover:text-red-500 transition-colors">
+                                            class="inline-flex items-center min-h-9 py-1.5 text-xs font-medium text-muted-foreground hover:text-red-500 transition-colors">
                                             <i class="fa-regular fa-trash-can mr-1"></i>{{ __('common.actions.delete') }}
                                         </button>
                                     </form>

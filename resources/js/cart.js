@@ -16,11 +16,17 @@ function request(url, method, body) {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(data.message || labels().failed || "");
+            const error = new Error(data.message || labels().failed || "");
+            error.status = response.status;
+            throw error;
         }
 
         return data;
     });
+}
+
+function failIcon(error) {
+    return [409, 422].includes(error?.status) ? "warning" : "error";
 }
 
 function buildBody(body, method) {
@@ -217,7 +223,7 @@ $(function () {
             })
             .catch((error) => {
                 setBusy($button, false);
-                window.notify("error", error.message);
+                window.notify(failIcon(error), error.message);
             });
     });
 
@@ -261,7 +267,7 @@ $(function () {
                 })
                 .catch((error) => {
                     $line.removeClass("opacity-60 pointer-events-none");
-                    window.notify("error", error.message);
+                    window.notify(failIcon(error), error.message);
                 });
         }, 350);
     });
@@ -292,7 +298,7 @@ $(function () {
             })
             .catch((error) => {
                 $line.removeClass("opacity-40 pointer-events-none");
-                window.notify("error", error.message);
+                window.notify(failIcon(error), error.message);
             });
     });
 
@@ -326,7 +332,7 @@ $(function () {
             })
             .catch((error) => {
                 $button.prop("disabled", false);
-                window.notify("error", error.message);
+                window.notify(failIcon(error), error.message);
             });
     });
 
@@ -353,7 +359,7 @@ $(function () {
             })
             .catch((error) => {
                 $button.prop("disabled", false);
-                window.notify("error", error.message);
+                window.notify(failIcon(error), error.message);
             });
     });
 
@@ -379,7 +385,7 @@ $(function () {
                         .addClass("bg-white/95 text-muted-foreground border-border");
                 }
             })
-            .catch((error) => window.notify("error", error.message));
+            .catch((error) => window.notify(failIcon(error), error.message));
     });
 
     $(document).on("click", "[data-compare-dismiss]", function () {

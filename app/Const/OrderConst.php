@@ -23,12 +23,12 @@ class OrderConst
     public static function statusBadgeClass(?int $status): string
     {
         return match ($status) {
-            self::STATUS_PENDING => 'text-amber-600 bg-amber-100',
-            self::STATUS_CONFIRMED => 'text-sky-600 bg-sky-100',
-            self::STATUS_SHIPPING => 'text-indigo-600 bg-indigo-100',
-            self::STATUS_COMPLETED => 'text-green-600 bg-green-100',
-            self::STATUS_CANCELLED => 'text-red-600 bg-red-100',
-            default => 'text-gray-600 bg-gray-100',
+            self::STATUS_PENDING => 'text-amber-800 bg-amber-100',
+            self::STATUS_CONFIRMED => 'text-sky-700 bg-sky-100',
+            self::STATUS_SHIPPING => 'text-indigo-700 bg-indigo-100',
+            self::STATUS_COMPLETED => 'text-green-800 bg-green-100',
+            self::STATUS_CANCELLED => 'text-red-700 bg-red-100',
+            default => 'text-gray-700 bg-gray-100',
         };
     }
 

@@ -324,6 +324,7 @@ return [
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',
+            'filter_status' => 'Lọc theo trạng thái',
             'cancel' => 'Huỷ đơn hàng',
             'cancel_title' => 'Huỷ đơn hàng này?',
             'cancel_hint' => 'Bạn chỉ có thể huỷ đơn khi đơn chưa được giao đi. Sản phẩm sẽ được hoàn lại kho.',

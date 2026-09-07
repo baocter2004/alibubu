@@ -46,7 +46,7 @@
 
                 @if ($categories->isNotEmpty())
                     <div class="flex flex-wrap items-center gap-2 mb-7">
-                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45 mr-1">
+                        <span class="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70 mr-1">
                             {{ __('client.home.hero.quick_links') }}
                         </span>
                         @foreach ($categories->take(4) as $category)
@@ -148,7 +148,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index') }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>
@@ -222,7 +222,7 @@
                     @endif
 
                     <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
-                        class="link-draw text-sm font-semibold text-primary">
+                        class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary">
                         {{ __('common.actions.view_all') }}
                         <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                     </a>
@@ -247,7 +247,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index') }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>
@@ -295,7 +295,7 @@
                     </h2>
                 </div>
                 <a href="{{ route('shop.index', ['sort' => 'popular']) }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
+                    class="link-draw inline-flex items-center min-h-8 text-sm font-semibold text-primary self-end pb-1">
                     {{ __('common.actions.view_all') }}
                     <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
                 </a>

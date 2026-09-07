@@ -60,7 +60,7 @@ class CatalogSeeder extends Seeder
                     'sale_price_end_at' => $item['sale_price'] ? now()->addDays(25) : null,
                     'is_sale' => (bool) $item['sale_price'],
                     'is_featured' => $index % 4 === 0,
-                    'is_trending' => ($item['rating'] ?? 0) >= 4,
+                    'is_trending' => ($item['rating'] ?? 0) >= 4.75,
                     'is_active' => true,
                 ]
             );
