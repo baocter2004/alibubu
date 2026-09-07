@@ -171,7 +171,8 @@
 
                 <div class="space-y-3">
                     @foreach (\App\Const\PaymentConst::methods() as $value => $label)
-                        @continue(\App\Const\PaymentConst::isOnline((int) $value) && ! $vnpayEnabled)
+                        @continue((int) $value === \App\Const\PaymentConst::METHOD_VNPAY && ! $vnpayEnabled)
+                        @continue((int) $value === \App\Const\PaymentConst::METHOD_MOMO && ! $momoEnabled)
                         <label class="block cursor-pointer">
                             <input type="radio" name="payment_method" value="{{ $value }}"
                                 @checked((int) old('payment_method', \App\Const\PaymentConst::METHOD_COD) === (int) $value)
@@ -191,6 +192,10 @@
 
                                             @case(\App\Const\PaymentConst::METHOD_VNPAY)
                                                 {{ __('client.checkout.method_vnpay_desc') }}
+                                            @break
+
+                                            @case(\App\Const\PaymentConst::METHOD_MOMO)
+                                                {{ __('client.checkout.method_momo_desc') }}
                                             @break
 
                                             @default
@@ -282,6 +287,18 @@
                 </div>
             @endif
 
+            @if ($membershipDiscount > 0)
+                <div class="flex justify-between text-sm mb-4">
+                    <span class="text-muted-foreground">
+                        <i class="fa-solid fa-crown text-accent mr-1"></i>
+                        {{ __('client.membership.discount_label', [
+                            'tier' => \App\Const\MembershipConst::label($membershipTier),
+                            'rate' => \App\Const\MembershipConst::discountRate($membershipTier),
+                        ]) }}
+                    </span>
+                    <span class="font-medium text-success">-{{ format_price($membershipDiscount) }}</span>
+                </div>
+            @endif
             <div class="border-t border-border my-4"></div>
 
             <div class="flex justify-between items-baseline mb-5">

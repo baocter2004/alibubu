@@ -40,6 +40,10 @@
             </div>
 
             <p class="text-xs text-muted-foreground mt-1.5">
+                {{ __('client.membership.period_ends', ['date' => $user->tierPeriodEndsAt()->format('d/m/Y')]) }}
+            </p>
+
+            <p class="text-xs text-muted-foreground mt-1">
                 @if ($next)
                     {{ __('client.membership.to_next', [
                         'points' => number_format($user->pointsToNextTier()),

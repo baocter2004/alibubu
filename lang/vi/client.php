@@ -267,6 +267,7 @@ return [
         'method_cod_desc' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
         'method_bank_desc' => 'Chuyển khoản tới tài khoản của shop, hàng được gửi sau khi xác nhận.',
         'method_vnpay_desc' => 'Thanh toán qua thẻ/ứng dụng ngân hàng, xác nhận ngay lập tức.',
+        'method_momo_desc' => 'Quét QR hoặc mở ứng dụng MoMo, xác nhận tức thì.',
         'bank_details' => 'Thông tin chuyển khoản',
         'bank_name' => 'Ngân hàng',
         'bank_account' => 'Số tài khoản',
@@ -539,6 +540,9 @@ return [
     ],
 
     'membership' => [
+        'discount_label' => 'Ưu đãi hạng :tier (:rate%)',
+        'period_ends' => 'Xét hạng lại vào :date',
+        'earn_window' => 'Hạng tính theo điểm tích được trong kỳ, hết kỳ không đủ điểm sẽ hạ bậc.',
         'points' => 'điểm',
         'to_next' => 'Còn :points điểm để lên hạng :tier',
         'max_tier' => 'Bạn đang ở hạng cao nhất.',

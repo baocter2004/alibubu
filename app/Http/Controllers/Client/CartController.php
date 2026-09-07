@@ -93,13 +93,17 @@ class CartController extends Controller
         $items = $this->cartService->items();
         $subtotal = $this->cartService->subtotal($items);
         $applied = $this->couponService->current($items, $subtotal, Auth::user());
+        $tier = Auth::user()?->membershipTier();
+        $membershipDiscount = $tier ? \App\Const\MembershipConst::discountFor($tier, $subtotal) : 0.0;
 
         return [
             'items' => $items,
             'subtotal' => $subtotal,
             'coupon' => $applied['coupon'] ?? null,
             'discount' => $applied['discount'] ?? 0.0,
-            'total' => $subtotal - ($applied['discount'] ?? 0.0),
+            'membershipTier' => $tier,
+            'membershipDiscount' => $membershipDiscount,
+            'total' => max($subtotal - ($applied['discount'] ?? 0.0) - $membershipDiscount, 0),
             'availableCoupons' => $this->couponService->availableFor($items, $subtotal, Auth::user()),
         ];
     }

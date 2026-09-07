@@ -88,6 +88,11 @@ Route::prefix('payment/vnpay')->name('payment.vnpay.')->controller(PaymentContro
     Route::get('/ipn', 'vnpayIpn')->withoutMiddleware(['web'])->name('ipn');
 });
 
+Route::prefix('payment/momo')->name('payment.momo.')->controller(PaymentController::class)->group(function () {
+    Route::get('/return', 'momoReturn')->name('return');
+    Route::post('/ipn', 'momoIpn')->withoutMiddleware(['web'])->name('ipn');
+});
+
 Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');

@@ -41,6 +41,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'user_bank_name',
         'bank_account',
         'loyalty_points',
+        'membership_tier',
+        'tier_reviewed_at',
         'google_id',
         'remember_token'
     ];
@@ -67,6 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'birthday' => 'datetime',
             'loyalty_points'    => 'integer',
+            'tier_reviewed_at'  => 'datetime',
             'status'            => 'integer',
             'role'              => 'integer',
             'gender'            => 'integer',
@@ -113,12 +116,24 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function membershipTier(): string
     {
-        return MembershipConst::tierFor((int) $this->loyalty_points);
+        return $this->membership_tier ?: MembershipConst::tierFor((int) $this->loyalty_points);
+    }
+
+    public function loyaltyTransactions(): HasMany
+    {
+        return $this->hasMany(LoyaltyPointTransaction::class)->latest('earned_at');
     }
 
     public function nextMembershipTier(): ?string
     {
         return MembershipConst::nextTier((int) $this->loyalty_points);
+    }
+
+    public function tierPeriodEndsAt(): \Illuminate\Support\Carbon
+    {
+        $start = $this->tier_reviewed_at ?: $this->created_at ?: now();
+
+        return $start->copy()->addMonths((int) config('membership.review_months', 1));
     }
 
     public function pointsToNextTier(): int

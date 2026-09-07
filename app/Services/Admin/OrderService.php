@@ -3,15 +3,14 @@
 namespace App\Services\Admin;
 
 use App\Const\OrderConst;
-use App\Const\MembershipConst;
 use App\Models\Coupon;
 use App\Models\Order;
-use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Repositories\OrderRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
+use App\Services\Client\MembershipService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -134,17 +133,11 @@ class OrderService extends BaseCrudService
 
     protected function awardLoyaltyPoints(Order $order): void
     {
-        if (! $order->user_id || $order->status === OrderConst::STATUS_COMPLETED) {
+        if ($order->status === OrderConst::STATUS_COMPLETED) {
             return;
         }
 
-        $points = MembershipConst::pointsFor((float) $order->total_amount);
-
-        if ($points < 1) {
-            return;
-        }
-
-        User::whereKey($order->user_id)->increment('loyalty_points', $points);
+        app(MembershipService::class)->awardForOrder($order);
     }
 
     protected function releaseCoupon(Order $order): void

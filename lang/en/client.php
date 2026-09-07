@@ -267,6 +267,7 @@ return [
         'method_cod_desc' => 'Pay in cash when the order arrives.',
         'method_bank_desc' => 'Transfer to our bank account, we ship after confirmation.',
         'method_vnpay_desc' => 'Pay by card or banking app, confirmed instantly.',
+        'method_momo_desc' => 'Scan the QR or open the MoMo app, confirmed instantly.',
         'bank_details' => 'Transfer details',
         'bank_name' => 'Bank',
         'bank_account' => 'Account number',
@@ -539,6 +540,9 @@ return [
     ],
 
     'membership' => [
+        'discount_label' => ':tier member discount (:rate%)',
+        'period_ends' => 'Tier reviewed on :date',
+        'earn_window' => 'Your tier reflects points earned this period; falling short at review means a lower tier.',
         'points' => 'points',
         'to_next' => ':points points to reach :tier',
         'max_tier' => 'You are at the highest tier.',

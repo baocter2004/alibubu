@@ -11,6 +11,10 @@ class MembershipConst
 
     const POINTS_PER_UNIT = 100000;
 
+    const TYPE_ORDER = 'order';
+
+    const TYPE_ADJUSTMENT = 'adjustment';
+
     public static function tiers(): array
     {
         return [
@@ -19,6 +23,28 @@ class MembershipConst
             self::TIER_GOLD => 2000,
             self::TIER_DIAMOND => 5000,
         ];
+    }
+
+    public static function discountRates(): array
+    {
+        return [
+            self::TIER_MEMBER => 0,
+            self::TIER_SILVER => 2,
+            self::TIER_GOLD => 3,
+            self::TIER_DIAMOND => 5,
+        ];
+    }
+
+    public static function discountRate(string $tier): int
+    {
+        return self::discountRates()[$tier] ?? 0;
+    }
+
+    public static function discountFor(string $tier, float $subtotal): float
+    {
+        $rate = self::discountRate($tier);
+
+        return $rate > 0 ? round($subtotal * $rate / 100) : 0.0;
     }
 
     public static function tierFor(int $points): string
