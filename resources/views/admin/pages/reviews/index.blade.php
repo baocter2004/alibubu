@@ -40,7 +40,7 @@
         </form>
 
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[900px] w-full table-fixed admin-table">
+            <table class="min-w-[900px] w-full table-fixed admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[22%] px-4 py-3">{{ __('admin/review.fields.product') }}</th>

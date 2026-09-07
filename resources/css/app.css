@@ -391,6 +391,27 @@ summary:focus-visible {
     background-color: hsl(var(--primary-soft) / 0.55);
 }
 
+.admin-table-sticky th:last-child,
+.admin-table-sticky td:last-child:not([colspan]) {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+}
+
+.admin-table-sticky thead th:last-child {
+    z-index: 3;
+    background-color: hsl(var(--primary-soft));
+}
+
+.admin-table-sticky tbody td:last-child:not([colspan]) {
+    background-color: hsl(var(--card));
+    box-shadow: -10px 0 12px -12px rgb(20 40 75 / 0.45);
+}
+
+.admin-table-sticky tbody tr:hover td:last-child:not([colspan]) {
+    background-color: hsl(var(--primary-soft));
+}
+
 .radius-left {
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);

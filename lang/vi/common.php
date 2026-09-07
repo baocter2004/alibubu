@@ -4,6 +4,7 @@ return [
     'app_name' => 'Alibubu',
 
     'actions' => [
+        'toggle_password' => 'Hiện/ẩn mật khẩu',
         'create' => 'Thêm mới',
         'edit' => 'Chỉnh sửa',
         'update' => 'Cập nhật',

@@ -62,11 +62,6 @@ class ProductService extends BaseCrudService
             $wheres['is_active'] = (int) $params['is_active'];
         }
 
-        if (! empty($params['keyword'])) {
-            $orWheres[] = ['name', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['sku', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['short_descriptions', 'like', '%' . $params['keyword'] . '%'];
-        }
 
         return [
             'wheres' => $wheres,
@@ -78,6 +73,7 @@ class ProductService extends BaseCrudService
             'sort' => $sort,
             'relates' => $relates,
             'relates_count' => $relatesCount,
+            'keyword' => trim((string) ($params['keyword'] ?? '')),
         ];
     }
 

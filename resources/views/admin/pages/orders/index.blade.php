@@ -89,7 +89,7 @@
 
     <div class="w-full bg-white rounded-lg shadow-lg p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[980px] w-full table-fixed admin-table">
+            <table class="min-w-[980px] w-full table-fixed admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[15%] px-4 py-3">{{ __('admin/order.fields.code') }}</th>

@@ -19,7 +19,7 @@
 
     <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[720px] w-full admin-table">
+            <table class="min-w-[720px] w-full admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[28%] px-4 py-3">{{ __('admin/administrator.fields.name') }}</th>

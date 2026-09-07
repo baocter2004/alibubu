@@ -41,7 +41,8 @@
         @endif
 
         @if ($type === 'password')
-            <button type="button"
+            <button type="button" title="{{ __('common.actions.toggle_password') }}"
+                aria-label="{{ __('common.actions.toggle_password') }}"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-accent toggle-password"
                 data-target="#{{ $name }}" id="toggle-{{ $name }}">
                 <i class="fa-solid fa-eye"></i>

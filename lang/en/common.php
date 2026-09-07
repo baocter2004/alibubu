@@ -4,6 +4,7 @@ return [
     'app_name' => 'Alibubu',
 
     'actions' => [
+        'toggle_password' => 'Show or hide password',
         'create' => 'Create',
         'edit' => 'Edit',
         'update' => 'Update',

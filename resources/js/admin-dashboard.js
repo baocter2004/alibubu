@@ -24,6 +24,9 @@ const centerTextPlugin = {
         if (!options?.value && options?.value !== 0) return;
 
         const { ctx, chartArea } = chart;
+
+        if (!ctx || !chartArea) return;
+
         const x = (chartArea.left + chartArea.right) / 2;
         const y = (chartArea.top + chartArea.bottom) / 2;
         ctx.save();

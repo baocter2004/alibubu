@@ -60,11 +60,6 @@ class UserService extends BaseCrudService
             $wheres['role'] = $params['role'];
         }
 
-        if (!empty($params['keyword'])) {
-            $orWheres[] = ['fullname', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['email', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['phone_number', 'like', '%' . $params['keyword'] . '%'];
-        }
 
         return [
             'wheres' => $wheres,
@@ -75,6 +70,7 @@ class UserService extends BaseCrudService
             'sort' => $sort,
             'relates' => $relates,
             'relates_count' => $relatesCount,
+            'keyword' => trim((string) ($params['keyword'] ?? '')),
         ];
     }
 
