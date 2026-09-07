@@ -18,6 +18,8 @@ return [
         'compare' => 'Compare',
         'search_no_result' => 'No matching products',
         'search_view_all' => 'View all results',
+        'search_history' => 'Recent searches',
+        'clear_search_history' => 'Clear search history',
         'skip_to_content' => 'Skip to main content',
         'free_shipping' => 'Free shipping on orders over 500,000đ',
     ],
@@ -451,6 +453,30 @@ return [
             'full' => 'You can compare up to :max products at a time.',
             'different_category' => 'Only products in the same category can be compared.',
             'no_category' => 'This product has no category, so it cannot be compared.',
+        ],
+    ],
+
+    'tracking' => [
+        'title' => 'Track order',
+        'heading' => 'Track your order',
+        'subheading' => 'Enter the order code and phone number used at checkout.',
+        'submit' => 'Track order',
+        'result_label' => 'Tracking result',
+        'timeline' => 'Order progress',
+        'total' => 'Order total',
+        'cancelled' => 'This order has been cancelled.',
+        'fields' => [
+            'code' => 'Order code',
+            'phone_number' => 'Checkout phone number',
+        ],
+        'placeholders' => [
+            'code' => 'Example: ORD260907ABC123',
+            'phone_number' => '09xxxxxxxx',
+        ],
+        'messages' => [
+            'not_found' => 'No order was found with these details.',
+            'invalid_code' => 'The order code format is invalid.',
+            'invalid_phone' => 'The phone number format is invalid.',
         ],
     ],
 

@@ -53,6 +53,12 @@
                 {{ __('client.nav.about') }}
             </a>
 
+            <a href="{{ route('order.track') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <i class="fa-solid fa-truck-fast w-4 text-center"></i>
+                {{ __('client.nav.track_order') }}
+            </a>
+
             @auth
                 <form action="{{ route('auth.client.logout') }}" method="POST">
                     @csrf

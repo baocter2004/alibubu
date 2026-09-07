@@ -18,6 +18,8 @@ return [
         'compare' => 'So sánh',
         'search_no_result' => 'Không tìm thấy sản phẩm phù hợp',
         'search_view_all' => 'Xem tất cả kết quả',
+        'search_history' => 'Tìm kiếm gần đây',
+        'clear_search_history' => 'Xoá lịch sử tìm kiếm',
         'skip_to_content' => 'Tới nội dung chính',
         'free_shipping' => 'Miễn phí vận chuyển cho đơn từ 500.000đ',
     ],
@@ -451,6 +453,30 @@ return [
             'full' => 'Chỉ so sánh tối đa :max sản phẩm cùng lúc.',
             'different_category' => 'Chỉ so sánh được các sản phẩm cùng danh mục.',
             'no_category' => 'Sản phẩm này chưa thuộc danh mục nào nên không thể so sánh.',
+        ],
+    ],
+
+    'tracking' => [
+        'title' => 'Theo dõi đơn hàng',
+        'heading' => 'Tra cứu đơn hàng',
+        'subheading' => 'Nhập mã đơn và số điện thoại đã dùng khi đặt hàng.',
+        'submit' => 'Tra cứu đơn hàng',
+        'result_label' => 'Kết quả tra cứu',
+        'timeline' => 'Tiến trình đơn hàng',
+        'total' => 'Tổng thanh toán',
+        'cancelled' => 'Đơn hàng này đã bị huỷ.',
+        'fields' => [
+            'code' => 'Mã đơn hàng',
+            'phone_number' => 'Số điện thoại đặt hàng',
+        ],
+        'placeholders' => [
+            'code' => 'Ví dụ: ORD260907ABC123',
+            'phone_number' => '09xxxxxxxx',
+        ],
+        'messages' => [
+            'not_found' => 'Không tìm thấy đơn hàng với thông tin này.',
+            'invalid_code' => 'Mã đơn hàng không đúng định dạng.',
+            'invalid_phone' => 'Số điện thoại không đúng định dạng.',
         ],
     ],
 

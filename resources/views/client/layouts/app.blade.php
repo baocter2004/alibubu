@@ -50,6 +50,8 @@
             failed: @json(__('client.messages.action_failed')),
             searchEmpty: @json(__('client.nav.search_no_result')),
             searchAll: @json(__('client.nav.search_view_all')),
+            searchHistory: @json(__('client.nav.search_history')),
+            clearSearchHistory: @json(__('client.nav.clear_search_history')),
         };
     </script>
 

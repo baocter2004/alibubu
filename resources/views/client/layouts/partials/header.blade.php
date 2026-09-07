@@ -3,6 +3,9 @@
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <span><i class="fa-solid fa-truck mr-1"></i> {{ __('client.nav.free_shipping') }}</span>
             <div class="flex gap-4">
+                <a href="{{ route('order.track') }}" class="py-1 hover:text-accent transition-colors">
+                    {{ __('client.nav.track_order') }}
+                </a>
                 <a href="{{ route('about') }}" class="py-1 hover:text-accent transition-colors">
                     {{ __('client.nav.about') }}
                 </a>
