@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Services\Client\ProductService;
+use App\Services\Client\QuestionService;
 use App\Services\Client\ReviewService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,8 @@ class ShopController extends Controller
 {
     public function __construct(
         protected ProductService $productService,
-        protected ReviewService $reviewService
+        protected ReviewService $reviewService,
+        protected QuestionService $questionService
     ) {}
 
     public function index(GetProductRequest $request)
@@ -56,7 +58,7 @@ class ShopController extends Controller
             throw new NotFoundHttpException(__('client.messages.product_not_found'));
         }
 
-        $product->loadMissing('specifications');
+        $product->loadMissing(['specifications', 'promotions']);
         $product->increment('views');
 
         $recentlyViewed = $this->productService->recentlyViewed($product->id);
@@ -66,6 +68,7 @@ class ShopController extends Controller
             'product' => $product,
             'relatedProducts' => $this->productService->related($product),
             'recentlyViewed' => $recentlyViewed,
+            'questions' => $this->questionService->paginateFor($product),
             'reviews' => $this->reviewService->paginateFor($product),
             'ratingBreakdown' => $this->reviewService->breakdownFor($product),
             'canReview' => $this->reviewService->canReview($product, auth()->user()),

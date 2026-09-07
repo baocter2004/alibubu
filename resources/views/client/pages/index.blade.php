@@ -29,13 +29,13 @@
                 </p>
 
                 <form action="{{ route('shop.index') }}" method="GET" class="max-w-lg mb-8" data-search-history>
-                    <div class="flex items-center gap-2 p-1.5 bg-white rounded-2xl shadow-lg">
+                    <div class="flex items-center gap-2 p-1.5 bg-white rounded-2xl shadow-lg overflow-hidden">
                         <div class="relative flex-1 min-w-0">
                             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
                             <input type="search" name="keyword" value="{{ request('keyword') }}"
                                 aria-label="{{ __('client.home.hero.search_placeholder') }}"
                                 placeholder="{{ __('client.home.hero.search_placeholder') }}"
-                                class="w-full pl-11 pr-3 py-3 text-sm text-foreground bg-transparent placeholder:text-muted-foreground focus:outline-none">
+                                class="w-full pl-11 pr-3 py-3 text-sm text-foreground bg-transparent appearance-none rounded-xl placeholder:text-muted-foreground focus:outline-none">
                         </div>
                         <button type="submit"
                             class="shrink-0 px-5 md:px-7 py-3 text-sm font-bold btn-accent rounded-xl whitespace-nowrap">

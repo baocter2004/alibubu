@@ -181,6 +181,8 @@ return [
             'title_placeholder' => 'Tóm tắt trải nghiệm của bạn',
             'comment' => 'Nội dung đánh giá',
             'comment_placeholder' => 'Bạn thích hoặc chưa hài lòng điều gì?',
+            'images' => 'Ảnh thực tế',
+            'images_hint' => 'Tối đa :max ảnh, mỗi ảnh dưới 2MB.',
         ],
         'messages' => [
             'submitted' => 'Cảm ơn bạn! Đánh giá đã được gửi và đang chờ duyệt.',
@@ -503,6 +505,37 @@ return [
             'gateway_disabled' => 'Cổng thanh toán online chưa được cấu hình.',
             'gateway_unavailable' => 'Không kết nối được cổng thanh toán. Đơn hàng đã được tạo, vui lòng thanh toán lại sau.',
         ],
+    ],
+
+    'question' => [
+        'title' => 'Hỏi đáp về sản phẩm',
+        'subtitle' => 'Đặt câu hỏi, đội ngũ Alibubu sẽ trả lời sớm nhất.',
+        'ask' => 'Đặt câu hỏi',
+        'submit' => 'Gửi câu hỏi',
+        'empty' => 'Chưa có câu hỏi nào cho sản phẩm này.',
+        'answered_by' => 'Alibubu trả lời',
+        'pending' => 'Đang chờ trả lời',
+        'fields' => [
+            'question' => 'Câu hỏi',
+            'fullname' => 'Tên của bạn',
+            'question_placeholder' => 'Ví dụ: Máy này có hỗ trợ sạc nhanh không?',
+        ],
+        'messages' => [
+            'received' => 'Đã gửi câu hỏi. Chúng tôi sẽ trả lời sớm nhất.',
+            'too_fast' => 'Bạn vừa gửi câu hỏi cho sản phẩm này, vui lòng chờ một lát.',
+        ],
+    ],
+
+    'promotion' => [
+        'title' => 'Khuyến mãi kèm theo',
+        'subtitle' => 'Ưu đãi áp dụng khi mua sản phẩm này.',
+    ],
+
+    'installment' => [
+        'title' => 'Trả góp 0%',
+        'monthly' => 'Chỉ từ :amount/tháng',
+        'term' => ':months tháng',
+        'note' => 'Trả góp qua thẻ tín dụng, duyệt nhanh tại cửa hàng.',
     ],
 
     'messages' => [

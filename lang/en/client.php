@@ -181,6 +181,8 @@ return [
             'title_placeholder' => 'Sum up your experience',
             'comment' => 'Your review',
             'comment_placeholder' => 'What did you like or dislike?',
+            'images' => 'Photos',
+            'images_hint' => 'Up to :max photos, 2MB each.',
         ],
         'messages' => [
             'submitted' => 'Thank you! Your review was submitted and is awaiting approval.',
@@ -503,6 +505,37 @@ return [
             'gateway_disabled' => 'The online payment gateway is not configured.',
             'gateway_unavailable' => 'Could not reach the payment gateway. Your order was created, please pay again later.',
         ],
+    ],
+
+    'question' => [
+        'title' => 'Questions about this product',
+        'subtitle' => 'Ask anything, our team will answer shortly.',
+        'ask' => 'Ask a question',
+        'submit' => 'Send question',
+        'empty' => 'No questions for this product yet.',
+        'answered_by' => 'Answered by Alibubu',
+        'pending' => 'Awaiting an answer',
+        'fields' => [
+            'question' => 'Question',
+            'fullname' => 'Your name',
+            'question_placeholder' => 'For example: does this support fast charging?',
+        ],
+        'messages' => [
+            'received' => 'Question sent. We will answer as soon as we can.',
+            'too_fast' => 'You just asked about this product, please wait a moment.',
+        ],
+    ],
+
+    'promotion' => [
+        'title' => 'Included promotions',
+        'subtitle' => 'Offers that apply when you buy this product.',
+    ],
+
+    'installment' => [
+        'title' => '0% installment',
+        'monthly' => 'From :amount/month',
+        'term' => ':months months',
+        'note' => 'Pay by credit card, approved in store.',
     ],
 
     'messages' => [

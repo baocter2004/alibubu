@@ -6,6 +6,7 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\CouponController;
 use App\Http\Controllers\Client\PaymentController;
+use App\Http\Controllers\Client\QuestionController;
 use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\OrderTrackingController;
@@ -38,6 +39,10 @@ Route::prefix('shop')->name('shop.')->group(function () {
         ->name('wishlist.toggle');
 
     Route::post('/{slug}/compare', [CompareController::class, 'toggle'])->name('compare.toggle');
+
+    Route::post('/{slug}/questions', [QuestionController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('questions.store');
 });
 
 Route::prefix('compare')->name('compare.')->controller(CompareController::class)->group(function () {
