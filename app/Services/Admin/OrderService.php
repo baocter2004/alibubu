@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Const\OrderConst;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Repositories\OrderRepository;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
@@ -130,6 +131,12 @@ class OrderService extends BaseCrudService
         foreach ($order->items()->get() as $item) {
             if (! $item->product_id) {
                 continue;
+            }
+
+            if ($item->product_variant_id) {
+                ProductVariant::whereKey($item->product_variant_id)->update([
+                    'stock' => DB::raw('stock + ' . (int) $item->quantity),
+                ]);
             }
 
             Product::whereKey($item->product_id)->update([

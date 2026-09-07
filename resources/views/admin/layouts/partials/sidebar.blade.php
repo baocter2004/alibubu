@@ -1,40 +1,44 @@
 @php
+    $adminRole = (int) Auth::guard('admin')->user()?->role;
+    $allAdminRoles = \App\Const\AdminConst::allRoleIds();
+    $managementRoles = \App\Const\AdminConst::managementRoleIds();
     $navGroups = [
         [
             'label' => __('admin/nav.groups.main'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'fa-gauge-high', 'label' => __('admin/nav.dashboard')],
+                ['type' => 'link', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'fa-gauge-high', 'label' => __('admin/nav.dashboard'), 'roles' => $allAdminRoles],
             ],
         ],
         [
             'label' => __('admin/nav.groups.catalog'),
             'items' => [
-                ['type' => 'dropdown', 'active' => 'admin.products.*', 'icon' => 'fa-mobile-screen-button', 'label' => __('admin/nav.products'), 'base' => 'admin.products'],
-                ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories'],
-                ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches'],
-                ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes'],
-                ['type' => 'dropdown', 'active' => 'admin.tags.*', 'icon' => 'fa-tags', 'label' => __('admin/nav.tags'), 'base' => 'admin.tags'],
+                ['type' => 'dropdown', 'active' => 'admin.products.*', 'icon' => 'fa-mobile-screen-button', 'label' => __('admin/nav.products'), 'base' => 'admin.products', 'roles' => $allAdminRoles],
+                ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories', 'roles' => $managementRoles],
+                ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches', 'roles' => $managementRoles],
+                ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes', 'roles' => $managementRoles],
+                ['type' => 'dropdown', 'active' => 'admin.tags.*', 'icon' => 'fa-tags', 'label' => __('admin/nav.tags'), 'base' => 'admin.tags', 'roles' => $managementRoles],
             ],
         ],
         [
             'label' => __('admin/nav.groups.sales'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders')],
-                ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews')],
-                ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons'],
+                ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders'), 'roles' => $allAdminRoles],
+                ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews'), 'roles' => $allAdminRoles],
+                ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons', 'roles' => $managementRoles],
             ],
         ],
         [
             'label' => __('admin/nav.groups.system'),
             'items' => [
-                ['type' => 'dropdown', 'active' => 'admin.users.*', 'icon' => 'fa-user-group', 'label' => __('admin/nav.users'), 'base' => 'admin.users'],
+                ['type' => 'link', 'route' => 'admin.administrators.index', 'active' => 'admin.administrators.*', 'icon' => 'fa-user-shield', 'label' => __('admin/nav.administrators'), 'roles' => [\App\Const\AdminConst::ROLE_SUPER_ADMIN]],
+                ['type' => 'dropdown', 'active' => 'admin.users.*', 'icon' => 'fa-user-group', 'label' => __('admin/nav.users'), 'base' => 'admin.users', 'roles' => $managementRoles],
             ],
         ],
         [
             'label' => __('admin/nav.groups.address'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.provinces.index', 'active' => 'admin.provinces.*', 'icon' => 'fa-map-location-dot', 'label' => __('admin/nav.provinces')],
-                ['type' => 'link', 'route' => 'admin.wards.index', 'active' => 'admin.wards.*', 'icon' => 'fa-location-dot', 'label' => __('admin/nav.wards')],
+                ['type' => 'link', 'route' => 'admin.provinces.index', 'active' => 'admin.provinces.*', 'icon' => 'fa-map-location-dot', 'label' => __('admin/nav.provinces'), 'roles' => $managementRoles],
+                ['type' => 'link', 'route' => 'admin.wards.index', 'active' => 'admin.wards.*', 'icon' => 'fa-location-dot', 'label' => __('admin/nav.wards'), 'roles' => $managementRoles],
             ],
         ],
     ];
@@ -75,6 +79,9 @@
             </p>
 
             @foreach ($group['items'] as $item)
+                @if (! empty($item['roles']) && ! in_array($adminRole, $item['roles'], true))
+                    @continue
+                @endif
                 @php $isActive = request()->routeIs($item['active']); @endphp
 
                 @if ($item['type'] === 'link')

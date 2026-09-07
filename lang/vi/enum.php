@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'admin' => [
+        'role' => [
+            1 => 'Quản trị cấp cao',
+            2 => 'Quản lý',
+            3 => 'Nhân viên',
+        ],
+    ],
     'user' => [
         'role' => [
             1 => 'Người dùng',

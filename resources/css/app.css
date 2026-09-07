@@ -104,6 +104,13 @@ p {
     text-wrap: pretty;
 }
 
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+select,
+textarea {
+    border-color: hsl(var(--border));
+    background-color: hsl(var(--card));
+}
+
 .tabular,
 .price-main,
 .admin-table td {

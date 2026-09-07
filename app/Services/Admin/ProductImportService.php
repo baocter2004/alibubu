@@ -32,7 +32,7 @@ class ProductImportService
     ];
 
     private const VARIANT_HEADERS = [
-        'product_sku', 'variant_sku', 'attribute_values', 'price', 'sale_price', 'is_active',
+        'product_sku', 'variant_sku', 'attribute_values', 'price', 'sale_price', 'stock', 'is_active',
     ];
 
     private const SPECIFICATION_HEADERS = ['product_sku', 'group', 'name', 'value', 'ordinal'];
@@ -134,7 +134,8 @@ class ProductImportService
             }
 
             $stock = $this->number($row['stock'] ?? null);
-            if ($stock === null || $stock < 0 || floor($stock) !== $stock) {
+            if (($type !== ProductConst::VARIANT && ($stock === null || $stock < 0 || floor($stock) !== $stock))
+                || ($type === ProductConst::VARIANT && $stock !== null && ($stock < 0 || floor($stock) !== $stock))) {
                 $errors[] = $this->error($rowNumber, 'stock', __('admin/product.import.errors.invalid_stock'));
             }
 
@@ -217,6 +218,11 @@ class ProductImportService
                 $errors[] = $this->error($rowNumber, 'sale_price', __('admin/product.import.errors.invalid_sale_price'));
             }
 
+            $stock = $this->number($row['stock'] ?? null);
+            if ($stock === null || $stock < 0 || floor($stock) !== $stock) {
+                $errors[] = $this->error($rowNumber, 'stock', __('admin/product.import.errors.invalid_stock'));
+            }
+
             $prepared[] = [
                 'row' => $rowNumber,
                 'product_sku' => $productSku,
@@ -224,6 +230,7 @@ class ProductImportService
                 'attribute_value_ids' => $values,
                 'price' => $price,
                 'sale_price' => $salePrice,
+                'stock' => (int) ($stock ?? 0),
                 'is_active' => $this->boolean($row['is_active'] ?? null, true),
             ];
         }
@@ -382,6 +389,7 @@ class ProductImportService
                 'sku' => $data['variant_sku'],
                 'price' => $data['price'],
                 'sale_price' => $data['sale_price'],
+                'stock' => $data['stock'],
                 'thumbnail' => $product->thumbnail ?: 'products/placeholder.webp',
                 'is_active' => $data['is_active'],
             ];
@@ -411,7 +419,6 @@ class ProductImportService
 
         foreach ($products as $data) {
             $product = $productModels[$this->key($data['sku'])];
-            $variantRows = collect($variants)->where('product_sku', $data['sku']);
 
             if ($data['type'] === ProductConst::SINGLE) {
                 $product->variants()->get()->each(function (ProductVariant $variant) {
@@ -421,14 +428,19 @@ class ProductImportService
                 continue;
             }
 
-            $prices = $variantRows->pluck('price')->filter(fn ($price) => $price !== null);
-            $salePrices = $variantRows->pluck('sale_price')->filter(fn ($price) => $price !== null);
+            $variantModels = $product->variants()->get();
+            $prices = $variantModels->pluck('price')->filter(fn ($price) => $price !== null);
+            $salePrices = $variantModels->pluck('sale_price')->filter(fn ($price) => $price !== null);
+            $stock = $variantModels->sum('stock');
             if ($prices->isNotEmpty()) {
                 $product->update([
                     'price' => $prices->min(),
                     'sale_price' => $salePrices->count() === $prices->count() ? $salePrices->min() : null,
                     'is_sale' => $salePrices->count() === $prices->count() && $salePrices->isNotEmpty(),
+                    'stock' => $stock,
                 ]);
+            } else {
+                $product->update(['stock' => $stock]);
             }
         }
 

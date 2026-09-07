@@ -152,6 +152,7 @@ class ProductService extends BaseCrudService
             'sku' => null,
             'price' => null,
             'sale_price' => null,
+            'stock' => 0,
             'is_active' => false,
             'attribute_value_ids' => [],
         ], $variant), $variants));
@@ -297,6 +298,7 @@ class ProductService extends BaseCrudService
                 'sku' => $variant['sku'] ?: ($model?->sku ?: $this->generateVariantSku($product, $index)),
                 'price' => $variant['price'],
                 'sale_price' => $variant['sale_price'] ?? null,
+                'stock' => (int) ($variant['stock'] ?? 0),
                 'is_active' => ! empty($variant['is_active']),
             ];
 
@@ -320,6 +322,8 @@ class ProductService extends BaseCrudService
                 $variant->attributeValues()->detach();
                 $variant->delete();
             });
+
+        $product->updateQuietly(['stock' => (int) $product->variants()->sum('stock')]);
     }
 
     protected function syncSpecifications(Product $product, array $specs): void
@@ -378,6 +382,7 @@ class ProductService extends BaseCrudService
 
             $attributes['price'] = $prices->min();
             $attributes['sale_price'] = $salePrices->count() === $prices->count() ? $salePrices->min() : null;
+            $attributes['stock'] = (int) collect($params['variants'] ?? [])->sum(fn ($variant) => (int) ($variant['stock'] ?? 0));
         }
 
         $attributes['is_sale'] = ! empty($attributes['sale_price']);

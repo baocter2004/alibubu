@@ -11,6 +11,7 @@
             'sku' => $variant->sku,
             'price' => $variant->price,
             'sale_price' => $variant->sale_price,
+            'stock' => $variant->stock,
             'is_active' => $variant->is_active,
             'attribute_value_ids' => $variant->attributeValues->pluck('id')->all(),
         ])->all()
@@ -152,6 +153,15 @@
                 ])
                 <p class="text-xs text-gray-500 mt-1.5">{{ __('admin/product.hints.sale_price') }}</p>
             </div>
+
+            @include('components.input', [
+                'label' => __('admin/product.fields.stock'),
+                'name' => 'stock',
+                'type' => 'number',
+                'icon' => 'boxes-stacked',
+                'required' => true,
+                'value' => $values['stock'] ?? 0,
+            ])
 
             @include('components.input', [
                 'label' => __('admin/product.fields.sale_price_start_at'),

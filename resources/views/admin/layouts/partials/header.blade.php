@@ -38,7 +38,7 @@
                     </span>
                     <span class="hidden sm:block text-left leading-tight">
                         <span class="block text-sm font-medium text-gray-800">{{ $admin?->name }}</span>
-                        <span class="block text-xs text-gray-500">{{ __('admin/nav.role') }}</span>
+                        <span class="block text-xs text-gray-500">{{ \App\Const\AdminConst::roleLabel($admin?->role) }}</span>
                     </span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 hidden sm:block"></i>
                 </button>

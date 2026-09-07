@@ -49,7 +49,7 @@ class CartController extends Controller
             return $this->failed($request, __('client.messages.variant_required'));
         }
 
-        if (! $product->inStock()) {
+        if (($variant?->stock ?? $product->stock) < 1) {
             return $this->failed($request, __('client.messages.out_of_stock', ['name' => $product->name]));
         }
 

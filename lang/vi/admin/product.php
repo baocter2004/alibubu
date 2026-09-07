@@ -98,7 +98,7 @@ return [
         'columns_title' => 'Các sheet và cột chính',
         'columns' => [
             'products' => 'Products: product_sku, product_name, brand, categories, type, stock, price, sale_price...',
-            'variants' => 'Variants: product_sku, variant_sku, attribute_values, price, sale_price, is_active.',
+            'variants' => 'Variants: product_sku, variant_sku, attribute_values, price, sale_price, stock, is_active.',
             'specifications' => 'Specifications: product_sku, group, name, value, ordinal (không bắt buộc).',
         ],
         'success' => 'Nhập thành công: :products_created sản phẩm mới, :products_updated sản phẩm cập nhật, :variants_created biến thể mới, :variants_updated biến thể cập nhật, :specifications_created thông số mới, :specifications_updated thông số cập nhật.',

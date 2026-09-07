@@ -1,5 +1,6 @@
 import "./bootstrap";
 import "./cart";
+import "./admin-dashboard";
 
 let toast = null;
 

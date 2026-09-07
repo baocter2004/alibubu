@@ -8,6 +8,8 @@ use App\Mail\OrderPlaced;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -91,7 +93,19 @@ class OrderService
             $product = $item['product'];
             $quantity = (int) $item['quantity'];
 
-            $affected = \App\Models\Product::whereKey($product->id)
+            if ($item['variant']) {
+                $variantAffected = ProductVariant::whereKey($item['variant']->id)
+                    ->where('stock', '>=', $quantity)
+                    ->update([
+                        'stock' => DB::raw('stock - ' . $quantity),
+                    ]);
+
+                if ($variantAffected === 0) {
+                    throw new \RuntimeException(__('client.messages.out_of_stock', ['name' => $product->name]));
+                }
+            }
+
+            $affected = Product::whereKey($product->id)
                 ->where('stock', '>=', $quantity)
                 ->update([
                     'stock' => DB::raw('stock - ' . $quantity),

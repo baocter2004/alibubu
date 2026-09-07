@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'admin' => [
+        'role' => [
+            1 => 'Super administrator',
+            2 => 'Manager',
+            3 => 'Staff',
+        ],
+    ],
     'user' => [
         'role' => [
             1 => 'Customer',

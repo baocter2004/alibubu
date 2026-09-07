@@ -44,8 +44,9 @@
 @section('content')
     @php
         $variants = $product->variants->where('is_active', true)->values();
+        $availableVariants = $variants->where('stock', '>', 0)->values();
         $hasVariants = $product->hasVariants() && $variants->isNotEmpty();
-        $defaultVariant = $variants->sortBy('effective_price')->first();
+        $defaultVariant = $availableVariants->sortBy('effective_price')->first() ?: $variants->sortBy('effective_price')->first();
         $price = $hasVariants ? $defaultVariant->effective_price : $product->effective_price;
         $base = $hasVariants ? (float) $defaultVariant->price : $product->base_price;
         $images = collect([$product->thumbnail])
@@ -53,8 +54,8 @@
             ->filter()
             ->unique()
             ->values();
-        $noSellableVariant = $product->hasVariants() && $variants->isEmpty();
-        $outOfStock = ! $product->inStock() || $noSellableVariant;
+        $noSellableVariant = $product->hasVariants() && $availableVariants->isEmpty();
+        $outOfStock = $product->hasVariants() ? $noSellableVariant : ! $product->inStock();
     @endphp
 
     <span data-recent-product class="hidden"
@@ -166,16 +167,17 @@
                             @foreach ($variants as $variant)
                                 @php
                                     $label = $variant->attributeValues->pluck('value')->implode(' / ') ?: $variant->sku;
+                                    $variantAvailable = $variant->stock > 0;
                                 @endphp
-                                <label class="cursor-pointer">
+                                <label class="{{ $variantAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-60' }}">
                                     <input type="radio" name="product_variant_id" value="{{ $variant->id }}"
                                         data-price="{{ $variant->effective_price }}"
-                                        data-base="{{ $variant->price }}" class="peer sr-only variant-option"
-                                        @checked($variant->id === $defaultVariant->id)>
+                                        data-base="{{ $variant->price }}" data-stock="{{ $variant->stock }}" class="peer sr-only variant-option"
+                                        @checked($variant->id === $defaultVariant?->id) @disabled(! $variantAvailable)>
                                     <span
-                                        class="inline-flex flex-col items-start px-4 py-2.5 text-sm border-2 border-border rounded-xl text-muted-foreground transition-all peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary hover:border-primary/50">
+                                        class="inline-flex flex-col items-start px-4 py-2.5 text-sm border-2 border-border rounded-xl text-muted-foreground transition-all {{ $variantAvailable ? 'peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary hover:border-primary/50' : '' }}">
                                         <span class="font-medium">{{ $label }}</span>
-                                        <span class="text-xs opacity-80">{{ format_price($variant->effective_price) }}</span>
+                                        <span class="text-xs opacity-80">{{ $variantAvailable ? format_price($variant->effective_price) : __('client.product.out_of_stock') }}</span>
                                     </span>
                                 </label>
                             @endforeach
@@ -510,17 +512,25 @@
     <script>
         $(function() {
             const $qty = $('#quantity');
-            const max = parseInt($qty.attr('max'), 10);
+            const defaultMax = parseInt($qty.attr('max'), 10);
+
+            function syncQuantityMax(stock) {
+                const variantStock = parseInt(stock, 10);
+                const max = Number.isFinite(variantStock) && variantStock > 0 ? Math.min(defaultMax, variantStock) : defaultMax;
+                $qty.attr('max', max).val(Math.min(max, Math.max(1, parseInt($qty.val(), 10) || 1)));
+            }
 
             $('#qty-minus').on('click', function() {
                 $qty.val(Math.max(1, parseInt($qty.val(), 10) - 1));
             });
 
             $('#qty-plus').on('click', function() {
+                const max = parseInt($qty.attr('max'), 10);
                 $qty.val(Math.min(max, parseInt($qty.val(), 10) + 1));
             });
 
             $qty.on('change blur', function() {
+                const max = parseInt($qty.attr('max'), 10);
                 const value = parseInt($qty.val(), 10);
                 $qty.val(Number.isNaN(value) ? 1 : Math.min(max, Math.max(1, value)));
             });
@@ -536,6 +546,8 @@
             $('.variant-option').on('change', function() {
                 const price = parseFloat($(this).data('price'));
                 const base = parseFloat($(this).data('base'));
+
+                syncQuantityMax($(this).data('stock'));
 
                 $('#price-display').text(formatPrice(price));
                 $('[data-sticky-price]').text(formatPrice(price));
@@ -579,6 +591,8 @@
             function formatPrice(value) {
                 return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
             }
+
+            syncQuantityMax($('.variant-option:checked').data('stock'));
         });
     </script>
 @endpush

@@ -22,6 +22,7 @@ return [
     'reviews' => 'Đánh giá',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
+    'administrators' => 'Tài khoản quản trị',
     'provinces' => 'Tỉnh/Thành phố',
     'wards' => 'Phường/Xã',
 

@@ -98,7 +98,7 @@ return [
         'columns_title' => 'Sheets and key columns',
         'columns' => [
             'products' => 'Products: product_sku, product_name, brand, categories, type, stock, price, sale_price...',
-            'variants' => 'Variants: product_sku, variant_sku, attribute_values, price, sale_price, is_active.',
+            'variants' => 'Variants: product_sku, variant_sku, attribute_values, price, sale_price, stock, is_active.',
             'specifications' => 'Specifications: product_sku, group, name, value, ordinal (optional).',
         ],
         'success' => 'Import complete: :products_created products created, :products_updated products updated, :variants_created variants created, :variants_updated variants updated, :specifications_created specifications created, :specifications_updated specifications updated.',

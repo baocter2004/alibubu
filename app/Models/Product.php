@@ -166,6 +166,12 @@ class Product extends Model
 
     public function inStock(): bool
     {
+        if ($this->hasVariants()) {
+            return $this->relationLoaded('variants')
+                ? $this->variants->contains(fn ($variant) => $variant->is_active && $variant->stock > 0)
+                : $this->variants()->where('is_active', true)->where('stock', '>', 0)->exists();
+        }
+
         return $this->stock > 0;
     }
 

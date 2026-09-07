@@ -22,6 +22,7 @@ return [
     'reviews' => 'Reviews',
     'orders' => 'Orders',
     'users' => 'Users',
+    'administrators' => 'Admin accounts',
     'provinces' => 'Provinces',
     'wards' => 'Wards',
 
