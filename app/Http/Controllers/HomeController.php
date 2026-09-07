@@ -31,7 +31,8 @@ class HomeController extends Controller
                 ->get(),
             'featuredProducts' => $this->productService->highlights('is_featured', 8),
             'trendingProducts' => $this->productService->highlights('is_trending', 4),
-            'saleProducts' => $this->productService->onSale(4),
+            'saleProducts' => $this->productService->onSale(8),
+            'saleDeadline' => $this->productService->saleDeadline(),
             'stats' => $this->storeStats(),
         ]);
     }

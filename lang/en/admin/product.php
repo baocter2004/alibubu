@@ -24,6 +24,7 @@ return [
     ],
 
     'fields' => [
+        'accessories' => 'Suggested accessories',
         'name' => 'Product name',
         'slug' => 'Slug',
         'sku' => 'SKU',
@@ -145,6 +146,7 @@ return [
     ],
 
     'messages' => [
+        'validation_failed' => 'Please check the following fields:',
         'created' => 'Product created successfully.',
         'updated' => 'Product updated successfully.',
         'deleted' => 'Product deleted successfully.',

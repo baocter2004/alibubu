@@ -24,6 +24,7 @@ return [
     ],
 
     'fields' => [
+        'accessories' => 'Phụ kiện bán kèm',
         'name' => 'Tên sản phẩm',
         'slug' => 'Đường dẫn',
         'sku' => 'Mã SKU',
@@ -145,6 +146,7 @@ return [
     ],
 
     'messages' => [
+        'validation_failed' => 'Vui lòng kiểm tra lại các thông tin sau:',
         'created' => 'Thêm sản phẩm thành công.',
         'updated' => 'Cập nhật sản phẩm thành công.',
         'deleted' => 'Xoá sản phẩm thành công.',

@@ -24,10 +24,22 @@ class PostProductRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $variants = array_map(function ($variant) {
+            if (isset($variant['attribute_value_ids']) && is_array($variant['attribute_value_ids'])) {
+                $variant['attribute_value_ids'] = array_values(array_filter(
+                    $variant['attribute_value_ids'],
+                    fn ($value) => is_string($value) && trim($value) !== ''
+                ));
+            }
+
+            return $variant;
+        }, $this->input('variants', []));
+
         $this->merge([
             'type' => (int) $this->input('type', ProductConst::SINGLE),
+            'accessory_ids' => array_values(array_filter((array) $this->input('accessory_ids', []))),
             'variants' => array_values(array_filter(
-                $this->input('variants', []),
+                $variants,
                 fn ($variant) => ! empty($variant['price']) || ! empty($variant['sku']) || ! empty($variant['attribute_value_ids'])
             )),
             'specifications' => array_values(array_filter(
@@ -58,6 +70,8 @@ class PostProductRequest extends FormRequest
             'branch_id' => ['required', 'uuid', Rule::exists('branches', 'id')->where('is_active', true)],
             'category_ids' => ['required', 'array', 'min:1'],
             'category_ids.*' => ['uuid', Rule::exists('categories', 'id')->where('is_active', true)],
+            'accessory_ids' => ['nullable', 'array', 'max:12'],
+            'accessory_ids.*' => ['uuid', Rule::exists('products', 'id')],
             'short_descriptions' => ['nullable', 'string', 'max:255'],
             'descriptions' => ['nullable', 'string', 'max:5000'],
             'thumbnail' => [$id ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
@@ -100,6 +114,7 @@ class PostProductRequest extends FormRequest
             'sku' => __('admin/product.fields.sku'),
             'branch_id' => __('admin/product.fields.branch'),
             'category_ids' => __('admin/product.fields.categories'),
+            'accessory_ids' => __('admin/product.fields.accessories'),
             'short_descriptions' => __('admin/product.fields.short_descriptions'),
             'descriptions' => __('admin/product.fields.descriptions'),
             'thumbnail' => __('admin/product.fields.thumbnail'),

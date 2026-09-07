@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\Product\PostProductRequest;
 use App\Models\Attribute;
 use App\Models\Branch;
 use App\Models\Category;
+use App\Models\Product;
 use App\Services\Admin\ProductService;
 use App\Services\Admin\ProductImportService;
 use Illuminate\Http\RedirectResponse;
@@ -129,7 +130,7 @@ class ProductController extends Controller
 
     public function edit(int|string $id)
     {
-        $product = $this->productService->filter(['relates' => ['categories']])->find($id);
+        $product = $this->productService->filter(['relates' => ['categories', 'accessories']])->find($id);
 
         abort_if(! $product, 404);
 
@@ -232,6 +233,11 @@ class ProductController extends Controller
         return [
             'branches' => Branch::orderBy('name')->pluck('name', 'id'),
             'categories' => Category::orderBy('name')->pluck('name', 'id'),
+            'accessoryOptions' => Product::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'sku'])
+                ->mapWithKeys(fn (Product $item) => [$item->id => $item->name . ' — ' . ($item->sku ?: '-')]),
             'attributeGroups' => Attribute::with(['values' => fn ($query) => $query->where('is_active', true)])
                 ->orderBy('name')
                 ->get()

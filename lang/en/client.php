@@ -52,6 +52,7 @@ return [
             'subtitle' => 'Authorised retailers only',
         ],
         'deals' => [
+            'ends_in' => 'Ends in',
             'title' => 'Deals of the week',
             'subtitle' => 'Limited stock at these prices',
         ],
@@ -136,6 +137,11 @@ return [
         'views' => ':count views',
         'sku' => 'SKU',
         'select_variant' => 'Choose a version',
+        'accessories' => [
+            'title' => 'Frequently bought together',
+            'subtitle' => 'Add matching accessories and save on a single order.',
+        ],
+        'recently_viewed' => 'Recently viewed',
         'add_to_cart' => 'Add to cart',
         'buy_now' => 'Buy now',
         'quantity' => 'Quantity',

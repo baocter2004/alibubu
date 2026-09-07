@@ -59,9 +59,13 @@ class ShopController extends Controller
         $product->loadMissing('specifications');
         $product->increment('views');
 
+        $recentlyViewed = $this->productService->recentlyViewed($product->id);
+        $this->productService->rememberViewed($product);
+
         return view('client.pages.shop.show', [
             'product' => $product,
             'relatedProducts' => $this->productService->related($product),
+            'recentlyViewed' => $recentlyViewed,
             'reviews' => $this->reviewService->paginateFor($product),
             'ratingBreakdown' => $this->reviewService->breakdownFor($product),
             'canReview' => $this->reviewService->canReview($product, auth()->user()),

@@ -209,11 +209,24 @@
                         </h2>
                     </div>
                 </div>
-                <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
-                    class="link-draw text-sm font-semibold text-primary self-end pb-1">
-                    {{ __('common.actions.view_all') }}
-                    <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
-                </a>
+                <div class="flex items-center gap-4 self-end pb-1">
+                    @if ($saleDeadline)
+                        <div class="flex items-center gap-2" data-countdown="{{ $saleDeadline->toIso8601String() }}">
+                            <span class="hidden sm:inline text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                {{ __('client.home.deals.ends_in') }}
+                            </span>
+                            @foreach (['days', 'hours', 'minutes', 'seconds'] as $unit)
+                                <span class="countdown-cell" data-countdown-{{ $unit }}>00</span>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <a href="{{ route('shop.index', ['is_sale' => 1]) }}"
+                        class="link-draw text-sm font-semibold text-primary">
+                        {{ __('common.actions.view_all') }}
+                        <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5" data-reveal-group>

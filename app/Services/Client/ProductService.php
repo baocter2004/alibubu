@@ -8,6 +8,7 @@ use App\Services\BaseCrudService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 class ProductService extends BaseCrudService
 {
@@ -110,6 +111,51 @@ class ProductService extends BaseCrudService
         ])->limit($limit)->get();
     }
 
+    public function saleDeadline(): ?Carbon
+    {
+        $value = $this->filter(['is_sale' => 1])
+            ->whereNotNull('products.sale_price_end_at')
+            ->where('products.sale_price_end_at', '>', now())
+            ->min('products.sale_price_end_at');
+
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public const RECENT_KEY = 'recently_viewed';
+
+    public const RECENT_LIMIT = 8;
+
+    public function rememberViewed(Product $product): void
+    {
+        $ids = collect(session()->get(self::RECENT_KEY, []))
+            ->reject(fn ($id) => (string) $id === (string) $product->id)
+            ->prepend((string) $product->id)
+            ->take(self::RECENT_LIMIT)
+            ->values()
+            ->all();
+
+        session()->put(self::RECENT_KEY, $ids);
+    }
+
+    public function recentlyViewed(?string $exceptId = null, int $limit = 6): Collection
+    {
+        $ids = collect(session()->get(self::RECENT_KEY, []))
+            ->reject(fn ($id) => $exceptId !== null && (string) $id === (string) $exceptId)
+            ->take($limit)
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return new Collection();
+        }
+
+        $products = $this->filter(['relates' => ['branch', 'variants']])
+            ->whereIn('products.id', $ids->all())
+            ->get()
+            ->keyBy('id');
+
+        return new Collection($ids->map(fn ($id) => $products->get($id))->filter()->values()->all());
+    }
+
     public function highlights(string $flag, int $limit = 8): Collection
     {
         return $this->filter([
@@ -124,7 +170,14 @@ class ProductService extends BaseCrudService
             ->newQuery()
             ->where('slug', $slug)
             ->where('is_active', true)
-            ->with(['branch', 'categories', 'tags', 'galleries', 'variants.attributeValues.attribute'])
+            ->with([
+                'branch',
+                'categories',
+                'tags',
+                'galleries',
+                'variants.attributeValues.attribute',
+                'accessories' => fn ($query) => $query->where('is_active', true)->with(['branch', 'variants'])->limit(8),
+            ])
             ->first();
     }
 
@@ -134,7 +187,14 @@ class ProductService extends BaseCrudService
             ->newQuery()
             ->where('id', $id)
             ->where('is_active', true)
-            ->with(['branch', 'categories', 'tags', 'galleries', 'variants.attributeValues.attribute'])
+            ->with([
+                'branch',
+                'categories',
+                'tags',
+                'galleries',
+                'variants.attributeValues.attribute',
+                'accessories' => fn ($query) => $query->where('is_active', true)->with(['branch', 'variants'])->limit(8),
+            ])
             ->first();
     }
 

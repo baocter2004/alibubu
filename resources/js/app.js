@@ -274,3 +274,38 @@ $(function () {
         $section.addClass("hidden");
     });
 });
+
+$(function () {
+    const $timers = $("[data-countdown]");
+
+    if (!$timers.length) return;
+
+    const pad = (value) => String(Math.max(0, value)).padStart(2, "0");
+
+    function tick() {
+        $timers.each(function () {
+            const $timer = $(this);
+            const target = new Date($timer.data("countdown")).getTime();
+            let left = Math.floor((target - Date.now()) / 1000);
+
+            if (left <= 0) {
+                $timer.find("[data-countdown-days], [data-countdown-hours], [data-countdown-minutes], [data-countdown-seconds]").text("00");
+                return;
+            }
+
+            const days = Math.floor(left / 86400);
+            left -= days * 86400;
+            const hours = Math.floor(left / 3600);
+            left -= hours * 3600;
+            const minutes = Math.floor(left / 60);
+
+            $timer.find("[data-countdown-days]").text(pad(days));
+            $timer.find("[data-countdown-hours]").text(pad(hours));
+            $timer.find("[data-countdown-minutes]").text(pad(minutes));
+            $timer.find("[data-countdown-seconds]").text(pad(left - minutes * 60));
+        });
+    }
+
+    tick();
+    setInterval(tick, 1000);
+});

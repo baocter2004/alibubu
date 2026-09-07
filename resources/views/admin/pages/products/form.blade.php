@@ -4,6 +4,9 @@
     $selectedCategories = $isEdit
         ? $product->categories->pluck('id')->all()
         : ($values['category_ids'] ?? []);
+    $selectedAccessories = $isEdit
+        ? $product->accessories->pluck('id')->all()
+        : ($values['accessory_ids'] ?? []);
     $currentType = (int) old('type', $values['type'] ?? \App\Const\ProductConst::SINGLE);
     $existingVariants = $isEdit
         ? $product->variants->map(fn($variant) => [
@@ -27,6 +30,21 @@
     action="{{ $isEdit ? route('admin.products.confirm', $product->id) : route('admin.products.confirm') }}"
     method="POST" enctype="multipart/form-data" class="space-y-8">
     @csrf
+
+    @if ($errors->any())
+        <div class="mb-5 rounded-lg border border-red-200 bg-red-50 p-4">
+            <p class="flex items-center gap-2 text-sm font-semibold text-red-700 mb-2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ __('admin/product.messages.validation_failed') }}
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-sm text-red-600">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 
     <section>
         <h2 class="text-base font-semibold text-gray-900 pb-2 mb-5 border-b border-gray-200">
@@ -79,6 +97,35 @@
             </div>
 
             @error('category_ids')
+                <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mt-5">
+            <label for="accessory-filter" class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
+                <i class="fa-solid fa-plug-circle-plus"></i>
+                {{ __('admin/product.fields.accessories') }}
+            </label>
+
+            <input type="search" id="accessory-filter" autocomplete="off"
+                placeholder="{{ __('common.actions.search') }}"
+                class="w-full mb-2 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30">
+
+            <div id="accessory-list"
+                class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-52 overflow-y-auto p-3 border rounded-lg {{ $errors->has('accessory_ids') ? 'is-invalid' : 'border-gray-300' }}">
+                @foreach ($accessoryOptions as $id => $label)
+                    @continue($isEdit && (string) $id === (string) $product->id)
+                    <label class="flex items-center gap-2 cursor-pointer accessory-option"
+                        data-label="{{ Str::lower($label) }}">
+                        <input type="checkbox" name="accessory_ids[]" value="{{ $id }}"
+                            @checked(in_array($id, old('accessory_ids', $selectedAccessories), false))
+                            class="h-4 w-4 rounded accent-accent">
+                        <span class="text-sm text-gray-700 truncate">{{ $label }}</span>
+                    </label>
+                @endforeach
+            </div>
+
+            @error('accessory_ids')
                 <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
             @enderror
         </div>
@@ -303,6 +350,14 @@
 @push('scripts')
     <script>
         $(function() {
+            $('#accessory-filter').on('input', function() {
+                const term = $(this).val().trim().toLowerCase();
+
+                $('#accessory-list .accessory-option').each(function() {
+                    $(this).toggle(term === '' || String($(this).data('label')).includes(term));
+                });
+            });
+
             const VARIANT_LABEL = @json(__('admin/product.fields.variant_number', ['number' => ':n']));
             let variantIndex = {{ count($variantRows) }};
 

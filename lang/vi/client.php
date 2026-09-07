@@ -52,6 +52,7 @@ return [
             'subtitle' => 'Chỉ phân phối chính hãng',
         ],
         'deals' => [
+            'ends_in' => 'Kết thúc sau',
             'title' => 'Ưu đãi trong tuần',
             'subtitle' => 'Số lượng có hạn',
         ],
@@ -136,6 +137,11 @@ return [
         'views' => ':count lượt xem',
         'sku' => 'Mã SKU',
         'select_variant' => 'Chọn phiên bản',
+        'accessories' => [
+            'title' => 'Phụ kiện mua kèm',
+            'subtitle' => 'Chọn thêm để dùng trọn bộ, tiết kiệm hơn khi mua cùng lúc.',
+        ],
+        'recently_viewed' => 'Sản phẩm bạn vừa xem',
         'add_to_cart' => 'Thêm vào giỏ hàng',
         'buy_now' => 'Mua ngay',
         'quantity' => 'Số lượng',

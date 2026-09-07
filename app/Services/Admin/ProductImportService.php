@@ -37,6 +37,8 @@ class ProductImportService
 
     private const SPECIFICATION_HEADERS = ['product_sku', 'group', 'name', 'value', 'ordinal'];
 
+    private const HEADER_SCAN_ROWS = 10;
+
     public function import(UploadedFile $file): array
     {
         $analysis = $this->analyse($file);
@@ -142,7 +144,7 @@ class ProductImportService
         $seen = [];
 
         foreach ($rows as $rowNumber => $raw) {
-            $row = $this->normalizeRow($raw);
+            $row = $this->normalizeRow($raw, self::PRODUCT_HEADERS);
             $sku = trim((string) ($row['product_sku'] ?? ''));
             $name = trim((string) ($row['product_name'] ?? ''));
             $type = $this->productType($row['type'] ?? null);
@@ -235,7 +237,7 @@ class ProductImportService
         $seen = [];
 
         foreach ($rows as $rowNumber => $raw) {
-            $row = $this->normalizeRow($raw);
+            $row = $this->normalizeRow($raw, self::VARIANT_HEADERS);
             $productSku = trim((string) ($row['product_sku'] ?? ''));
             $variantSku = trim((string) ($row['variant_sku'] ?? ''));
             $product = $products['rows'][$this->key($productSku)] ?? null;
@@ -287,7 +289,7 @@ class ProductImportService
         $errors = [];
 
         foreach ($rows as $rowNumber => $raw) {
-            $row = $this->normalizeRow($raw);
+            $row = $this->normalizeRow($raw, self::SPECIFICATION_HEADERS);
             $productSku = trim((string) ($row['product_sku'] ?? ''));
             if (! isset($products['rows'][$this->key($productSku)])) {
                 $errors[] = $this->error($rowNumber, 'product_sku', __('admin/product.import.errors.unknown_product', ['value' => $productSku]));
@@ -574,12 +576,12 @@ class ProductImportService
         $workbook = $this->xml($workbookXml);
         $rels = $this->xml($relsXml);
         $relMap = [];
-        foreach ($rels->getElementsByTagName('Relationship') as $relation) {
+        foreach ($rels->getElementsByTagNameNS('*', 'Relationship') as $relation) {
             $relMap[$relation->getAttribute('Id')] = ltrim($relation->getAttribute('Target'), '/');
         }
 
         $sheets = [];
-        foreach ($workbook->getElementsByTagName('sheet') as $sheet) {
+        foreach ($workbook->getElementsByTagNameNS('*', 'sheet') as $sheet) {
             $name = $sheet->getAttribute('name');
             $relationId = $sheet->getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
             $target = $relMap[$relationId] ?? null;
@@ -602,16 +604,16 @@ class ProductImportService
     {
         $document = $this->xml($content);
         $rows = [];
-        foreach ($document->getElementsByTagName('row') as $row) {
+        foreach ($document->getElementsByTagNameNS('*', 'row') as $row) {
             $cells = [];
-            foreach ($row->getElementsByTagName('c') as $cell) {
+            foreach ($row->getElementsByTagNameNS('*', 'c') as $cell) {
                 $ref = $cell->getAttribute('r');
                 preg_match('/^([A-Z]+)/', $ref, $match);
                 $column = $this->columnNumber($match[1] ?? 'A');
                 $type = $cell->getAttribute('t');
                 $value = '';
                 if ($type === 'inlineStr') {
-                    foreach ($cell->getElementsByTagName('t') as $text) {
+                    foreach ($cell->getElementsByTagNameNS('*', 't') as $text) {
                         $value .= $text->textContent;
                     }
                 } else {
@@ -645,9 +647,9 @@ class ProductImportService
 
         $document = $this->xml($content);
         $strings = [];
-        foreach ($document->getElementsByTagName('si') as $item) {
+        foreach ($document->getElementsByTagNameNS('*', 'si') as $item) {
             $value = '';
-            foreach ($item->getElementsByTagName('t') as $text) {
+            foreach ($item->getElementsByTagNameNS('*', 't') as $text) {
                 $value .= $text->textContent;
             }
             $strings[] = $value;
@@ -685,15 +687,17 @@ class ProductImportService
             return [];
         }
 
-        $headers = array_map(fn ($value) => $this->header((string) $value), array_values($rows[0]));
-        $headers = array_map(fn ($header) => $this->alias($header), $headers);
         $required = match ($name) {
             'Products' => self::PRODUCT_HEADERS,
             'Variants' => self::VARIANT_HEADERS,
             'Specifications' => self::SPECIFICATION_HEADERS,
             default => [],
         };
+
+        $headerIndex = $this->headerRowIndex($rows, $required);
+        $headers = $this->headerNames($rows[$headerIndex] ?? [], $required);
         $missing = array_diff($required, $headers);
+
         if ($missing !== []) {
             throw new ProductImportException([
                 __('admin/product.import.errors.missing_headers', ['sheet' => $name, 'headers' => implode(', ', $missing)]),
@@ -701,7 +705,7 @@ class ProductImportService
         }
 
         $result = [];
-        foreach (array_slice($rows, 1) as $index => $values) {
+        foreach (array_slice($rows, $headerIndex + 1) as $index => $values) {
             $row = [];
             foreach ($headers as $column => $header) {
                 $row[$header] = $values[$column] ?? '';
@@ -709,19 +713,50 @@ class ProductImportService
             if (count(array_filter($row, fn ($value) => trim((string) $value) !== '')) === 0) {
                 continue;
             }
-            $result[$index + 2] = $row;
+            $result[$index + $headerIndex + 2] = $row;
         }
 
         return $result;
     }
 
-    protected function normalizeRow(array $row): array
+    protected function headerRowIndex(array $rows, array $required): int
     {
-        return collect($row)->mapWithKeys(fn ($value, $key) => [$this->alias($this->header((string) $key)) => trim((string) $value)])->all();
+        if ($required === []) {
+            return 0;
+        }
+
+        foreach (array_slice($rows, 0, self::HEADER_SCAN_ROWS, true) as $index => $values) {
+            if (array_diff($required, $this->headerNames($values, $required)) === []) {
+                return $index;
+            }
+        }
+
+        return 0;
     }
 
-    protected function alias(string $header): string
+    protected function headerNames(array $values, array $required = []): array
     {
+        return array_map(
+            fn ($value) => $this->alias($this->header((string) $value), $required),
+            array_values($values)
+        );
+    }
+
+    protected function normalizeRow(array $row, array $required = []): array
+    {
+        return collect($row)
+            ->mapWithKeys(fn ($value, $key) => [
+                $this->alias($this->header((string) $key), $required) => trim((string) $value),
+            ])
+            ->all();
+    }
+
+    protected function alias(string $header, array $required = []): string
+    {
+        if (in_array($header, $required, true)) {
+            return $header;
+        }
+
         return [
             'sku' => 'product_sku',
             'product_code' => 'product_sku',

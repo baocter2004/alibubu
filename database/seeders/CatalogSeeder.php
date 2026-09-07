@@ -75,6 +75,31 @@ class CatalogSeeder extends Seeder
                 $this->seedVariants($product->load('galleries'), $item, $attributeValues);
             }
         }
+
+        $this->seedAccessories();
+    }
+
+    protected function seedAccessories(): void
+    {
+        $accessoryIds = Product::query()
+            ->whereHas('categories', fn ($query) => $query->where('name', 'Phụ kiện'))
+            ->pluck('id');
+
+        if ($accessoryIds->isEmpty()) {
+            return;
+        }
+
+        $targets = Product::query()
+            ->whereHas('categories', fn ($query) => $query->whereIn('name', ['Điện thoại', 'Laptop', 'Máy tính bảng']))
+            ->get();
+
+        foreach ($targets as $product) {
+            if ($product->accessories()->exists()) {
+                continue;
+            }
+
+            $product->accessories()->sync($accessoryIds->shuffle()->take(4)->all());
+        }
     }
 
     protected function seedBranches(array $items): array
@@ -240,24 +265,36 @@ class CatalogSeeder extends Seeder
 
     protected function variantMatrix(string $category): array
     {
-        $storages = $category === 'Laptop'
-            ? ['256GB', '512GB', '1TB']
-            : ['128GB', '256GB', '512GB'];
+        [$primary, $secondary] = match ($category) {
+            'Laptop' => [['256GB', '512GB', '1TB'], ['Đen', 'Bạc']],
+            'Đồng hồ thông minh' => [['41mm', '45mm'], ['Đen', 'Bạc', 'Vàng đồng']],
+            'Phụ kiện' => [['Tiêu chuẩn'], ['Đen', 'Trắng', 'Xanh dương']],
+            default => [['128GB', '256GB', '512GB'], ['Đen', 'Trắng']],
+        };
 
-        $colors = ['Đen', 'Trắng', 'Xanh dương'];
         $matrix = [];
 
-        foreach ($storages as $i => $storage) {
-            foreach (array_slice($colors, 0, 2) as $j => $color) {
+        foreach ($primary as $i => $first) {
+            foreach ($secondary as $j => $second) {
                 $matrix[] = [
                     'code' => 'V' . ($i + 1) . ($j + 1),
-                    'values' => [$storage, $color],
-                    'extra' => ($i * 3000000) + ($j * 500000),
+                    'values' => [$first, $second],
+                    'extra' => ($i * $this->variantStep($category)) + ($j * 300000),
                 ];
             }
         }
 
         return $matrix;
+    }
+
+    protected function variantStep(string $category): int
+    {
+        return match ($category) {
+            'Laptop' => 3000000,
+            'Đồng hồ thông minh' => 1200000,
+            'Phụ kiện' => 0,
+            default => 2000000,
+        };
     }
 
     protected function storeImage(?string $file): ?string

@@ -476,6 +476,41 @@
         </div>
     @endunless
 
+    @if ($recentlyViewed->isNotEmpty())
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-xl font-bold text-foreground">{{ __('client.product.recently_viewed') }}</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach ($recentlyViewed as $viewed)
+                    @include('components.product-card', ['product' => $viewed])
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @if ($product->accessories->isNotEmpty())
+        <section class="bg-card border border-border rounded-2xl p-6 md:p-8 mb-12">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 shrink-0 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+                        <i class="fa-solid fa-plug-circle-plus"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-lg font-bold text-foreground">{{ __('client.product.accessories.title') }}</h2>
+                        <p class="text-sm text-muted-foreground">{{ __('client.product.accessories.subtitle') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach ($product->accessories as $accessory)
+                    @include('components.product-card', ['product' => $accessory])
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     @if ($relatedProducts->isNotEmpty())
         <section class="mb-12">
             <div class="flex items-center justify-between mb-5">

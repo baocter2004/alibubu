@@ -154,6 +154,18 @@ class ProductService extends BaseCrudService
         ], $variant), $variants));
     }
 
+    protected function syncAccessories(Product $product, array $accessoryIds): void
+    {
+        $product->accessories()->sync(
+            collect($accessoryIds)
+                ->filter()
+                ->reject(fn ($id) => (string) $id === (string) $product->id)
+                ->unique()
+                ->values()
+                ->all()
+        );
+    }
+
     public function create(array $params = []): Product
     {
         $thumbnail = Arr::get($params, 'thumbnail');
@@ -162,6 +174,7 @@ class ProductService extends BaseCrudService
             return DB::transaction(function () use ($params) {
                 $product = parent::create($this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
+                $this->syncAccessories($product, $params['accessory_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
                 $this->syncSpecifications($product, $params['specifications'] ?? []);
 
@@ -187,6 +200,7 @@ class ProductService extends BaseCrudService
             $product = DB::transaction(function () use ($id, $params) {
                 $product = parent::update($id, $this->productAttributes($params));
                 $product->categories()->sync($params['category_ids'] ?? []);
+                $this->syncAccessories($product, $params['accessory_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
                 $this->syncSpecifications($product, $params['specifications'] ?? []);
 
