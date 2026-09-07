@@ -7,6 +7,7 @@ use App\Services\Client\CartService;
 use App\Services\Client\CompareService;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -36,6 +37,12 @@ class AppServiceProvider extends ServiceProvider
             return $request->is('admin', 'admin/*')
                 ? route('admin.dashboard')
                 : route('index');
+        });
+
+        View::composer('admin.layouts.*', function ($view) {
+            $admin = Auth::guard('admin')->user();
+
+            $view->with('adminUnreadCount', $admin ? $admin->unreadNotifications()->count() : 0);
         });
 
         View::composer('client.layouts.*', function ($view) {

@@ -22,6 +22,18 @@
         <div class="flex items-center gap-2 ml-auto">
             @include('components.locale-switcher')
 
+            <a href="{{ route('admin.notifications.index') }}"
+                class="relative inline-flex items-center justify-center w-10 h-10 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                title="{{ __('admin/notification.title') }}" aria-label="{{ __('admin/notification.title') }}">
+                <i class="fa-solid fa-bell"></i>
+                @if (($adminUnreadCount ?? 0) > 0)
+                    <span
+                        class="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                        {{ $adminUnreadCount > 99 ? '99+' : $adminUnreadCount }}
+                    </span>
+                @endif
+            </a>
+
             <a href="{{ route('index') }}" target="_blank" rel="noopener"
                 class="hidden sm:inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>

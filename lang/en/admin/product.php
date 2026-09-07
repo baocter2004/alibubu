@@ -79,6 +79,18 @@ return [
     ],
 
     'import' => [
+        'preview_title' => 'Import preview',
+        'preview_subtitle' => 'Check the data before writing it. Nothing has been saved yet.',
+        'preview_file' => 'File',
+        'preview_create' => 'Will create',
+        'preview_update' => 'Will update',
+        'preview_variants' => 'Variants',
+        'preview_specifications' => 'Specifications',
+        'preview_confirm' => 'Confirm import',
+        'preview_cancel' => 'Pick another file',
+        'preview_action' => 'Action',
+        'preview_new' => 'Create',
+        'preview_existing' => 'Update',
         'title' => 'Import products from Excel',
         'subtitle' => 'Create or update products by SKU, including variants and technical specifications.',
         'file' => 'Excel/CSV file',

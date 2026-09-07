@@ -76,6 +76,6 @@
             </table>
         </div>
 
-        @include('components.pagination', ['paginator' => $wards])
+        @include('components.pagination', ['paginator' => $wards->withQueryString()])
     </div>
 @endsection

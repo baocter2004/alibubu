@@ -79,6 +79,18 @@ return [
     ],
 
     'import' => [
+        'preview_title' => 'Xem trước dữ liệu nhập',
+        'preview_subtitle' => 'Kiểm tra kỹ trước khi ghi vào hệ thống. Chưa có gì được lưu.',
+        'preview_file' => 'Tệp',
+        'preview_create' => 'Sẽ tạo mới',
+        'preview_update' => 'Sẽ cập nhật',
+        'preview_variants' => 'Biến thể',
+        'preview_specifications' => 'Thông số',
+        'preview_confirm' => 'Xác nhận nhập dữ liệu',
+        'preview_cancel' => 'Chọn tệp khác',
+        'preview_action' => 'Thao tác',
+        'preview_new' => 'Tạo mới',
+        'preview_existing' => 'Cập nhật',
         'title' => 'Nhập sản phẩm từ Excel',
         'subtitle' => 'Thêm mới hoặc cập nhật sản phẩm theo SKU, kèm biến thể và thông số kỹ thuật.',
         'file' => 'Tệp Excel/CSV',

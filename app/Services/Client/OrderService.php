@@ -5,15 +5,18 @@ namespace App\Services\Client;
 use App\Const\OrderConst;
 use App\Const\PaymentConst;
 use App\Mail\OrderPlaced;
+use App\Models\Admin;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Notifications\NewOrderPlaced;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -65,8 +68,27 @@ class OrderService
         });
 
         $this->sendConfirmationMail($order, $user);
+        $this->notifyAdmins($order);
 
         return $order;
+    }
+
+    protected function notifyAdmins(Order $order): void
+    {
+        try {
+            $admins = Admin::query()->get();
+
+            if ($admins->isEmpty()) {
+                return;
+            }
+
+            Notification::send($admins, new NewOrderPlaced($order));
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, [
+                'message' => $th->getMessage(),
+                'order_code' => $order->code,
+            ]);
+        }
     }
 
     protected function sendConfirmationMail(Order $order, ?User $user = null): void
@@ -154,6 +176,7 @@ class OrderService
 
         if ($userId) {
             $coupon->users()->attach($userId, [
+                'id' => (string) Str::uuid(),
                 'times_used' => 1,
                 'used_at' => now(),
             ]);

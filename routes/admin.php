@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdministratorController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -55,7 +56,8 @@ Route::prefix('/admin')
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/import', 'importForm')->name('import');
-                Route::post('/import', 'import')->name('import.store');
+                Route::post('/import/preview', 'importPreview')->name('import.preview');
+            Route::post('/import', 'import')->name('import.store');
                 Route::get('/import/template', 'importTemplate')->name('import.template');
                 Route::get('/trash', 'trash')->name('trash');
                 Route::get('/create', 'create')->name('create');
@@ -103,6 +105,16 @@ Route::prefix('/admin')
             Route::post('/{id}/reject', 'reject')->name('reject');
             Route::delete('/{id}', 'destroy')->name('destroy');
         });
+
+        Route::prefix('notifications')
+            ->name('notifications.')
+            ->middleware('admin.role:' . $allAdminRoles)
+            ->controller(NotificationController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/read-all', 'readAll')->name('read-all');
+                Route::post('/{id}/read', 'read')->name('read');
+            });
 
         Route::prefix('orders')->name('orders.')->middleware('admin.role:' . $allAdminRoles)->controller(OrderController::class)->group(function () {
             Route::get('/', 'index')->name('index');

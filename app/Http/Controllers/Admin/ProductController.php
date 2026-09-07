@@ -14,6 +14,9 @@ use App\Models\Category;
 use App\Services\Admin\ProductService;
 use App\Services\Admin\ProductImportService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
@@ -54,10 +57,37 @@ class ProductController extends Controller
         return view('admin.pages.products.import');
     }
 
+    public function importPreview(ImportProductRequest $request)
+    {
+        $file = $request->file('file');
+
+        try {
+            $preview = $this->productImportService->preview($file);
+        } catch (ProductImportException $exception) {
+            return back()
+                ->withInput()
+                ->withErrors(['file' => $exception->errors]);
+        }
+
+        $token = (string) Str::uuid();
+        $file->storeAs('imports', $token . '.' . $file->getClientOriginalExtension());
+
+        session()->put('product_import.' . $token, [
+            'name' => $file->getClientOriginalName(),
+            'path' => 'imports/' . $token . '.' . $file->getClientOriginalExtension(),
+        ]);
+
+        return view('admin.pages.products.import-preview', [
+            'preview' => $preview,
+            'token' => $token,
+            'filename' => $file->getClientOriginalName(),
+        ]);
+    }
+
     public function import(ImportProductRequest $request): RedirectResponse
     {
         try {
-            $result = $this->productImportService->import($request->file('file'));
+            $result = $this->productImportService->import($this->importFile($request));
         } catch (ProductImportException $exception) {
             return back()
                 ->withInput()
@@ -67,6 +97,25 @@ class ProductController extends Controller
         return redirect()
             ->route('admin.products.index')
             ->with('success', __('admin/product.import.success', $result));
+    }
+
+    protected function importFile(ImportProductRequest $request): UploadedFile
+    {
+        if ($request->hasFile('file')) {
+            return $request->file('file');
+        }
+
+        $stored = session()->pull('product_import.' . $request->input('token'));
+
+        abort_if(! $stored || ! Storage::exists($stored['path']), 404);
+
+        return new UploadedFile(
+            Storage::path($stored['path']),
+            $stored['name'],
+            null,
+            null,
+            true
+        );
     }
 
     public function importTemplate(): BinaryFileResponse

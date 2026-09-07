@@ -39,6 +39,51 @@ class ProductImportService
 
     public function import(UploadedFile $file): array
     {
+        $analysis = $this->analyse($file);
+
+        return DB::transaction(fn () => $this->persist(
+            $analysis['products'],
+            $analysis['variants'],
+            $analysis['specifications'],
+            $analysis['lookups']
+        ));
+    }
+
+    public function preview(UploadedFile $file): array
+    {
+        $analysis = $this->analyse($file);
+
+        $skus = collect($analysis['products'])->pluck('sku')->filter()->values();
+        $existing = $skus->isEmpty()
+            ? collect()
+            : Product::withTrashed()->whereIn('sku', $skus)->pluck('sku')->all();
+
+        $brands = Branch::query()->pluck('name', 'id');
+
+        $rows = collect($analysis['products'])->map(fn (array $row) => [
+            'sku' => $row['sku'] ?? '-',
+            'name' => $row['name'] ?? '-',
+            'brand' => $brands[$row['branch_id'] ?? null] ?? null,
+            'price' => $row['price'] ?? null,
+            'stock' => $row['stock'] ?? null,
+            'variants' => collect($analysis['variants'])->where('product_sku', $row['sku'] ?? null)->count(),
+            'is_update' => in_array($row['sku'] ?? null, $existing, true),
+        ]);
+
+        return [
+            'rows' => $rows->all(),
+            'counts' => [
+                'products' => count($analysis['products']),
+                'variants' => count($analysis['variants']),
+                'specifications' => count($analysis['specifications']),
+                'create' => $rows->where('is_update', false)->count(),
+                'update' => $rows->where('is_update', true)->count(),
+            ],
+        ];
+    }
+
+    protected function analyse(UploadedFile $file): array
+    {
         $sheets = $this->readWorkbook($file);
         $products = $this->rowsFromSheet($sheets, 'Products');
         $variants = $this->rowsFromSheet($sheets, 'Variants');
@@ -82,14 +127,12 @@ class ProductImportService
             throw new ProductImportException($errors);
         }
 
-        return DB::transaction(function () use ($preparedProducts, $preparedVariants, $preparedSpecifications, $lookups) {
-            return $this->persist(
-                $preparedProducts['rows'],
-                $preparedVariants['rows'],
-                $preparedSpecifications['rows'],
-                $lookups
-            );
-        });
+        return [
+            'products' => $preparedProducts['rows'],
+            'variants' => $preparedVariants['rows'],
+            'specifications' => $preparedSpecifications['rows'],
+            'lookups' => $lookups,
+        ];
     }
 
     protected function prepareProducts(array $rows, array $lookups): array

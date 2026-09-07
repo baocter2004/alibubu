@@ -24,7 +24,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <section class="xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5 md:p-7">
-            <form action="{{ route('admin.products.import.store') }}" method="POST" enctype="multipart/form-data"
+            <form action="{{ route('admin.products.import.preview') }}" method="POST" enctype="multipart/form-data"
                 class="space-y-6" data-submit-once>
                 @csrf
 
