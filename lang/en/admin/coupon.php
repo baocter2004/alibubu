@@ -41,6 +41,7 @@ return [
         'min_order_value' => 'Minimum order value',
         'max_discount_value' => 'Maximum discount',
         'valid_categories' => 'Limit to categories',
+        'valid_products' => 'Limit to products',
         'users' => 'Customers who used it',
     ],
 
@@ -49,10 +50,12 @@ return [
         'discount_value' => 'A percentage (1-100) or a fixed amount depending on the type.',
         'max_discount_value' => 'Required for percentage codes to cap the discount.',
         'valid_categories' => 'Leave empty to allow every category.',
+        'valid_products' => 'Leave empty to allow every product.',
         'schedule' => 'Leave empty for a code that never expires.',
     ],
 
     'all_categories' => 'All categories',
+    'all_products' => 'All products',
     'unlimited' => 'Unlimited',
 
     'messages' => [

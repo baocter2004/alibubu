@@ -41,6 +41,7 @@ return [
         'min_order_value' => 'Giá trị đơn tối thiểu',
         'max_discount_value' => 'Giảm tối đa',
         'valid_categories' => 'Giới hạn theo danh mục',
+        'valid_products' => 'Giới hạn theo sản phẩm',
         'users' => 'Khách hàng đã dùng',
     ],
 
@@ -49,10 +50,12 @@ return [
         'discount_value' => 'Phần trăm (1-100) hoặc số tiền cố định tuỳ theo loại.',
         'max_discount_value' => 'Bắt buộc với mã phần trăm để giới hạn số tiền giảm.',
         'valid_categories' => 'Để trống nếu áp dụng cho mọi danh mục.',
+        'valid_products' => 'Để trống nếu áp dụng cho mọi sản phẩm.',
         'schedule' => 'Để trống nếu mã không giới hạn thời gian.',
     ],
 
     'all_categories' => 'Tất cả danh mục',
+    'all_products' => 'Tất cả sản phẩm',
     'unlimited' => 'Không giới hạn',
 
     'messages' => [

@@ -25,6 +25,7 @@
                     ['label' => __('admin/coupon.fields.start_date'), 'value' => $data['start_date'] ?: __('admin/coupon.unlimited')],
                     ['label' => __('admin/coupon.fields.end_date'), 'value' => $data['end_date'] ?: __('admin/coupon.unlimited')],
                     ['label' => __('admin/coupon.fields.valid_categories'), 'value' => !empty($data['valid_categories']) ? collect($data['valid_categories'])->map(fn($id) => $categories[$id] ?? null)->filter()->implode(', ') : __('admin/coupon.all_categories')],
+                    ['label' => __('admin/coupon.fields.valid_products'), 'value' => !empty($data['valid_products']) ? collect($data['valid_products'])->map(fn($id) => $products[$id] ?? null)->filter()->implode(', ') : __('admin/coupon.all_products')],
                 ];
             @endphp
 

@@ -50,13 +50,15 @@ class PostCouponRequest extends FormRequest
             ]),
             'usage_limit' => ['required', 'integer', 'min:1', 'max:65535'],
             'start_date' => ['nullable', 'date'],
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_active' => ['required', Rule::in(array_keys(GlobalConst::statuses()))],
 
             'min_order_value' => ['nullable', 'numeric', 'min:0'],
             'max_discount_value' => ['nullable', 'numeric', 'min:0', Rule::requiredIf($isPercent)],
             'valid_categories' => ['nullable', 'array'],
             'valid_categories.*' => ['uuid', 'exists:categories,id'],
+            'valid_products' => ['nullable', 'array'],
+            'valid_products.*' => ['uuid', 'exists:products,id'],
         ];
     }
 
@@ -92,6 +94,7 @@ class PostCouponRequest extends FormRequest
             'min_order_value' => __('admin/coupon.fields.min_order_value'),
             'max_discount_value' => __('admin/coupon.fields.max_discount_value'),
             'valid_categories' => __('admin/coupon.fields.valid_categories'),
+            'valid_products' => __('admin/coupon.fields.valid_products'),
         ];
     }
 }

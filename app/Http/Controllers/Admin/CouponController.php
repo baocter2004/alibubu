@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Coupon\GetCouponRequest;
 use App\Http\Requests\Admin\Coupon\PostCouponRequest;
 use App\Models\Category;
+use App\Models\Product;
 use App\Services\Admin\CouponService;
 
 class CouponController extends Controller
@@ -137,6 +138,10 @@ class CouponController extends Controller
     {
         return [
             'categories' => Category::orderBy('name')->pluck('name', 'id'),
+            'products' => Product::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->pluck('name', 'id'),
         ];
     }
 }

@@ -3,13 +3,15 @@
         'min_order_value' => $coupon->restriction?->min_order_value,
         'max_discount_value' => $coupon->restriction?->max_discount_value,
         'valid_categories' => $coupon->restriction?->valid_categories ?? [],
+        'valid_products' => $coupon->restriction?->valid_products ?? [],
         'start_date' => $coupon->start_date?->format('Y-m-d'),
         'end_date' => $coupon->end_date?->format('Y-m-d'),
     ]) : ($data ?? []);
     $selectedCategories = old('valid_categories', $values['valid_categories'] ?? []);
+    $selectedProducts = old('valid_products', $values['valid_products'] ?? []);
 @endphp
 
-<form action="{{ $formAction }}" method="POST" class="space-y-6">
+<form action="{{ $formAction }}" method="POST" class="space-y-6" data-submit-once>
     @csrf
 
     <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -140,6 +142,29 @@
                 </div>
                 <p class="text-xs text-gray-500 mt-1.5">{{ __('admin/coupon.hints.valid_categories') }}</p>
                 @error('valid_categories')
+                    <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label class="flex items-center gap-x-2 text-sm font-medium text-primary mb-2">
+                    <i class="fa-solid fa-box-open"></i>
+                    {{ __('admin/coupon.fields.valid_products') }}
+                </label>
+
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-3 border rounded-lg {{ $errors->has('valid_products') ? 'is-invalid' : 'border-gray-300' }}">
+                    @foreach ($products as $id => $name)
+                        <label class="flex items-center gap-2 cursor-pointer min-w-0">
+                            <input type="checkbox" name="valid_products[]" value="{{ $id }}"
+                                @checked(in_array($id, $selectedProducts, false))
+                                class="h-4 w-4 shrink-0 rounded accent-accent">
+                            <span class="text-sm text-gray-700 truncate">{{ $name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <p class="text-xs text-gray-500 mt-1.5">{{ __('admin/coupon.hints.valid_products') }}</p>
+                @error('valid_products')
                     <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
                 @enderror
             </div>

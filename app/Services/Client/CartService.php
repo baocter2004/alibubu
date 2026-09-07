@@ -72,7 +72,7 @@ class CartService
         }
 
         $products = Product::query()
-            ->with('variants')
+            ->with(['variants', 'categories'])
             ->whereIn('id', $raw->pluck('product_id')->unique())
             ->get()
             ->keyBy('id');

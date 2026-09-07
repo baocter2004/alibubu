@@ -75,11 +75,13 @@ class CouponService extends BaseCrudService
             'min_order_value' => 0,
             'max_discount_value' => null,
             'valid_categories' => [],
+            'valid_products' => [],
         ], $validated);
 
         $data['id'] = $id;
         $data['code'] = mb_strtoupper(trim((string) $data['code']));
         $data['valid_categories'] = array_values(array_filter($data['valid_categories'] ?? []));
+        $data['valid_products'] = array_values(array_filter($data['valid_products'] ?? []));
 
         return $data;
     }
@@ -170,7 +172,7 @@ class CouponService extends BaseCrudService
 
     protected function restrictionKeys(): array
     {
-        return ['id', 'min_order_value', 'max_discount_value', 'valid_categories'];
+        return ['id', 'min_order_value', 'max_discount_value', 'valid_categories', 'valid_products'];
     }
 
     protected function restrictionAttributes(array $params): array
@@ -179,7 +181,7 @@ class CouponService extends BaseCrudService
             'min_order_value' => $params['min_order_value'] ?? 0,
             'max_discount_value' => $params['max_discount_value'] ?? null,
             'valid_categories' => ! empty($params['valid_categories']) ? $params['valid_categories'] : null,
-            'valid_products' => null,
+            'valid_products' => ! empty($params['valid_products']) ? $params['valid_products'] : null,
         ];
     }
 }

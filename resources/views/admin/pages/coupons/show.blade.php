@@ -6,6 +6,7 @@
     @php
         $isPercent = $coupon->discount_type === \App\Const\CouponConst::PERCENT;
         $validCategories = $coupon->restriction?->valid_categories ?? [];
+        $validProducts = $coupon->restriction?->valid_products ?? [];
     @endphp
 
     <div class="max-w-5xl mx-auto space-y-6">
@@ -41,6 +42,7 @@
                         ['label' => __('admin/coupon.fields.start_date'), 'value' => $coupon->start_date?->format('d/m/Y') ?? __('admin/coupon.unlimited')],
                         ['label' => __('admin/coupon.fields.end_date'), 'value' => $coupon->end_date?->format('d/m/Y') ?? __('admin/coupon.unlimited')],
                         ['label' => __('admin/coupon.fields.valid_categories'), 'value' => $validCategories ? collect($validCategories)->map(fn($id) => $categories[$id] ?? null)->filter()->implode(', ') : __('admin/coupon.all_categories')],
+                        ['label' => __('admin/coupon.fields.valid_products'), 'value' => $validProducts ? collect($validProducts)->map(fn($id) => $products[$id] ?? null)->filter()->implode(', ') : __('admin/coupon.all_products')],
                     ];
                 @endphp
 
