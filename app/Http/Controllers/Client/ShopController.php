@@ -69,6 +69,7 @@ class ShopController extends Controller
             'relatedProducts' => $this->productService->related($product),
             'recentlyViewed' => $recentlyViewed,
             'questions' => $this->questionService->paginateFor($product),
+            'ownPendingQuestions' => $this->questionService->ownPending($product),
             'reviews' => $this->reviewService->paginateFor($product),
             'ratingBreakdown' => $this->reviewService->breakdownFor($product),
             'canReview' => $this->reviewService->canReview($product, auth()->user()),

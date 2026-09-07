@@ -12,6 +12,9 @@ return [
         'marked_read' => 'Đã đánh dấu thông báo là đã đọc.',
         'marked_all_read' => 'Đã đánh dấu tất cả thông báo là đã đọc.',
     ],
+    'question' => [
+        'asked' => 'Câu hỏi mới về :product',
+    ],
     'order' => [
         'placed' => 'Đơn hàng mới :code',
         'detail' => ':customer · :items sản phẩm · :total',

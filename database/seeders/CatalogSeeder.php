@@ -160,7 +160,9 @@ class CatalogSeeder extends Seeder
 
         $attributes = [
             'Dung lượng' => ['128GB', '256GB', '512GB', '1TB'],
-            'Màu sắc' => ['Đen', 'Trắng', 'Xanh dương', 'Vàng đồng'],
+            'Màu sắc' => ['Đen', 'Trắng', 'Bạc', 'Xanh dương', 'Vàng đồng'],
+            'Kích thước' => ['41mm', '45mm'],
+            'Phiên bản' => ['Tiêu chuẩn'],
         ];
 
         foreach ($attributes as $name => $options) {

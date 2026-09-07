@@ -593,6 +593,25 @@
             </div>
         </form>
 
+        @if ($ownPendingQuestions->isNotEmpty())
+            <div class="space-y-3 mb-6">
+                @foreach ($ownPendingQuestions as $pending)
+                    <div class="flex gap-3 rounded-xl border border-dashed border-primary/30 bg-primary-soft/40 p-4">
+                        <span class="w-9 h-9 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                            <i class="fa-solid fa-hourglass-half text-xs"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-primary">{{ __('client.question.pending') }}</p>
+                            <p class="text-sm text-foreground mt-0.5">{{ $pending->question }}</p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                {{ $pending->created_at?->format('d/m/Y H:i') }}
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         @if ($questions->isEmpty())
             <p class="py-10 text-center text-sm text-muted-foreground">{{ __('client.question.empty') }}</p>
         @else

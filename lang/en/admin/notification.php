@@ -12,6 +12,9 @@ return [
         'marked_read' => 'Notification marked as read.',
         'marked_all_read' => 'All notifications marked as read.',
     ],
+    'question' => [
+        'asked' => 'New question about :product',
+    ],
     'order' => [
         'placed' => 'New order :code',
         'detail' => ':customer · :items items · :total',

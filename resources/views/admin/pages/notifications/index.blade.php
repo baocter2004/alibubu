@@ -38,14 +38,18 @@
                 @foreach ($notifications as $notification)
                     @php $data = $notification->data; @endphp
                     <li class="flex flex-wrap items-start gap-3 py-4 {{ $notification->read_at ? '' : 'bg-primary-soft/40' }}">
+                        @php $isQuestion = ($data['type'] ?? null) === 'product.question'; @endphp
+
                         <span
                             class="w-10 h-10 shrink-0 rounded-lg flex items-center justify-center {{ $notification->read_at ? 'bg-gray-100 text-gray-400' : 'bg-primary/10 text-primary' }}">
-                            <i class="fas fa-receipt"></i>
+                            <i class="fas {{ $isQuestion ? 'fa-comments' : 'fa-receipt' }}"></i>
                         </span>
 
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-gray-900">
-                                {{ __('admin/notification.order.placed', ['code' => $data['order_code'] ?? '-']) }}
+                                {{ $isQuestion
+                                    ? __('admin/notification.question.asked', ['product' => $data['product_name'] ?? '-'])
+                                    : __('admin/notification.order.placed', ['code' => $data['order_code'] ?? '-']) }}
                                 @unless ($notification->read_at)
                                     <span
                                         class="ml-1 px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-primary text-white align-middle">
@@ -54,11 +58,15 @@
                                 @endunless
                             </p>
                             <p class="text-sm text-gray-600 mt-0.5">
+                                @if ($isQuestion)
+                                    {{ Str::limit($data['question'] ?? '', 120) }}
+                                @else
                                 {{ __('admin/notification.order.detail', [
                                     'customer' => $data['customer'] ?? '-',
                                     'items' => $data['items_count'] ?? 0,
                                     'total' => format_price($data['total_amount'] ?? 0),
                                 ]) }}
+                                @endif
                             </p>
                             <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at?->format('d/m/Y H:i') }}</p>
                         </div>

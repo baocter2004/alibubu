@@ -23,6 +23,15 @@ return [
         'visibility' => 'Hiển thị',
     ],
 
+    'promotion' => [
+        'section' => 'Khuyến mãi kèm theo',
+        'hint' => 'Hiển thị ngay dưới giá trên trang sản phẩm.',
+        'add' => 'Thêm khuyến mãi',
+        'remove' => 'Xoá khuyến mãi',
+        'empty' => 'Chưa có khuyến mãi nào.',
+        'icon_placeholder' => 'fa-solid fa-gift',
+        'content_placeholder' => 'Ví dụ: Tặng ốp lưng chính hãng',
+    ],
     'filters' => [
         'sale_state' => 'Khuyến mãi',
         'sale_states' => [

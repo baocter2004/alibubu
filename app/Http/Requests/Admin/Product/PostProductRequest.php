@@ -46,6 +46,10 @@ class PostProductRequest extends FormRequest
                 $this->input('specifications', []),
                 fn ($spec) => ! empty($spec['name']) || ! empty($spec['value'])
             )),
+            'promotions' => array_values(array_filter(
+                $this->input('promotions', []),
+                fn ($promotion) => ! empty($promotion['content'])
+            )),
         ]);
     }
 
@@ -94,6 +98,10 @@ class PostProductRequest extends FormRequest
             'variants.*.attribute_value_ids.*' => ['uuid', Rule::exists('attribute_values', 'id')->where('is_active', true)],
 
             'specifications' => ['nullable', 'array', 'max:40'],
+            'promotions' => ['nullable', 'array', 'max:10'],
+            'promotions.*.id' => ['nullable', 'uuid'],
+            'promotions.*.icon' => ['nullable', 'string', 'max:60'],
+            'promotions.*.content' => ['required', 'string', 'max:180'],
             'specifications.*.id' => ['nullable', 'uuid', 'exists:product_specifications,id'],
             'specifications.*.group' => ['nullable', 'string', 'max:100'],
             'specifications.*.name' => ['required_with:specifications.*.value', 'nullable', 'string', 'max:120'],

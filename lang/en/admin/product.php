@@ -23,6 +23,15 @@ return [
         'visibility' => 'Visibility',
     ],
 
+    'promotion' => [
+        'section' => 'Included promotions',
+        'hint' => 'Shown right under the price on the product page.',
+        'add' => 'Add promotion',
+        'remove' => 'Remove promotion',
+        'empty' => 'No promotions yet.',
+        'icon_placeholder' => 'fa-solid fa-gift',
+        'content_placeholder' => 'For example: free official case',
+    ],
     'filters' => [
         'sale_state' => 'Promotion',
         'sale_states' => [

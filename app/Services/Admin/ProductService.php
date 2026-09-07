@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Const\GlobalConst;
 use App\Const\ProductConst;
 use App\Models\Product;
+use App\Models\ProductPromotion;
 use App\Models\ProductSpecification;
 use App\Models\ProductVariant;
 use App\Repositories\ProductRepository;
@@ -101,6 +102,7 @@ class ProductService extends BaseCrudService
             'is_active' => GlobalConst::IS_ACTIVE,
             'variants' => [],
             'specifications' => [],
+            'promotions' => [],
         ], $validated);
 
         $data['id'] = $id;
@@ -180,6 +182,7 @@ class ProductService extends BaseCrudService
                 $this->syncAccessories($product, $params['accessory_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
                 $this->syncSpecifications($product, $params['specifications'] ?? []);
+                $this->syncPromotions($product, $params['promotions'] ?? []);
 
                 return $product;
             });
@@ -206,6 +209,7 @@ class ProductService extends BaseCrudService
                 $this->syncAccessories($product, $params['accessory_ids'] ?? []);
                 $this->syncVariants($product, $params['variants'] ?? []);
                 $this->syncSpecifications($product, $params['specifications'] ?? []);
+                $this->syncPromotions($product, $params['promotions'] ?? []);
 
                 return $product;
             });
@@ -339,6 +343,33 @@ class ProductService extends BaseCrudService
         $product->updateQuietly(['stock' => (int) $product->variants()->sum('stock')]);
     }
 
+    protected function syncPromotions(Product $product, array $promotions): void
+    {
+        $keptIds = [];
+
+        foreach ($promotions as $index => $promotion) {
+            $attributes = [
+                'content' => $promotion['content'],
+                'icon' => $promotion['icon'] ?: null,
+                'ordinal' => $index,
+            ];
+
+            $model = ! empty($promotion['id'])
+                ? $product->promotions()->whereKey($promotion['id'])->first()
+                : null;
+
+            if ($model) {
+                $model->update($attributes);
+            } else {
+                $model = ProductPromotion::create(array_merge($attributes, ['product_id' => $product->id]));
+            }
+
+            $keptIds[] = $model->id;
+        }
+
+        $product->promotions()->whereNotIn('id', $keptIds)->delete();
+    }
+
     protected function syncSpecifications(Product $product, array $specs): void
     {
         $keptIds = [];
@@ -380,7 +411,7 @@ class ProductService extends BaseCrudService
 
     protected function productAttributes(array $params): array
     {
-        $attributes = Arr::except($params, ['id', 'category_ids', 'accessory_ids', 'persisted_thumbnail', 'variants', 'specifications']);
+        $attributes = Arr::except($params, ['id', 'category_ids', 'accessory_ids', 'persisted_thumbnail', 'variants', 'specifications', 'promotions']);
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {

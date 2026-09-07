@@ -132,7 +132,7 @@ class ProductController extends Controller
 
     public function edit(int|string $id)
     {
-        $product = $this->productService->filter(['relates' => ['categories', 'accessories']])->find($id);
+        $product = $this->productService->filter(['relates' => ['categories', 'accessories', 'promotions']])->find($id);
 
         abort_if(! $product, 404);
 

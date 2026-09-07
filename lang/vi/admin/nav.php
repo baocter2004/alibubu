@@ -20,6 +20,7 @@ return [
     'attributes' => 'Thuộc tính',
     'tags' => 'Nhãn',
     'reviews' => 'Đánh giá',
+    'questions' => 'Hỏi đáp',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
     'administrators' => 'Tài khoản quản trị',

@@ -33,8 +33,6 @@
 
     <main id="main"
         class="w-full max-w-7xl mx-auto flex-1 px-4 py-6 md:py-10 {{ $compareItems->isNotEmpty() ? 'pb-48 md:pb-32' : 'pb-24 md:pb-12' }}">
-        @include('components.form-errors')
-
         @yield('content')
     </main>
 

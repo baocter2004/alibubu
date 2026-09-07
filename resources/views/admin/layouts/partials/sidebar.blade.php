@@ -24,6 +24,7 @@
             'items' => [
                 ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders'), 'roles' => $allAdminRoles],
                 ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews'), 'roles' => $allAdminRoles],
+                ['type' => 'link', 'route' => 'admin.questions.index', 'active' => 'admin.questions.*', 'icon' => 'fa-comments', 'label' => __('admin/nav.questions'), 'roles' => $allAdminRoles],
                 ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons', 'roles' => $managementRoles],
             ],
         ],

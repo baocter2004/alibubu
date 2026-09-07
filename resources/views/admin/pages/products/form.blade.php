@@ -24,6 +24,14 @@
         ? $product->specifications->map(fn($sp) => ['id' => $sp->id, 'group' => $sp->group, 'name' => $sp->name, 'value' => $sp->value])->all()
         : ($values['specifications'] ?? []);
     $specRows = old('specifications', $existingSpecs);
+    $existingPromotions = $isEdit
+        ? $product->promotions->map(fn($promotion) => [
+            'id' => $promotion->id,
+            'icon' => $promotion->icon,
+            'content' => $promotion->content,
+        ])->all()
+        : ($values['promotions'] ?? []);
+    $promotionRows = old('promotions', $existingPromotions);
 @endphp
 
 <form
@@ -276,6 +284,34 @@
     </section>
 
     <section>
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-2 mb-5 border-b border-gray-200">
+            <div>
+                <h2 class="text-base font-semibold text-gray-900">{{ __('admin/product.promotion.section') }}</h2>
+                <p class="text-sm text-gray-500 mt-0.5">{{ __('admin/product.promotion.hint') }}</p>
+            </div>
+            <button type="button" id="add-promotion-btn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
+                <i class="fa-solid fa-plus"></i>
+                {{ __('admin/product.promotion.add') }}
+            </button>
+        </div>
+
+        <div id="promotion-list" class="space-y-3">
+            @foreach ($promotionRows as $index => $promotion)
+                @include('admin.pages.products.promotion-row', ['index' => $index, 'promotion' => $promotion])
+            @endforeach
+        </div>
+
+        <p id="promotion-empty" class="{{ count($promotionRows) ? 'hidden' : '' }} py-8 text-center text-sm text-gray-500">
+            {{ __('admin/product.promotion.empty') }}
+        </p>
+
+        <template id="promotion-template">
+            @include('admin.pages.products.promotion-row', ['index' => 'INDEX', 'promotion' => []])
+        </template>
+    </section>
+
+    <section>
         <h2 class="text-base font-semibold text-gray-900 pb-2 mb-5 border-b border-gray-200">
             {{ __('admin/product.sections.media') }}
         </h2>
@@ -401,6 +437,25 @@
             });
 
             refreshSpecState();
+
+            let promotionIndex = {{ count($promotionRows) }};
+
+            function refreshPromotionState() {
+                $('#promotion-empty').toggleClass('hidden', $('#promotion-list .promotion-item').length > 0);
+            }
+
+            $('#add-promotion-btn').on('click', function() {
+                $('#promotion-list').append($('#promotion-template').html().replace(/INDEX/g, promotionIndex));
+                promotionIndex += 1;
+                refreshPromotionState();
+            });
+
+            $(document).on('click', '.remove-promotion-btn', function() {
+                $(this).closest('.promotion-item').remove();
+                refreshPromotionState();
+            });
+
+            refreshPromotionState();
         });
     </script>
 @endpush
