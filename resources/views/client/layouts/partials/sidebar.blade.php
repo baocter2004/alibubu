@@ -18,7 +18,7 @@
         </div>
 
         <div class="px-5 py-4 border-b border-border">
-            <form action="{{ route('shop.index') }}" method="GET" class="relative">
+            <form action="{{ route('shop.index') }}" method="GET" class="relative" data-search-history>
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
                 <input type="search" name="keyword" value="{{ request('keyword') }}"
                     aria-label="{{ __('client.nav.search_placeholder') }}"

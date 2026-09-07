@@ -28,7 +28,7 @@
                     {{ __('client.home.description') }}
                 </p>
 
-                <form action="{{ route('shop.index') }}" method="GET" class="max-w-lg mb-8">
+                <form action="{{ route('shop.index') }}" method="GET" class="max-w-lg mb-8" data-search-history>
                     <div class="flex items-center gap-2 p-1.5 bg-white rounded-2xl shadow-lg">
                         <div class="relative flex-1 min-w-0">
                             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"></i>
@@ -154,13 +154,18 @@
                 </a>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-3" data-reveal-group>
+            <div class="grid gap-4 md:grid-cols-3 md:auto-rows-[8.5rem]" data-reveal-group>
                 <a href="{{ route('shop.index', ['category_id' => $leadCategory->id]) }}"
-                    class="reveal grain group relative md:row-span-2 flex flex-col justify-end min-h-56 md:min-h-full overflow-hidden ink-panel rounded-2xl p-7 text-white">
-                    <i class="{{ $leadCategory->icon ?: 'fa-solid fa-tag' }} absolute -right-6 -top-4 text-8xl text-white/[0.07] transition-transform duration-500 group-hover:scale-110"></i>
+                    class="reveal grain group relative md:row-span-2 flex min-h-64 md:min-h-0 flex-col justify-end overflow-hidden ink-panel rounded-2xl p-6 sm:p-7 text-white">
+                    <span class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                        <span class="absolute -right-16 -bottom-20 h-56 w-56 rounded-full bg-accent/10 blur-2xl"></span>
+                        <span class="absolute right-5 top-5 flex h-24 w-24 rotate-6 items-center justify-center rounded-3xl border border-white/15 bg-white/10 text-accent shadow-inner transition duration-500 group-hover:rotate-0 group-hover:scale-105">
+                            <i class="{{ $leadCategory->icon ?: 'fa-solid fa-tag' }} text-5xl leading-none"></i>
+                        </span>
+                    </span>
 
                     <span class="relative">
-                        <span class="block text-xl font-bold mb-1">{{ $leadCategory->name }}</span>
+                        <span class="mb-1 block max-w-[12rem] text-xl font-bold leading-tight">{{ $leadCategory->name }}</span>
                         <span class="block text-sm text-white/55 mb-4">
                             {{ __('client.home.categories.count', ['count' => $leadCategory->products_count]) }}
                         </span>
@@ -173,16 +178,17 @@
 
                 @foreach ($restCategories as $category)
                     <a href="{{ route('shop.index', ['category_id' => $category->id]) }}"
-                        class="reveal group flex items-center gap-4 card-surface card-interactive p-4">
-                        <span class="w-12 h-12 shrink-0 rounded-xl bg-primary-soft text-primary flex items-center justify-center transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
-                            <i class="{{ $category->icon ?: 'fa-solid fa-tag' }}"></i>
+                        class="reveal group flex min-h-[7.5rem] md:min-h-0 items-center gap-4 card-surface card-interactive p-4 sm:p-5">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+                            <i class="{{ $category->icon ?: 'fa-solid fa-tag' }} text-lg leading-none"></i>
                         </span>
                         <span class="min-w-0">
-                            <span class="block text-sm font-semibold text-foreground line-clamp-1">{{ $category->name }}</span>
+                            <span class="block text-sm font-semibold text-foreground line-clamp-2 leading-snug">{{ $category->name }}</span>
                             <span class="block text-xs text-muted-foreground tabular">
                                 {{ __('client.home.categories.count', ['count' => $category->products_count]) }}
                             </span>
                         </span>
+                        <i class="fa-solid fa-arrow-right ml-auto shrink-0 text-xs text-muted-foreground/70 transition duration-300 group-hover:translate-x-1 group-hover:text-primary"></i>
                     </a>
                 @endforeach
             </div>

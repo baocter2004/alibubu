@@ -27,11 +27,30 @@ Route::prefix('/admin')
             Route::patch('/password', 'updatePassword')->name('password.update');
         });
 
+        Route::prefix('products')
+            ->name('products.')
+            ->controller(ProductController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/import', 'importForm')->name('import');
+                Route::post('/import', 'import')->name('import.store');
+                Route::get('/import/template', 'importTemplate')->name('import.template');
+                Route::get('/trash', 'trash')->name('trash');
+                Route::get('/create', 'create')->name('create');
+                Route::get('/confirm', 'confirmDetail')->name('confirm-detail');
+                Route::post('/confirm/{id?}', 'confirm')->name('confirm');
+                Route::post('/save', 'save')->name('save');
+                Route::post('/restore/{id}', 'restore')->name('restore');
+                Route::delete('/force/{id}', 'forceDestroy')->name('force-destroy');
+                Route::get('/{id}/edit', 'edit')->name('edit');
+                Route::get('/{id}', 'show')->name('show');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
         foreach ([
             'users' => UserController::class,
             'branches' => BranchController::class,
             'categories' => CategoryController::class,
-            'products' => ProductController::class,
             'coupons' => CouponController::class,
             'attributes' => AttributeController::class,
             'tags' => TagController::class,

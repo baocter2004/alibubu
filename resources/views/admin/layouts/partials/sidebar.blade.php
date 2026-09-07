@@ -105,6 +105,13 @@
                                     {{ $child['label'] }}
                                 </a>
                             @endforeach
+                            @if ($item['base'] === 'admin.products')
+                                <a href="{{ route('admin.products.import') }}"
+                                    class="submenu-link {{ request()->routeIs('admin.products.import*') ? 'is-active' : '' }}">
+                                    <i class="fa-solid fa-file-import w-3.5 text-center text-xs"></i>
+                                    {{ __('admin/product.import.title') }}
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif

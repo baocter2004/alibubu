@@ -11,6 +11,11 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <a href="{{ route('admin.products.import') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary-soft rounded-lg hover:bg-primary hover:text-white transition-colors">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span class="hidden sm:inline">{{ __('admin/product.import.title') }}</span>
+                </a>
                 <a href="{{ route('admin.products.trash') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                     <i class="fas fa-trash"></i>

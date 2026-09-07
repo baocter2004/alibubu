@@ -476,8 +476,8 @@ $(function () {
         $panel.removeClass("hidden");
     }
 
-    $(document).on("submit", "form[data-search-box]", function () {
-        saveRecentSearch($(this).find("[data-search-input]").val() || "");
+    $(document).on("submit", "form[data-search-box], form[data-search-history]", function () {
+        saveRecentSearch($(this).find("[data-search-input], [name=keyword]").val() || "");
     });
 
     $(document).on("focus", "[data-search-input]", function () {

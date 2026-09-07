@@ -367,8 +367,14 @@ class ProductService extends BaseCrudService
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {
-            $prices = collect($params['variants'] ?? [])->pluck('price')->filter()->map(fn ($p) => (float) $p);
-            $salePrices = collect($params['variants'] ?? [])->pluck('sale_price')->filter()->map(fn ($p) => (float) $p);
+            $prices = collect($params['variants'] ?? [])
+                ->pluck('price')
+                ->filter(fn ($p) => $p !== null && $p !== '')
+                ->map(fn ($p) => (float) $p);
+            $salePrices = collect($params['variants'] ?? [])
+                ->pluck('sale_price')
+                ->filter(fn ($p) => $p !== null && $p !== '')
+                ->map(fn ($p) => (float) $p);
 
             $attributes['price'] = $prices->min();
             $attributes['sale_price'] = $salePrices->count() === $prices->count() ? $salePrices->min() : null;

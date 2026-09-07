@@ -4,6 +4,8 @@ namespace App\Http\Requests\Admin\Product;
 
 use App\Const\GlobalConst;
 use App\Const\ProductConst;
+use App\Models\AttributeValue;
+use App\Models\ProductVariant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -44,30 +46,35 @@ class PostProductRequest extends FormRequest
     {
         $id = $this->route('id');
         $isVariable = (int) $this->input('type') === ProductConst::VARIANT;
+        $variantIdRule = Rule::exists('product_variants', 'id');
+        if ($id) {
+            $variantIdRule->where(fn ($query) => $query->where('product_id', $id));
+        }
 
         return [
             'type' => ['required', Rule::in([ProductConst::SINGLE, ProductConst::VARIANT])],
             'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($id)],
-            'branch_id' => ['required', 'uuid', 'exists:branches,id'],
+            'branch_id' => ['required', 'uuid', Rule::exists('branches', 'id')->where('is_active', true)],
             'category_ids' => ['required', 'array', 'min:1'],
-            'category_ids.*' => ['uuid', 'exists:categories,id'],
+            'category_ids.*' => ['uuid', Rule::exists('categories', 'id')->where('is_active', true)],
             'short_descriptions' => ['nullable', 'string', 'max:255'],
             'descriptions' => ['nullable', 'string', 'max:5000'],
             'thumbnail' => [$id ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'stock' => ['required', 'integer', 'min:0', 'max:4294967295'],
             'price' => [Rule::requiredIf(! $isVariable), 'nullable', 'numeric', 'min:0', 'max:99999999999'],
             'sale_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
             'sale_price_start_at' => ['nullable', 'date', 'required_with:sale_price'],
             'sale_price_end_at' => ['nullable', 'date', 'after:sale_price_start_at'],
 
-            'variants' => [Rule::requiredIf($isVariable), 'array', 'max:20'],
-            'variants.*.id' => ['nullable', 'uuid', 'exists:product_variants,id'],
+            'variants' => [Rule::requiredIf($isVariable), 'array', 'min:1', 'max:20'],
+            'variants.*.id' => ['nullable', 'uuid', $variantIdRule],
             'variants.*.sku' => ['nullable', 'string', 'max:255'],
             'variants.*.price' => ['required_with:variants.*', 'nullable', 'numeric', 'min:0', 'max:99999999999'],
             'variants.*.sale_price' => ['nullable', 'numeric', 'min:0', 'lt:variants.*.price'],
             'variants.*.is_active' => ['nullable', 'boolean'],
             'variants.*.attribute_value_ids' => [Rule::requiredIf($isVariable), 'array', 'min:1'],
-            'variants.*.attribute_value_ids.*' => ['uuid', 'exists:attribute_values,id'],
+            'variants.*.attribute_value_ids.*' => ['uuid', Rule::exists('attribute_values', 'id')->where('is_active', true)],
 
             'specifications' => ['nullable', 'array', 'max:40'],
             'specifications.*.id' => ['nullable', 'uuid', 'exists:product_specifications,id'],
@@ -95,6 +102,7 @@ class PostProductRequest extends FormRequest
             'short_descriptions' => __('admin/product.fields.short_descriptions'),
             'descriptions' => __('admin/product.fields.descriptions'),
             'thumbnail' => __('admin/product.fields.thumbnail'),
+            'stock' => __('admin/product.fields.stock'),
             'price' => __('admin/product.fields.price'),
             'sale_price' => __('admin/product.fields.sale_price'),
             'sale_price_start_at' => __('admin/product.fields.sale_price_start_at'),
@@ -121,9 +129,38 @@ class PostProductRequest extends FormRequest
         $validator->after(function ($validator) {
             $variants = collect($this->input('variants', []));
             $signatures = [];
+            $attributeValueIds = $variants
+                ->flatMap(fn ($variant) => $variant['attribute_value_ids'] ?? [])
+                ->filter()
+                ->unique()
+                ->values();
+            $attributeValues = AttributeValue::query()
+                ->with('attribute')
+                ->whereIn('id', $attributeValueIds)
+                ->get()
+                ->keyBy('id');
+            $variantSkus = [];
 
             foreach ($variants as $index => $variant) {
-                $values = collect($variant['attribute_value_ids'] ?? [])->sort()->implode('-');
+                $rawValues = collect($variant['attribute_value_ids'] ?? [])->filter()->values();
+                $values = $rawValues->sort()->implode('-');
+
+                if ($rawValues->count() !== $rawValues->unique()->count()) {
+                    $validator->errors()->add(
+                        "variants.$index.attribute_value_ids",
+                        __('admin/product.messages.duplicate_attribute_value')
+                    );
+                }
+
+                $attributeGroups = $rawValues
+                    ->map(fn ($valueId) => $attributeValues->get($valueId)?->attribute_id)
+                    ->filter();
+                if ($attributeGroups->count() !== $attributeGroups->unique()->count()) {
+                    $validator->errors()->add(
+                        "variants.$index.attribute_value_ids",
+                        __('admin/product.messages.one_value_per_attribute')
+                    );
+                }
 
                 if ($values === '') {
                     continue;
@@ -137,6 +174,33 @@ class PostProductRequest extends FormRequest
                 }
 
                 $signatures[] = $values;
+
+                $sku = trim((string) ($variant['sku'] ?? ''));
+                if ($sku !== '') {
+                    $skuKey = mb_strtolower($sku);
+                    if (isset($variantSkus[$skuKey])) {
+                        $validator->errors()->add(
+                            "variants.$index.sku",
+                            __('admin/product.messages.duplicate_variant_sku')
+                        );
+                    }
+                    $variantSkus[$skuKey] = $variant['id'] ?? null;
+                }
+            }
+
+            if ($variantSkus !== []) {
+                $existing = ProductVariant::query()
+                    ->whereIn('sku', array_keys($variantSkus))
+                    ->get(['sku', 'id']);
+                foreach ($existing as $model) {
+                    $submittedId = $variantSkus[mb_strtolower($model->sku)] ?? null;
+                    if ((string) $submittedId !== (string) $model->id) {
+                        $validator->errors()->add(
+                            'variants',
+                            __('admin/product.messages.variant_sku_exists', ['sku' => $model->sku])
+                        );
+                    }
+                }
             }
         });
     }
