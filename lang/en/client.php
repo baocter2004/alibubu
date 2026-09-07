@@ -134,6 +134,8 @@ return [
     ],
 
     'product' => [
+        'label' => 'Product',
+        'variant_label' => 'Variant',
         'views' => ':count views',
         'sku' => 'SKU',
         'select_variant' => 'Choose a version',
@@ -559,6 +561,7 @@ return [
         'product_unavailable' => 'This product is no longer available.',
         'variant_invalid' => 'The selected version is invalid.',
         'variant_required' => 'Please choose a product version.',
+        'phone_invalid' => 'The phone number format is invalid.',
         'order_success' => 'Your order has been placed!',
         'order_failed' => 'Could not place the order. Please try again.',
         'product_not_found' => 'This product does not exist.',

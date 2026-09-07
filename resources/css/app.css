@@ -638,6 +638,21 @@ body:has(.buy-bar) .compare-bar {
     }
 }
 
+body:has(.bottom-nav) > footer {
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom));
+}
+
+body:has(.bottom-nav):has(.buy-bar) > footer {
+    padding-bottom: calc(9.75rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 768px) {
+    body:has(.bottom-nav) > footer,
+    body:has(.bottom-nav):has(.buy-bar) > footer {
+        padding-bottom: 0;
+    }
+}
+
 .compare-bar {
     position: fixed;
     left: 0;

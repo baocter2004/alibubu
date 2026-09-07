@@ -41,11 +41,11 @@ class GetProductRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'keyword' => 'từ khoá',
-            'category_id' => 'danh mục',
-            'branch_id' => 'thương hiệu',
-            'min_price' => 'giá thấp nhất',
-            'max_price' => 'giá cao nhất',
+            'keyword' => __('client.shop.keyword'),
+            'category_id' => __('client.shop.category'),
+            'branch_id' => __('client.shop.brand'),
+            'min_price' => __('client.shop.price_from'),
+            'max_price' => __('client.shop.price_to'),
         ];
     }
 }

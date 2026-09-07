@@ -134,6 +134,8 @@ return [
     ],
 
     'product' => [
+        'label' => 'sản phẩm',
+        'variant_label' => 'phiên bản',
         'views' => ':count lượt xem',
         'sku' => 'Mã SKU',
         'select_variant' => 'Chọn phiên bản',
@@ -559,6 +561,7 @@ return [
         'product_unavailable' => 'Sản phẩm không còn khả dụng.',
         'variant_invalid' => 'Phiên bản sản phẩm không hợp lệ.',
         'variant_required' => 'Vui lòng chọn phiên bản sản phẩm.',
+        'phone_invalid' => 'Số điện thoại không đúng định dạng.',
         'order_success' => 'Đặt hàng thành công!',
         'order_failed' => 'Đặt hàng thất bại. Vui lòng thử lại.',
         'product_not_found' => 'Sản phẩm không tồn tại.',
