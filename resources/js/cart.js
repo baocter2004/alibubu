@@ -405,6 +405,95 @@ $(function () {
     });
 
     let suggestTimer = null;
+    const RECENT_SEARCHES_KEY = "alibubu.recent-searches";
+
+    function readRecentSearches() {
+        try {
+            const data = JSON.parse(window.localStorage.getItem(RECENT_SEARCHES_KEY) || "[]");
+            return Array.isArray(data)
+                ? data.filter((item) => typeof item === "string" && item.trim())
+                : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function writeRecentSearches(items) {
+        try {
+            window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(items.slice(0, 6)));
+        } catch (error) {
+        }
+    }
+
+    function saveRecentSearch(keyword) {
+        const value = keyword.trim();
+
+        if (!value) return;
+
+        writeRecentSearches([
+            value,
+            ...readRecentSearches().filter((item) => item.toLowerCase() !== value.toLowerCase()),
+        ]);
+    }
+
+    function renderRecentSearches($panel, $input) {
+        const searches = readRecentSearches();
+
+        if (!searches.length) {
+            $panel.addClass("hidden").empty();
+            return;
+        }
+
+        $panel.empty().append(
+            $("<div>", {
+                class: "flex items-center justify-between px-4 py-2.5 border-b border-border",
+            }).append(
+                $("<span>", {
+                    class: "text-xs font-semibold uppercase tracking-wide text-muted-foreground",
+                    text: labels().searchHistory || "",
+                }),
+                $("<button>", {
+                    type: "button",
+                    class: "text-xs font-medium text-primary hover:underline",
+                    text: labels().clearSearchHistory || "",
+                    "data-clear-search-history": "",
+                }),
+            ),
+        );
+
+        searches.forEach((keyword) => {
+            $panel.append(
+                $("<a>", {
+                    href: $input.data("search-all") + "?keyword=" + encodeURIComponent(keyword),
+                    class: "flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors",
+                }).append(
+                    $("<i>", { class: "fa-solid fa-clock-rotate-left text-xs text-muted-foreground" }),
+                    $("<span>", { class: "truncate", text: keyword }),
+                ),
+            );
+        });
+
+        $panel.removeClass("hidden");
+    }
+
+    $(document).on("submit", "form[data-search-box], form[data-search-history]", function () {
+        saveRecentSearch($(this).find("[data-search-input], [name=keyword]").val() || "");
+    });
+
+    $(document).on("focus", "[data-search-input]", function () {
+        if (!$(this).val().trim()) {
+            renderRecentSearches(
+                $(this).closest("[data-search-box]").find("[data-search-panel]"),
+                $(this),
+            );
+        }
+    });
+
+    $(document).on("click", "[data-clear-search-history]", function (event) {
+        event.preventDefault();
+        writeRecentSearches([]);
+        $(this).closest("[data-search-panel]").addClass("hidden").empty();
+    });
 
     $(document).on("input", "[data-search-input]", function () {
         const $input = $(this);

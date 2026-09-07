@@ -22,6 +22,7 @@ return [
     'reviews' => 'Đánh giá',
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
+    'administrators' => 'Tài khoản quản trị',
     'provinces' => 'Tỉnh/Thành phố',
     'wards' => 'Phường/Xã',
 
@@ -31,6 +32,8 @@ return [
     'coming_soon' => 'Sắp ra mắt',
 
     'search_placeholder' => 'Tìm kiếm...',
+    'menu' => 'Mở menu',
+    'close_menu' => 'Đóng menu',
     'notifications' => 'Thông báo',
     'role' => 'Quản trị viên',
     'profile' => 'Tài khoản của tôi',

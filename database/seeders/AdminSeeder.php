@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Const\AdminConst;
 use App\Models\Admin;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,7 @@ class AdminSeeder extends Seeder
             [
                 'name' => 'Quản trị viên',
                 'password' => 'password',
+                'role' => AdminConst::ROLE_SUPER_ADMIN,
             ]
         );
     }

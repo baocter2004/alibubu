@@ -3,10 +3,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const $overlay = $("#overlay");
     const RAIL_KEY = "alibubu:sidebar-collapsed";
     const isDesktop = () => $(window).width() > 1024;
+    const syncSidebarToggle = () => {
+        const expanded = isDesktop()
+            ? !$sidebar.hasClass("collapsed")
+            : $sidebar.hasClass("show");
+
+        $("#sidebarToggle").attr("aria-expanded", expanded ? "true" : "false");
+    };
 
     if (isDesktop() && localStorage.getItem(RAIL_KEY) === "1") {
         $sidebar.addClass("collapsed");
     }
+    syncSidebarToggle();
 
     function openSubmenus() {
         $(".sidebar-dropdown.active").find(".submenu").show();
@@ -25,18 +33,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 openSubmenus();
             }
 
+            syncSidebarToggle();
+
             return;
         }
 
         $sidebar.toggleClass("show");
         $overlay.toggleClass("active");
         $("body").toggleClass("overflow-hidden");
+        syncSidebarToggle();
     });
 
     $("#sidebarClose, #overlay").on("click", function () {
         $sidebar.removeClass("show");
         $overlay.removeClass("active");
         $("body").removeClass("overflow-hidden");
+        syncSidebarToggle();
     });
 
     $(window).on("resize", function () {
@@ -45,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
             $overlay.removeClass("active");
             $("body").removeClass("overflow-hidden");
         }
+        syncSidebarToggle();
     });
 
     $(".dropdown-toggle").on("click", function (e) {
@@ -55,8 +68,10 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
 
         const $submenu = $(this).siblings(".submenu");
+        const willExpand = $submenu.is(":hidden");
         $submenu.slideToggle(220);
         $(this).find(".arrow-icon").toggleClass("rotate-90");
+        $(this).attr("aria-expanded", willExpand ? "true" : "false");
     });
 
     $(window).on("scroll", function () {

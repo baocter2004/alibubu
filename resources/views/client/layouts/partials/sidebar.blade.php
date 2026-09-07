@@ -1,4 +1,5 @@
-<div id="mobile-menu" class="fixed inset-0 z-50 hidden md:hidden">
+<div id="mobile-menu" class="fixed inset-0 z-50 hidden md:hidden" role="dialog" aria-modal="true"
+    aria-hidden="true" aria-label="{{ __('client.nav.menu') }}">
     <div id="menu-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
     <div id="menu-panel"
@@ -17,9 +18,10 @@
         </div>
 
         <div class="px-5 py-4 border-b border-border">
-            <form action="{{ route('shop.index') }}" method="GET" class="relative">
+            <form action="{{ route('shop.index') }}" method="GET" class="relative" data-search-history>
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
                 <input type="search" name="keyword" value="{{ request('keyword') }}"
+                    aria-label="{{ __('client.nav.search_placeholder') }}"
                     placeholder="{{ __('client.nav.search_placeholder') }}"
                     class="w-full pl-9 pr-4 py-2.5 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
             </form>
@@ -49,6 +51,12 @@
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                 <i class="fa-solid fa-circle-info w-4 text-center"></i>
                 {{ __('client.nav.about') }}
+            </a>
+
+            <a href="{{ route('order.track') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <i class="fa-solid fa-truck-fast w-4 text-center"></i>
+                {{ __('client.nav.track_order') }}
             </a>
 
             @auth

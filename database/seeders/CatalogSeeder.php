@@ -197,6 +197,8 @@ class CatalogSeeder extends Seeder
         $matrix = $this->variantMatrix($item['category']);
         $gallery = $product->galleries->pluck('image')->values();
         $keptIds = [];
+        $baseStock = intdiv((int) ($item['stock'] ?? 0), max(count($matrix), 1));
+        $stockRemainder = (int) ($item['stock'] ?? 0) % max(count($matrix), 1);
 
         foreach ($matrix as $position => $combo) {
             $price = (int) ($item['price'] + $combo['extra']);
@@ -208,6 +210,7 @@ class CatalogSeeder extends Seeder
                     'product_id' => $product->id,
                     'price' => $price,
                     'sale_price' => $sale,
+                    'stock' => $baseStock + ($position < $stockRemainder ? 1 : 0),
                     'thumbnail' => $gallery[$position % max($gallery->count(), 1)] ?? $product->thumbnail,
                     'is_active' => true,
                 ]
@@ -231,6 +234,7 @@ class CatalogSeeder extends Seeder
         $product->update([
             'price' => $prices->min(),
             'sale_price' => $item['sale_price'] ? (int) ($item['sale_price'] + collect($matrix)->min('extra')) : null,
+            'stock' => (int) $product->variants()->sum('stock'),
         ]);
     }
 

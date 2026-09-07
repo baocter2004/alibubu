@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Users;
 
 use App\Const\UserConst;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PostUserRequest extends FormRequest
@@ -52,7 +53,19 @@ class PostUserRequest extends FormRequest
                         !empty($address['ward_id']) &&
                         !empty($address['address'])
                     ) {
-                        $validAddressCount++;
+                        $wardMatchesProvince = DB::table('wards')
+                            ->where('id', $address['ward_id'])
+                            ->where('province_id', $address['province_id'])
+                            ->exists();
+
+                        if ($wardMatchesProvince) {
+                            $validAddressCount++;
+                        } else {
+                            $validator->errors()->add(
+                                "user_addresses.$index.ward_id",
+                                'Phường/xã không thuộc tỉnh/thành phố đã chọn'
+                            );
+                        }
                     }
                 }
             }

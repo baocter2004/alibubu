@@ -19,6 +19,7 @@
     <script>document.documentElement.classList.add('js-reveal');</script>
 
     @include('client.layouts.partials.common.css')
+    @stack('head')
     @stack('styles')
 </head>
 
@@ -49,6 +50,8 @@
             failed: @json(__('client.messages.action_failed')),
             searchEmpty: @json(__('client.nav.search_no_result')),
             searchAll: @json(__('client.nav.search_view_all')),
+            searchHistory: @json(__('client.nav.search_history')),
+            clearSearchHistory: @json(__('client.nav.clear_search_history')),
         };
     </script>
 

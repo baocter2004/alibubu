@@ -8,6 +8,8 @@ use App\Mail\OrderPlaced;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -32,11 +34,12 @@ class OrderService
 
         $subtotal = $this->cartService->subtotal($items);
         $user = $userId ? User::find($userId) : null;
-        $applied = $this->couponService->current($items, $subtotal, $user);
-        $coupon = $applied['coupon'] ?? null;
-        $discount = (float) ($applied['discount'] ?? 0);
 
-        $order = DB::transaction(function () use ($items, $params, $userId, $subtotal, $coupon, $discount) {
+        $order = DB::transaction(function () use ($items, $params, $userId, $subtotal, $user) {
+            $applied = $this->couponService->currentForOrder($items, $subtotal, $user);
+            $coupon = $applied['coupon'] ?? null;
+            $discount = (float) ($applied['discount'] ?? 0);
+
             $order = Order::create(array_merge([
                 'code' => $this->generateCode(),
                 'user_id' => $userId,
@@ -90,7 +93,19 @@ class OrderService
             $product = $item['product'];
             $quantity = (int) $item['quantity'];
 
-            $affected = \App\Models\Product::whereKey($product->id)
+            if ($item['variant']) {
+                $variantAffected = ProductVariant::whereKey($item['variant']->id)
+                    ->where('stock', '>=', $quantity)
+                    ->update([
+                        'stock' => DB::raw('stock - ' . $quantity),
+                    ]);
+
+                if ($variantAffected === 0) {
+                    throw new \RuntimeException(__('client.messages.out_of_stock', ['name' => $product->name]));
+                }
+            }
+
+            $affected = Product::whereKey($product->id)
                 ->where('stock', '>=', $quantity)
                 ->update([
                     'stock' => DB::raw('stock - ' . $quantity),
@@ -125,7 +140,17 @@ class OrderService
             return;
         }
 
-        $coupon->increment('usage_count');
+        $affected = Coupon::query()
+            ->whereKey($coupon->id)
+            ->where(function ($query) {
+                $query->where('usage_limit', 0)
+                    ->orWhereColumn('usage_count', '<', 'usage_limit');
+            })
+            ->increment('usage_count');
+
+        if ($affected === 0) {
+            throw new \RuntimeException(__('client.coupon.messages.exhausted'));
+        }
 
         if ($userId) {
             $coupon->users()->attach($userId, [

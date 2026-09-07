@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 abstract class BaseRepository
 {
@@ -240,6 +241,54 @@ abstract class BaseRepository
             });
 
         return $query;
+    }
+
+    protected function applyKeyword(Builder $query, ?string $keyword, array $columns, array $relations = [], array $asciiColumns = []): void
+    {
+        $words = $this->keywordWords((string) $keyword);
+
+        if ($words === []) {
+            return;
+        }
+
+        foreach ($words as $word) {
+            $like = $this->likeValue($word);
+            $folded = Str::slug(Str::ascii($word));
+            $ascii = $folded === '' ? null : $this->likeValue($folded);
+
+            $query->where(function (Builder $group) use ($columns, $relations, $asciiColumns, $like, $ascii) {
+                foreach (array_values($columns) as $index => $column) {
+                    $this->whereLike($group, $column, $like, $index > 0);
+                }
+
+                foreach ($ascii === null ? [] : $asciiColumns as $column) {
+                    $this->whereLike($group, $column, $ascii);
+                }
+
+                foreach ($relations as $relation => $column) {
+                    $group->orWhereHas($relation, fn (Builder $sub) => $this->whereLike($sub, $column, $like, false));
+                }
+            });
+        }
+    }
+
+    protected function keywordWords(string $keyword, int $max = 6): array
+    {
+        $words = preg_split('/\s+/u', trim($keyword), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        return array_slice($words, 0, $max);
+    }
+
+    protected function whereLike(Builder $query, string $column, string $value, bool $or = true): Builder
+    {
+        $sql = $column . " LIKE ? ESCAPE '\\'";
+
+        return $or ? $query->orWhereRaw($sql, [$value]) : $query->whereRaw($sql, [$value]);
+    }
+
+    protected function likeValue(string $value): string
+    {
+        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value) . '%';
     }
 
     public function get(array $params = []): Collection

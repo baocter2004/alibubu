@@ -122,7 +122,7 @@ class Product extends Model
     public function getEffectivePriceAttribute(): ?float
     {
         if ($this->hasVariants()) {
-            $variant = $this->variants->sortBy(fn ($item) => $item->effective_price)->first();
+            $variant = $this->sellableVariants()->sortBy(fn ($item) => $item->effective_price)->first();
 
             return $variant?->effective_price;
         }
@@ -133,7 +133,7 @@ class Product extends Model
     public function getBasePriceAttribute(): ?float
     {
         if ($this->hasVariants()) {
-            return $this->variants->sortBy(fn ($item) => $item->effective_price)->first()?->price;
+            return $this->sellableVariants()->sortBy(fn ($item) => $item->effective_price)->first()?->price;
         }
 
         return $this->price === null ? null : (float) $this->price;
@@ -166,6 +166,12 @@ class Product extends Model
 
     public function inStock(): bool
     {
+        if ($this->hasVariants()) {
+            return $this->relationLoaded('variants')
+                ? $this->variants->contains(fn ($variant) => $variant->is_active && $variant->stock > 0)
+                : $this->variants()->where('is_active', true)->where('stock', '>', 0)->exists();
+        }
+
         return $this->stock > 0;
     }
 
@@ -186,5 +192,12 @@ class Product extends Model
         }
 
         return true;
+    }
+
+    protected function sellableVariants()
+    {
+        return $this->relationLoaded('variants')
+            ? $this->variants->where('is_active', true)
+            : $this->variants()->where('is_active', true)->get();
     }
 }

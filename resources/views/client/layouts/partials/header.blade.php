@@ -3,6 +3,9 @@
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <span><i class="fa-solid fa-truck mr-1"></i> {{ __('client.nav.free_shipping') }}</span>
             <div class="flex gap-4">
+                <a href="{{ route('order.track') }}" class="py-1 hover:text-accent transition-colors">
+                    {{ __('client.nav.track_order') }}
+                </a>
                 <a href="{{ route('about') }}" class="py-1 hover:text-accent transition-colors">
                     {{ __('client.nav.about') }}
                 </a>
@@ -18,7 +21,8 @@
             <div class="flex items-center gap-3 min-w-0 shrink">
                 <button id="menu-open" type="button"
                     class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors"
-                    aria-label="{{ __('client.nav.categories') }}">
+                    aria-controls="mobile-menu" aria-expanded="false"
+                    aria-label="{{ __('client.nav.open_menu') }}">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
@@ -50,7 +54,8 @@
 
                     @if ($navCategories->isNotEmpty())
                         <div class="relative" id="category-menu">
-                            <button type="button"
+                            <button type="button" id="category-menu-toggle" aria-controls="category-dropdown"
+                                aria-expanded="false" aria-haspopup="true"
                                 class="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                                 {{ __('client.nav.categories') }}
                                 <i class="fa-solid fa-chevron-down text-[10px]"></i>
@@ -93,16 +98,23 @@
                 </nav>
             </div>
 
-            <form action="{{ route('shop.index') }}" method="GET" class="hidden md:block flex-1 max-w-sm"
+                            <form action="{{ route('shop.index') }}" method="GET" class="hidden md:block flex-1 max-w-sm"
                 data-search-box>
                 <div class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
                     <input type="search" name="keyword" value="{{ request('keyword') }}" autocomplete="off"
+                        aria-label="{{ __('client.nav.search_placeholder') }}" aria-controls="desktop-search-suggestions"
+                        aria-autocomplete="list"
                         placeholder="{{ __('client.nav.search_placeholder') }}"
                         data-search-input="{{ route('shop.suggest') }}" data-search-all="{{ route('shop.index') }}"
-                        class="w-full pl-9 pr-4 py-2 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
-                    <div class="suggest-panel hidden" data-search-panel></div>
+                        class="w-full pl-9 pr-10 py-2 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
+                    <button type="button" data-search-clear
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full text-muted-foreground hover:bg-white hover:text-foreground transition-colors {{ request('keyword') ? '' : 'hidden' }}"
+                        aria-label="{{ __('common.actions.clear_search') }}">
+                        <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
+                    </button>
+                    <div id="desktop-search-suggestions" class="suggest-panel hidden" data-search-panel role="listbox"></div>
                 </div>
             </form>
 
@@ -128,6 +140,7 @@
                 @auth
                     <div class="relative hidden md:block" id="account-menu">
                         <button type="button"
+                            id="account-menu-toggle" aria-controls="account-dropdown" aria-expanded="false" aria-haspopup="true"
                             class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors">
                             <span
                                 class="w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
@@ -137,7 +150,7 @@
                             <i class="fa-solid fa-chevron-down text-[10px] text-muted-foreground"></i>
                         </button>
 
-                        <div id="account-dropdown"
+                        <div id="account-dropdown" role="menu"
                             class="hidden absolute right-0 top-full mt-1 w-52 bg-white border border-border rounded-xl shadow-lg py-2 z-50">
                             @foreach ([['account.profile', 'fa-user', __('client.account.nav.profile')], ['account.orders', 'fa-receipt', __('client.account.nav.orders')], ['account.addresses', 'fa-location-dot', __('client.account.nav.addresses')]] as [$route, $icon, $label])
                                 <a href="{{ route($route) }}"
@@ -181,10 +194,17 @@
                 <i
                     class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"></i>
                 <input type="search" name="keyword" value="{{ request('keyword') }}" autocomplete="off"
+                    aria-label="{{ __('client.nav.search_placeholder') }}" aria-controls="mobile-search-suggestions"
+                    aria-autocomplete="list"
                     placeholder="{{ __('client.nav.search_placeholder') }}"
                     data-search-input="{{ route('shop.suggest') }}" data-search-all="{{ route('shop.index') }}"
-                    class="w-full pl-9 pr-4 py-2.5 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
-                <div class="suggest-panel hidden" data-search-panel></div>
+                    class="w-full pl-9 pr-10 py-2.5 text-sm bg-muted border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all">
+                <button type="button" data-search-clear
+                    class="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full text-muted-foreground hover:bg-white hover:text-foreground transition-colors {{ request('keyword') ? '' : 'hidden' }}"
+                    aria-label="{{ __('common.actions.clear_search') }}">
+                    <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
+                </button>
+                <div id="mobile-search-suggestions" class="suggest-panel hidden" data-search-panel role="listbox"></div>
             </div>
         </form>
     </div>

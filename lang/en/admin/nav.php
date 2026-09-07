@@ -22,6 +22,7 @@ return [
     'reviews' => 'Reviews',
     'orders' => 'Orders',
     'users' => 'Users',
+    'administrators' => 'Admin accounts',
     'provinces' => 'Provinces',
     'wards' => 'Wards',
 
@@ -31,6 +32,8 @@ return [
     'coming_soon' => 'Coming soon',
 
     'search_placeholder' => 'Search...',
+    'menu' => 'Open menu',
+    'close_menu' => 'Close menu',
     'notifications' => 'Notifications',
     'role' => 'Administrator',
     'profile' => 'My profile',

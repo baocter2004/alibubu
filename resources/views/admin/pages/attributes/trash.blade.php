@@ -17,7 +17,7 @@
         </div>
 
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[680px] w-full table-fixed admin-table">
+            <table class="min-w-[680px] w-full table-fixed admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[10%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>

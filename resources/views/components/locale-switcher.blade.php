@@ -11,7 +11,7 @@
         <i class="fa-solid fa-chevron-down text-[10px]"></i>
     </button>
 
-    <div data-locale-menu
+    <div data-locale-menu role="menu"
         class="hidden absolute {{ $align === 'right' ? 'right-0' : 'left-0' }} top-full mt-1 min-w-36 bg-white border border-border rounded-xl shadow-lg overflow-hidden z-50">
         @foreach (config('app.supported_locales') as $locale)
             <a href="{{ route('locale.switch', $locale) }}"

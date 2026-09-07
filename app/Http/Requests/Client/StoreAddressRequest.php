@@ -4,6 +4,7 @@ namespace App\Http\Requests\Client;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class StoreAddressRequest extends FormRequest
 {
@@ -26,7 +27,13 @@ class StoreAddressRequest extends FormRequest
             'fullname' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20', 'regex:/^0[0-9]{8,10}$/'],
             'province_id' => ['required', 'uuid', 'exists:provinces,id'],
-            'ward_id' => ['required', 'uuid', 'exists:wards,id'],
+            'ward_id' => [
+                'required',
+                'uuid',
+                Rule::exists('wards', 'id')->where(
+                    fn ($query) => $query->where('province_id', $this->input('province_id'))
+                ),
+            ],
             'address' => ['required', 'string', 'max:255'],
             'is_default' => ['nullable', 'boolean'],
         ];
@@ -45,6 +52,18 @@ class StoreAddressRequest extends FormRequest
             'province_id' => __('client.account.fields.province'),
             'ward_id' => __('client.account.fields.ward'),
             'address' => __('client.account.fields.address'),
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'ward_id.exists' => __('client.account.messages.ward_province_mismatch'),
         ];
     }
 }

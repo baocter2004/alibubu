@@ -4,7 +4,7 @@
     $discount = $product->discount_percent;
     $url = route('shop.show', $product->slug);
     $sellableVariants = $product->hasVariants()
-        ? $product->variants->where('is_active', true)->count()
+        ? $product->variants->where('is_active', true)->where('stock', '>', 0)->count()
         : 1;
     $outOfStock = ! $product->inStock() || $sellableVariants === 0;
     $reveal = $reveal ?? false;

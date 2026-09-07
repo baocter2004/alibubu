@@ -54,7 +54,7 @@
                     {{ __('common.actions.search') }}
                 </button>
                 <a href="{{ route('admin.branches.index') }}"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors" title="{{ __('common.actions.clear_filter') }}" aria-label="{{ __('common.actions.clear_filter') }}">
                     <i class="fas fa-rotate-left"></i>
                 </a>
             </div>
@@ -63,7 +63,7 @@
 
     <div class="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[840px] w-full table-fixed admin-table">
+            <table class="min-w-[840px] w-full table-fixed admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[7%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>

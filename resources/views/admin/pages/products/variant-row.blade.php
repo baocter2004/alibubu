@@ -45,7 +45,7 @@
         @enderror
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
             <label class="block text-sm font-medium text-primary mb-2">{{ __('admin/product.fields.sku') }}</label>
             <input type="text" name="variants[{{ $idx }}][sku]" value="{{ $variant['sku'] ?? '' }}"
@@ -74,6 +74,18 @@
                 min="0" step="1000"
                 class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has("variants.$idx.sale_price") ? 'is-invalid' : 'border-gray-300' }}">
             @error("variants.$idx.sale_price")
+                <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary mb-2">
+                {{ __('admin/product.fields.stock') }} <span class="text-red-500">*</span>
+            </label>
+            <input type="number" name="variants[{{ $idx }}][stock]" value="{{ $variant['stock'] ?? 0 }}" min="0"
+                step="1"
+                class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has("variants.$idx.stock") ? 'is-invalid' : 'border-gray-300' }}">
+            @error("variants.$idx.stock")
                 <p class="text-red-500 text-sm mt-1.5">{{ $message }}</p>
             @enderror
         </div>

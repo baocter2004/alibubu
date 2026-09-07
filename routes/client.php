@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\CouponController;
 use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\Client\ShopController;
+use App\Http\Controllers\Client\OrderTrackingController;
 use App\Http\Controllers\Client\WishlistController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/thanks-you', [HomeController::class, 'thankYou'])->name('thanks-you');
+
+Route::get('/track-order', [OrderTrackingController::class, 'show'])->name('order.track');
+Route::post('/track-order', [OrderTrackingController::class, 'lookup'])
+    ->middleware('throttle:10,1')
+    ->name('order.track.lookup');
 
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::controller(ShopController::class)->group(function () {

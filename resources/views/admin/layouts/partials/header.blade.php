@@ -5,6 +5,7 @@
 <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
     <div class="flex items-center gap-3 px-4 md:px-6 py-3">
         <button type="button" id="sidebarToggle"
+            aria-controls="sidebar" aria-label="{{ __('admin/nav.menu') }}"
             class="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -28,7 +29,8 @@
             </a>
 
             <div class="relative" id="buttonDropdown">
-                <button type="button"
+                <button type="button" id="account-menu-toggle"
+                    aria-controls="dropDownMenu" aria-expanded="false" aria-haspopup="true"
                     class="flex items-center gap-3 pl-3 py-1.5 pr-2 rounded-lg border-l border-gray-200 hover:bg-gray-100 transition-colors">
                     <span
                         class="w-9 h-9 rounded-full bg-primary-soft text-primary font-bold flex items-center justify-center">
@@ -36,12 +38,12 @@
                     </span>
                     <span class="hidden sm:block text-left leading-tight">
                         <span class="block text-sm font-medium text-gray-800">{{ $admin?->name }}</span>
-                        <span class="block text-xs text-gray-500">{{ __('admin/nav.role') }}</span>
+                        <span class="block text-xs text-gray-500">{{ \App\Const\AdminConst::roleLabel($admin?->role) }}</span>
                     </span>
                     <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 hidden sm:block"></i>
                 </button>
 
-                <div id="dropDownMenu"
+                <div id="dropDownMenu" role="menu"
                     class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-50 hidden">
                     <div class="px-4 py-2 border-b border-gray-100">
                         <p class="text-sm font-medium text-gray-800 truncate">{{ $admin?->name }}</p>
@@ -85,13 +87,18 @@
 @push('scripts')
     <script>
         $(function() {
-            $('#buttonDropdown').on('click', function(e) {
+            $('#account-menu-toggle').on('click', function(e) {
                 e.stopPropagation();
-                $('#dropDownMenu').toggleClass('hidden');
+                const $menu = $('#dropDownMenu');
+                const expanded = $menu.hasClass('hidden');
+
+                $menu.toggleClass('hidden', !expanded);
+                $('#account-menu-toggle').attr('aria-expanded', expanded ? 'true' : 'false');
             });
 
             $(document).on('click', function() {
                 $('#dropDownMenu').addClass('hidden');
+                $('#account-menu-toggle').attr('aria-expanded', 'false');
             });
         });
     </script>

@@ -4,16 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 use App\Const\GlobalConst;
 use App\Http\Controllers\Controller;
+use App\Exceptions\ProductImportException;
 use App\Http\Requests\Admin\Product\GetProductRequest;
+use App\Http\Requests\Admin\Product\ImportProductRequest;
 use App\Http\Requests\Admin\Product\PostProductRequest;
 use App\Models\Attribute;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Services\Admin\ProductService;
+use App\Services\Admin\ProductImportService;
+use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
 {
-    public function __construct(protected ProductService $productService) {}
+    public function __construct(
+        protected ProductService $productService,
+        protected ProductImportService $productImportService
+    ) {}
 
     public function index(GetProductRequest $request)
     {
@@ -39,6 +47,35 @@ class ProductController extends Controller
         return view('admin.pages.products.create', array_merge($this->formOptions(), [
             'data' => session()->get('product_data'),
         ]));
+    }
+
+    public function importForm()
+    {
+        return view('admin.pages.products.import');
+    }
+
+    public function import(ImportProductRequest $request): RedirectResponse
+    {
+        try {
+            $result = $this->productImportService->import($request->file('file'));
+        } catch (ProductImportException $exception) {
+            return back()
+                ->withInput()
+                ->withErrors(['file' => $exception->errors]);
+        }
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', __('admin/product.import.success', $result));
+    }
+
+    public function importTemplate(): BinaryFileResponse
+    {
+        $path = resource_path('templates/product-import-template.xlsx');
+
+        abort_unless(is_file($path), 404);
+
+        return response()->download($path, 'alibubu-product-import-template.xlsx');
     }
 
     public function edit(int|string $id)

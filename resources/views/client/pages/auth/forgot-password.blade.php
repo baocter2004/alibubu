@@ -13,7 +13,7 @@
         </div>
 
         <div class="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8">
-            <form action="{{ route('password.email') }}" method="POST" class="space-y-5">
+            <form action="{{ route('password.email') }}" method="POST" class="space-y-5" data-submit-once>
                 @csrf
 
                 <div>

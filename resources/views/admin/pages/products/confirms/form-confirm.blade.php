@@ -37,6 +37,7 @@
                         ['label' => __('admin/product.fields.type'), 'value' => __('enum.product.type.' . ($data['type'] ?? 0))],
                         ['label' => __('admin/product.fields.price'), 'value' => $isVariable ? '-' : format_price($data['price'] ?? 0)],
                         ['label' => __('admin/product.fields.sale_price'), 'value' => ! $isVariable && ! empty($data['sale_price']) ? format_price($data['sale_price']) : '-'],
+                        ['label' => __('admin/product.fields.stock'), 'value' => $isVariable ? number_format((int) collect($data['variants'] ?? [])->sum(fn ($variant) => (int) ($variant['stock'] ?? 0))) : number_format((int) ($data['stock'] ?? 0))],
                         ['label' => __('admin/product.fields.is_featured'), 'value' => !empty($data['is_featured']) ? __('common.labels.yes') : __('common.labels.no')],
                         ['label' => __('admin/product.fields.is_trending'), 'value' => !empty($data['is_trending']) ? __('common.labels.yes') : __('common.labels.no')],
                         ['label' => __('common.labels.status'), 'value' => \App\Const\GlobalConst::statusLabel($data['is_active'] ?? null)],
@@ -79,6 +80,7 @@
                                 <th class="px-4 py-3">{{ __('admin/product.fields.attributes') }}</th>
                                 <th class="px-4 py-3 text-right">{{ __('admin/product.fields.price') }}</th>
                                 <th class="px-4 py-3 text-right">{{ __('admin/product.fields.sale_price') }}</th>
+                                <th class="px-4 py-3 text-right">{{ __('admin/product.fields.stock') }}</th>
                                 <th class="px-4 py-3 text-center">{{ __('common.labels.status') }}</th>
                             </tr>
                         </thead>
@@ -93,6 +95,7 @@
                                     <td class="px-4 py-3 text-right">
                                         {{ ! empty($variant['sale_price']) ? format_price($variant['sale_price']) : '-' }}
                                     </td>
+                                    <td class="px-4 py-3 text-right">{{ number_format((int) ($variant['stock'] ?? 0)) }}</td>
                                     <td class="px-4 py-3 text-center">
                                         <span
                                             class="px-2 py-1 text-xs font-semibold rounded-full {{ \App\Const\GlobalConst::statusBadgeClass(!empty($variant['is_active'])) }}">

@@ -18,6 +18,8 @@ return [
         'compare' => 'Compare',
         'search_no_result' => 'No matching products',
         'search_view_all' => 'View all results',
+        'search_history' => 'Recent searches',
+        'clear_search_history' => 'Clear search history',
         'skip_to_content' => 'Skip to main content',
         'free_shipping' => 'Free shipping on orders over 500,000đ',
     ],
@@ -68,10 +70,10 @@ return [
             'subtitle' => 'The most searched products',
         ],
         'newsletter' => [
-            'title' => 'Sign up for deals',
-            'subtitle' => 'Get a 50,000đ voucher for your first order.',
+            'title' => 'Get your first offer',
+            'subtitle' => 'Create an account to receive a 50,000đ voucher for your first order.',
             'placeholder' => 'Your email',
-            'submit' => 'Sign up now',
+            'submit' => 'Create account',
         ],
     ],
 
@@ -145,6 +147,8 @@ return [
         'stock_left' => ':count left',
         'description' => 'Product description',
         'related' => 'Related products',
+        'recently_viewed' => 'Recently viewed',
+        'clear_recently_viewed' => 'Clear history',
         'increase' => 'Increase quantity',
         'decrease' => 'Decrease quantity',
         'benefits' => [
@@ -302,6 +306,7 @@ return [
             'empty' => 'You have not placed any order yet.',
             'empty_cta' => 'Start shopping',
             'detail' => 'Order detail',
+            'timeline_title' => 'Order tracking',
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',
@@ -349,6 +354,7 @@ return [
             'order_not_found' => 'Order not found.',
             'order_cancelled' => 'Your order has been cancelled.',
             'cancel_not_allowed' => 'This order can no longer be cancelled. Please contact our support team.',
+            'ward_province_mismatch' => 'The selected ward does not belong to the selected province/city.',
         ],
     ],
 
@@ -447,6 +453,30 @@ return [
             'full' => 'You can compare up to :max products at a time.',
             'different_category' => 'Only products in the same category can be compared.',
             'no_category' => 'This product has no category, so it cannot be compared.',
+        ],
+    ],
+
+    'tracking' => [
+        'title' => 'Track order',
+        'heading' => 'Track your order',
+        'subheading' => 'Enter the order code and phone number used at checkout.',
+        'submit' => 'Track order',
+        'result_label' => 'Tracking result',
+        'timeline' => 'Order progress',
+        'total' => 'Order total',
+        'cancelled' => 'This order has been cancelled.',
+        'fields' => [
+            'code' => 'Order code',
+            'phone_number' => 'Checkout phone number',
+        ],
+        'placeholders' => [
+            'code' => 'Example: ORD260907ABC123',
+            'phone_number' => '09xxxxxxxx',
+        ],
+        'messages' => [
+            'not_found' => 'No order was found with these details.',
+            'invalid_code' => 'The order code format is invalid.',
+            'invalid_phone' => 'The phone number format is invalid.',
         ],
     ],
 

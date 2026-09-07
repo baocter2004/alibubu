@@ -60,6 +60,40 @@ class CouponService
         ];
     }
 
+    /**
+     * Resolve the session coupon while holding a row lock for checkout.
+     *
+     * This prevents concurrent checkouts from both passing the usage-limit
+     * check with the same remaining slot.
+     */
+    public function currentForOrder(Collection $items, float $subtotal, ?User $user = null): ?array
+    {
+        $code = session()->get(self::SESSION_KEY);
+
+        if (! $code) {
+            return null;
+        }
+
+        $coupon = $this->findByCode($code, true);
+
+        if (! $coupon) {
+            $this->forget();
+
+            throw new \RuntimeException(__('client.coupon.messages.not_found'));
+        }
+
+        if ($reason = $this->rejectionReason($coupon, $items, $subtotal, $user)) {
+            $this->forget();
+
+            throw new \RuntimeException($this->messageForReason($reason));
+        }
+
+        return [
+            'coupon' => $coupon,
+            'discount' => $this->discountFor($coupon, $subtotal),
+        ];
+    }
+
     public function discountFor(Coupon $coupon, float $subtotal): float
     {
         $value = (float) $coupon->discount_value;
@@ -77,16 +111,22 @@ class CouponService
         return (float) min(round($discount), $subtotal);
     }
 
-    protected function findByCode(string $code): ?Coupon
+    protected function findByCode(string $code, bool $lock = false): ?Coupon
     {
-        return Coupon::with('restriction')
+        $query = Coupon::with('restriction')
             ->whereRaw('UPPER(code) = ?', [mb_strtoupper(trim($code))])
-            ->first();
+            ->limit(1);
+
+        if ($lock) {
+            $query->lockForUpdate();
+        }
+
+        return $query->first();
     }
 
     protected function rejectionReason(Coupon $coupon, Collection $items, float $subtotal, ?User $user): ?string
     {
-        if (! $coupon->is_active || $coupon->is_expired) {
+        if (! $coupon->is_active) {
             return 'inactive';
         }
 
@@ -96,7 +136,7 @@ class CouponService
             return 'not_started';
         }
 
-        if ($coupon->end_date && $now->gt($coupon->end_date)) {
+        if ($coupon->end_date && $now->gt($coupon->end_date->copy()->endOfDay())) {
             return 'expired';
         }
 
@@ -148,9 +188,14 @@ class CouponService
     {
         return [
             'status' => false,
-            'message' => __('client.coupon.messages.' . $reason),
+            'message' => $this->messageForReason($reason),
             'coupon' => null,
             'discount' => 0.0,
         ];
+    }
+
+    protected function messageForReason(string $reason): string
+    {
+        return __('client.coupon.messages.' . $reason);
     }
 }

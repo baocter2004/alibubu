@@ -4,6 +4,7 @@ return [
     'app_name' => 'Alibubu',
 
     'actions' => [
+        'toggle_password' => 'Show or hide password',
         'create' => 'Create',
         'edit' => 'Edit',
         'update' => 'Update',
@@ -16,6 +17,7 @@ return [
         'back' => 'Back',
         'confirm' => 'Confirm',
         'search' => 'Search',
+        'clear_search' => 'Clear search',
         'filter' => 'Filter',
         'reset' => 'Reset',
         'apply' => 'Apply',

@@ -5,6 +5,7 @@ namespace App\Services\Client;
 use App\Const\OrderConst;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -70,6 +71,12 @@ class AccountService
         foreach ($order->items()->get() as $item) {
             if (! $item->product_id) {
                 continue;
+            }
+
+            if ($item->product_variant_id) {
+                ProductVariant::whereKey($item->product_variant_id)->update([
+                    'stock' => DB::raw('stock + ' . (int) $item->quantity),
+                ]);
             }
 
             Product::whereKey($item->product_id)->update([

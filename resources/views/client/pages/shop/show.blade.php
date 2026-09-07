@@ -2,11 +2,51 @@
 
 @section('title', $product->name . ' - ' . __('common.app_name'))
 
+@php
+    $productUrl = route('shop.show', $product->slug);
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->short_descriptions ?: $product->descriptions,
+        'image' => $product->thumbnail ? [url(Storage::disk('public')->url($product->thumbnail))] : [],
+        'sku' => $product->sku,
+        'url' => $productUrl,
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $productUrl,
+            'priceCurrency' => 'VND',
+            'price' => $product->effective_price,
+            'availability' => $product->inStock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        ],
+    ];
+
+    if ($product->branch) {
+        $productSchema['brand'] = [
+            '@type' => 'Brand',
+            'name' => $product->branch->name,
+        ];
+    }
+
+    if ($product->reviews_count > 0 && $product->rating > 0) {
+        $productSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => $product->rating,
+            'reviewCount' => $product->reviews_count,
+        ];
+    }
+@endphp
+
+@push('head')
+    <script type="application/ld+json">@json($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)</script>
+@endpush
+
 @section('content')
     @php
         $variants = $product->variants->where('is_active', true)->values();
+        $availableVariants = $variants->where('stock', '>', 0)->values();
         $hasVariants = $product->hasVariants() && $variants->isNotEmpty();
-        $defaultVariant = $variants->sortBy('effective_price')->first();
+        $defaultVariant = $availableVariants->sortBy('effective_price')->first() ?: $variants->sortBy('effective_price')->first();
         $price = $hasVariants ? $defaultVariant->effective_price : $product->effective_price;
         $base = $hasVariants ? (float) $defaultVariant->price : $product->base_price;
         $images = collect([$product->thumbnail])
@@ -14,11 +54,18 @@
             ->filter()
             ->unique()
             ->values();
-        $noSellableVariant = $product->hasVariants() && $variants->isEmpty();
-        $outOfStock = ! $product->inStock() || $noSellableVariant;
+        $noSellableVariant = $product->hasVariants() && $availableVariants->isEmpty();
+        $outOfStock = $product->hasVariants() ? $noSellableVariant : ! $product->inStock();
     @endphp
 
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
+    <span data-recent-product class="hidden"
+        data-recent-id="{{ $product->id }}"
+        data-recent-name="{{ $product->name }}"
+        data-recent-url="{{ $productUrl }}"
+        data-recent-thumbnail="{{ $product->thumbnail ? Storage::disk('public')->url($product->thumbnail) : '' }}"
+        data-recent-price="{{ format_price($product->effective_price) }}"></span>
+
+    <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
         <a href="{{ route('index') }}" class="hover:text-primary transition-colors">{{ __('client.nav.home') }}</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         <a href="{{ route('shop.index') }}" class="hover:text-primary transition-colors">{{ __('client.shop.breadcrumb') }}</a>
@@ -120,16 +167,17 @@
                             @foreach ($variants as $variant)
                                 @php
                                     $label = $variant->attributeValues->pluck('value')->implode(' / ') ?: $variant->sku;
+                                    $variantAvailable = $variant->stock > 0;
                                 @endphp
-                                <label class="cursor-pointer">
+                                <label class="{{ $variantAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-60' }}">
                                     <input type="radio" name="product_variant_id" value="{{ $variant->id }}"
                                         data-price="{{ $variant->effective_price }}"
-                                        data-base="{{ $variant->price }}" class="peer sr-only variant-option"
-                                        @checked($variant->id === $defaultVariant->id)>
+                                        data-base="{{ $variant->price }}" data-stock="{{ $variant->stock }}" class="peer sr-only variant-option"
+                                        @checked($variant->id === $defaultVariant?->id) @disabled(! $variantAvailable)>
                                     <span
-                                        class="inline-flex flex-col items-start px-4 py-2.5 text-sm border-2 border-border rounded-xl text-muted-foreground transition-all peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary hover:border-primary/50">
+                                        class="inline-flex flex-col items-start px-4 py-2.5 text-sm border-2 border-border rounded-xl text-muted-foreground transition-all {{ $variantAvailable ? 'peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary hover:border-primary/50' : '' }}">
                                         <span class="font-medium">{{ $label }}</span>
-                                        <span class="text-xs opacity-80">{{ format_price($variant->effective_price) }}</span>
+                                        <span class="text-xs opacity-80">{{ $variantAvailable ? format_price($variant->effective_price) : __('client.product.out_of_stock') }}</span>
                                     </span>
                                 </label>
                             @endforeach
@@ -296,7 +344,7 @@
         @auth
             @if ($canReview)
                 <form action="{{ route('shop.reviews.store', $product->slug) }}" method="POST"
-                    id="review-form" class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
+                    id="review-form" data-submit-once class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
                     @csrf
 
                     <div>
@@ -442,23 +490,47 @@
             </div>
         </section>
     @endif
+
+    <section data-recently-viewed class="hidden mb-12" aria-labelledby="recently-viewed-title">
+        <div class="flex items-center justify-between gap-4 mb-5">
+            <div>
+                <p class="eyebrow mb-1">{{ __('client.product.recently_viewed') }}</p>
+                <h2 id="recently-viewed-title" class="text-xl font-bold text-foreground">
+                    {{ __('client.product.recently_viewed') }}
+                </h2>
+            </div>
+            <button type="button" data-clear-recent
+                class="shrink-0 text-xs font-semibold text-muted-foreground hover:text-danger transition-colors">
+                {{ __('client.product.clear_recently_viewed') }}
+            </button>
+        </div>
+        <div data-recent-list class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+    </section>
 @endsection
 
 @push('scripts')
     <script>
         $(function() {
             const $qty = $('#quantity');
-            const max = parseInt($qty.attr('max'), 10);
+            const defaultMax = parseInt($qty.attr('max'), 10);
+
+            function syncQuantityMax(stock) {
+                const variantStock = parseInt(stock, 10);
+                const max = Number.isFinite(variantStock) && variantStock > 0 ? Math.min(defaultMax, variantStock) : defaultMax;
+                $qty.attr('max', max).val(Math.min(max, Math.max(1, parseInt($qty.val(), 10) || 1)));
+            }
 
             $('#qty-minus').on('click', function() {
                 $qty.val(Math.max(1, parseInt($qty.val(), 10) - 1));
             });
 
             $('#qty-plus').on('click', function() {
+                const max = parseInt($qty.attr('max'), 10);
                 $qty.val(Math.min(max, parseInt($qty.val(), 10) + 1));
             });
 
             $qty.on('change blur', function() {
+                const max = parseInt($qty.attr('max'), 10);
                 const value = parseInt($qty.val(), 10);
                 $qty.val(Number.isNaN(value) ? 1 : Math.min(max, Math.max(1, value)));
             });
@@ -474,6 +546,8 @@
             $('.variant-option').on('change', function() {
                 const price = parseFloat($(this).data('price'));
                 const base = parseFloat($(this).data('base'));
+
+                syncQuantityMax($(this).data('stock'));
 
                 $('#price-display').text(formatPrice(price));
                 $('[data-sticky-price]').text(formatPrice(price));
@@ -517,6 +591,8 @@
             function formatPrice(value) {
                 return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
             }
+
+            syncQuantityMax($('.variant-option:checked').data('stock'));
         });
     </script>
 @endpush

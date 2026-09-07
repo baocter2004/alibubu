@@ -70,6 +70,8 @@ return [
         'google_failed' => 'Could not sign in with Google. Please try again.',
         'account_locked' => 'This account is locked or invalid.',
         'email_already_verified' => 'This email has already been verified.',
+        'verification_resent' => 'A verification email has been sent again. Please check your inbox.',
+        'verification_resend_failed' => 'Could not resend the verification email. Please try again later.',
         'must_login' => 'Please sign in to continue.',
     ],
 ];

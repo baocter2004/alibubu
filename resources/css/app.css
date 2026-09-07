@@ -104,6 +104,13 @@ p {
     text-wrap: pretty;
 }
 
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+select,
+textarea {
+    border-color: hsl(var(--border));
+    background-color: hsl(var(--card));
+}
+
 .tabular,
 .price-main,
 .admin-table td {
@@ -382,6 +389,27 @@ summary:focus-visible {
 
 .admin-table tbody tr:hover {
     background-color: hsl(var(--primary-soft) / 0.55);
+}
+
+.admin-table-sticky th:last-child,
+.admin-table-sticky td:last-child:not([colspan]) {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+}
+
+.admin-table-sticky thead th:last-child {
+    z-index: 3;
+    background-color: hsl(var(--primary-soft));
+}
+
+.admin-table-sticky tbody td:last-child:not([colspan]) {
+    background-color: hsl(var(--card));
+    box-shadow: -10px 0 12px -12px rgb(20 40 75 / 0.45);
+}
+
+.admin-table-sticky tbody tr:hover td:last-child:not([colspan]) {
+    background-color: hsl(var(--primary-soft));
 }
 
 .radius-left {

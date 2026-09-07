@@ -21,6 +21,7 @@ class ProductVariant extends Model
         'sku',
         'price',
         'sale_price',
+        'stock',
         'thumbnail',
         'is_active',
     ];
@@ -35,6 +36,7 @@ class ProductVariant extends Model
         return [
             'price' => 'decimal:2',
             'sale_price' => 'decimal:2',
+            'stock' => 'integer',
             'is_active' => 'boolean',
         ];
     }

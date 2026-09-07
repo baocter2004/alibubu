@@ -10,7 +10,13 @@ class ProductRepository extends BaseRepository
 {
     protected const KEYWORD_COLUMNS = ['products.name', 'products.sku', 'products.short_descriptions'];
 
-    protected const KEYWORD_MAX_WORDS = 6;
+    protected const KEYWORD_ASCII_COLUMNS = ['products.slug'];
+
+    protected const KEYWORD_RELATIONS = [
+        'branch' => 'branches.name',
+        'categories' => 'categories.name',
+        'tags' => 'tags.name',
+    ];
 
     protected const MONEY_PLACEHOLDER = 'CAST(? AS DECIMAL(11, 2))';
 
@@ -27,7 +33,13 @@ class ProductRepository extends BaseRepository
     {
         $query = parent::filter($params);
 
-        $this->applyKeyword($query, (string) ($params['keyword'] ?? ''));
+        $this->applyKeyword(
+            $query,
+            $params['keyword'] ?? null,
+            self::KEYWORD_COLUMNS,
+            self::KEYWORD_RELATIONS,
+            self::KEYWORD_ASCII_COLUMNS
+        );
         $this->applyPriceRange($query, $params['price_from'] ?? null, $params['price_to'] ?? null);
 
         if (! empty($params['on_sale'])) {
@@ -54,25 +66,6 @@ class ProductRepository extends BaseRepository
                 THEN products.sale_price
             ELSE products.price
         END)';
-    }
-
-    protected function applyKeyword(Builder $query, string $keyword): void
-    {
-        $words = preg_split('/\s+/u', trim($keyword), -1, PREG_SPLIT_NO_EMPTY) ?: [];
-
-        foreach (array_slice($words, 0, self::KEYWORD_MAX_WORDS) as $word) {
-            $like = $this->likeValue($word);
-
-            $query->where(function (Builder $group) use ($like) {
-                foreach (self::KEYWORD_COLUMNS as $index => $column) {
-                    $this->whereLike($group, $column, $like, $index > 0);
-                }
-
-                $group->orWhereHas('branch', fn (Builder $sub) => $this->whereLike($sub, 'branches.name', $like, false));
-                $group->orWhereHas('categories', fn (Builder $sub) => $this->whereLike($sub, 'categories.name', $like, false));
-                $group->orWhereHas('tags', fn (Builder $sub) => $this->whereLike($sub, 'tags.name', $like, false));
-            });
-        }
     }
 
     protected function applyPriceRange(Builder $query, mixed $from, mixed $to): void
@@ -134,17 +127,5 @@ class ProductRepository extends BaseRepository
         $now = now()->toDateTimeString();
 
         return [$now, $now];
-    }
-
-    protected function whereLike(Builder $query, string $column, string $value, bool $or = true): Builder
-    {
-        $sql = $column . " LIKE ? ESCAPE '\\'";
-
-        return $or ? $query->orWhereRaw($sql, [$value]) : $query->whereRaw($sql, [$value]);
-    }
-
-    protected function likeValue(string $value): string
-    {
-        return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value) . '%';
     }
 }

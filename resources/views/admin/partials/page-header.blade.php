@@ -6,7 +6,8 @@
 <div class="mb-6">
     @if ($crumbs)
         <nav class="flex flex-wrap items-center gap-2 text-sm text-gray-500 mb-3">
-            <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors">
+            <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors"
+                title="{{ __('admin/dashboard.title') }}" aria-label="{{ __('admin/dashboard.title') }}">
                 <i class="fa-solid fa-house"></i>
             </a>
             @foreach ($crumbs as $crumb)

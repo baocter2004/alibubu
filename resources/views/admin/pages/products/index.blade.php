@@ -11,6 +11,11 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <a href="{{ route('admin.products.import') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary-soft rounded-lg hover:bg-primary hover:text-white transition-colors">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span class="hidden sm:inline">{{ __('admin/product.import.title') }}</span>
+                </a>
                 <a href="{{ route('admin.products.trash') }}"
                     class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                     <i class="fas fa-trash"></i>
@@ -89,7 +94,7 @@
 
     <div class="w-full bg-white rounded-lg shadow-lg p-4 md:p-6">
         <div class="w-full overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-[1100px] w-full table-fixed admin-table">
+            <table class="min-w-[1100px] w-full table-fixed admin-table admin-table-sticky">
                 <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left uppercase bg-primary text-white">
                         <th class="w-[6%] text-center px-4 py-3">{{ __('common.labels.id') }}</th>

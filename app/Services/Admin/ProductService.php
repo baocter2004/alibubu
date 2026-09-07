@@ -62,11 +62,6 @@ class ProductService extends BaseCrudService
             $wheres['is_active'] = (int) $params['is_active'];
         }
 
-        if (! empty($params['keyword'])) {
-            $orWheres[] = ['name', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['sku', 'like', '%' . $params['keyword'] . '%'];
-            $orWheres[] = ['short_descriptions', 'like', '%' . $params['keyword'] . '%'];
-        }
 
         return [
             'wheres' => $wheres,
@@ -78,6 +73,7 @@ class ProductService extends BaseCrudService
             'sort' => $sort,
             'relates' => $relates,
             'relates_count' => $relatesCount,
+            'keyword' => trim((string) ($params['keyword'] ?? '')),
         ];
     }
 
@@ -152,6 +148,7 @@ class ProductService extends BaseCrudService
             'sku' => null,
             'price' => null,
             'sale_price' => null,
+            'stock' => 0,
             'is_active' => false,
             'attribute_value_ids' => [],
         ], $variant), $variants));
@@ -297,6 +294,7 @@ class ProductService extends BaseCrudService
                 'sku' => $variant['sku'] ?: ($model?->sku ?: $this->generateVariantSku($product, $index)),
                 'price' => $variant['price'],
                 'sale_price' => $variant['sale_price'] ?? null,
+                'stock' => (int) ($variant['stock'] ?? 0),
                 'is_active' => ! empty($variant['is_active']),
             ];
 
@@ -320,6 +318,8 @@ class ProductService extends BaseCrudService
                 $variant->attributeValues()->detach();
                 $variant->delete();
             });
+
+        $product->updateQuietly(['stock' => (int) $product->variants()->sum('stock')]);
     }
 
     protected function syncSpecifications(Product $product, array $specs): void
@@ -367,11 +367,18 @@ class ProductService extends BaseCrudService
         $attributes['type'] = (int) ($params['type'] ?? ProductConst::SINGLE);
 
         if ($attributes['type'] === ProductConst::VARIANT) {
-            $prices = collect($params['variants'] ?? [])->pluck('price')->filter()->map(fn ($p) => (float) $p);
-            $salePrices = collect($params['variants'] ?? [])->pluck('sale_price')->filter()->map(fn ($p) => (float) $p);
+            $prices = collect($params['variants'] ?? [])
+                ->pluck('price')
+                ->filter(fn ($p) => $p !== null && $p !== '')
+                ->map(fn ($p) => (float) $p);
+            $salePrices = collect($params['variants'] ?? [])
+                ->pluck('sale_price')
+                ->filter(fn ($p) => $p !== null && $p !== '')
+                ->map(fn ($p) => (float) $p);
 
             $attributes['price'] = $prices->min();
             $attributes['sale_price'] = $salePrices->count() === $prices->count() ? $salePrices->min() : null;
+            $attributes['stock'] = (int) collect($params['variants'] ?? [])->sum(fn ($variant) => (int) ($variant['stock'] ?? 0));
         }
 
         $attributes['is_sale'] = ! empty($attributes['sale_price']);
