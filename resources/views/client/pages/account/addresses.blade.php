@@ -27,7 +27,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('account.addresses.store') }}" method="POST" id="address-form"
+                <form action="{{ route('account.addresses.store') }}" method="POST" id="address-form" data-submit-once
                     data-store-url="{{ route('account.addresses.store') }}"
                     class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
                     @csrf
@@ -164,7 +164,7 @@
                                     </button>
 
                                     @unless ($address->is_default)
-                                        <form action="{{ route('account.addresses.update', $address->id) }}" method="POST">
+                                        <form action="{{ route('account.addresses.update', $address->id) }}" method="POST" data-submit-once>
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="fullname" value="{{ $address->fullname }}">

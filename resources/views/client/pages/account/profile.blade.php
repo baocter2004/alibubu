@@ -17,7 +17,7 @@
                 <h1 class="text-lg font-bold text-foreground mb-1">{{ __('client.account.profile.title') }}</h1>
                 <p class="text-sm text-muted-foreground mb-6">{{ __('client.account.profile.subtitle') }}</p>
 
-                <form action="{{ route('account.profile.update') }}" method="POST" class="space-y-5">
+                <form action="{{ route('account.profile.update') }}" method="POST" class="space-y-5" data-submit-once>
                     @csrf
                     @method('PATCH')
 
@@ -96,7 +96,7 @@
                 <h2 class="text-lg font-bold text-foreground mb-1">{{ __('client.account.profile.password_title') }}</h2>
                 <p class="text-sm text-muted-foreground mb-6">{{ __('client.account.profile.password_subtitle') }}</p>
 
-                <form action="{{ route('account.password.update') }}" method="POST" class="space-y-5">
+                <form action="{{ route('account.password.update') }}" method="POST" class="space-y-5" data-submit-once>
                     @csrf
                     @method('PATCH')
 

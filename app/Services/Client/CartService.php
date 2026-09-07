@@ -39,7 +39,12 @@ class CartService
             unset($items[$key]);
         } else {
             $stock = Product::whereKey($items[$key]['product_id'])->value('stock');
-            $items[$key]['quantity'] = $this->clamp($quantity, $stock);
+
+            if ($stock === null || (int) $stock < 1) {
+                unset($items[$key]);
+            } else {
+                $items[$key]['quantity'] = $this->clamp($quantity, (int) $stock);
+            }
         }
 
         $this->persist($items);
@@ -88,6 +93,14 @@ class CartService
                     return null;
                 }
 
+                if ($item['product_variant_id'] && ! $variant->is_active) {
+                    return null;
+                }
+
+                if ((int) $product->stock < 1) {
+                    return null;
+                }
+
                 $price = $variant ? $variant->effective_price : (float) $product->effective_price;
                 $quantity = $this->clamp($item['quantity'], $product->stock);
 
@@ -106,7 +119,7 @@ class CartService
 
     public function count(): int
     {
-        return (int) collect($this->rawItems())->sum('quantity');
+        return (int) $this->items()->sum('quantity');
     }
 
     public function subtotal(?Collection $items = null): float
@@ -116,7 +129,7 @@ class CartService
 
     public function isEmpty(): bool
     {
-        return $this->rawItems() === [];
+        return $this->items()->isEmpty();
     }
 
     protected function rawItems(): array

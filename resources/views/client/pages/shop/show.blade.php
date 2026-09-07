@@ -342,7 +342,7 @@
         @auth
             @if ($canReview)
                 <form action="{{ route('shop.reviews.store', $product->slug) }}" method="POST"
-                    id="review-form" class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
+                    id="review-form" data-submit-once class="{{ $errors->any() ? '' : 'hidden' }} bg-muted/40 border border-border rounded-xl p-5 mb-6 space-y-4">
                     @csrf
 
                     <div>

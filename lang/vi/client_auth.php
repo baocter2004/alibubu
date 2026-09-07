@@ -70,6 +70,8 @@ return [
         'google_failed' => 'Không thể đăng nhập bằng Google. Vui lòng thử lại.',
         'account_locked' => 'Tài khoản bị khoá hoặc không hợp lệ.',
         'email_already_verified' => 'Email đã được xác minh trước đó.',
+        'verification_resent' => 'Đã gửi lại email xác minh. Vui lòng kiểm tra hộp thư.',
+        'verification_resend_failed' => 'Gửi lại email xác minh thất bại. Vui lòng thử lại sau.',
         'must_login' => 'Bạn cần đăng nhập để tiếp tục.',
     ],
 ];

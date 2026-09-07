@@ -19,7 +19,7 @@
                 @endif
             </span>
 
-            <form action="{{ route('coupon.destroy') }}" method="POST">
+            <form action="{{ route('coupon.destroy') }}" method="POST" data-submit-once>
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="text-xs font-medium text-success hover:text-red-600 transition-colors">
@@ -28,7 +28,7 @@
             </form>
         </div>
     @else
-        <form action="{{ route('coupon.store') }}" method="POST" class="flex gap-2">
+        <form action="{{ route('coupon.store') }}" method="POST" class="flex gap-2" data-submit-once>
             @csrf
             <input type="text" name="code" value="{{ old('code') }}"
                 placeholder="{{ __('client.coupon.placeholder') }}"

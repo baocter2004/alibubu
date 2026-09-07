@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/email/resend', [AuthApiController::class, 'resendEmail'])
+    ->middleware(['auth:sanctum', 'throttle:6,1'])
     ->name('verification.resend');
 
 Route::get('/get-wards/{id}/', [WardController::class, 'getWards'])->name('get-wards');

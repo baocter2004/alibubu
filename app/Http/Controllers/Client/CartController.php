@@ -42,7 +42,7 @@ class CartController extends Controller
         if (! empty($data['product_variant_id'])) {
             $variant = $product->variants->firstWhere('id', $data['product_variant_id']);
 
-            if (! $variant) {
+            if (! $product->hasVariants() || ! $variant || ! $variant->is_active) {
                 return $this->failed($request, __('client.messages.variant_invalid'));
             }
         } elseif ($product->hasVariants()) {

@@ -68,10 +68,10 @@ return [
             'subtitle' => 'The most searched products',
         ],
         'newsletter' => [
-            'title' => 'Sign up for deals',
-            'subtitle' => 'Get a 50,000đ voucher for your first order.',
+            'title' => 'Get your first offer',
+            'subtitle' => 'Create an account to receive a 50,000đ voucher for your first order.',
             'placeholder' => 'Your email',
-            'submit' => 'Sign up now',
+            'submit' => 'Create account',
         ],
     ],
 
@@ -352,6 +352,7 @@ return [
             'order_not_found' => 'Order not found.',
             'order_cancelled' => 'Your order has been cancelled.',
             'cancel_not_allowed' => 'This order can no longer be cancelled. Please contact our support team.',
+            'ward_province_mismatch' => 'The selected ward does not belong to the selected province/city.',
         ],
     ],
 

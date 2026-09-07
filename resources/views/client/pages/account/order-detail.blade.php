@@ -193,7 +193,7 @@
                         {{ __('client.account.orders.cancel') }}
                     </button>
 
-                    <form id="cancel-order-form" action="{{ route('account.orders.cancel', $order->id) }}" method="POST"
+                    <form id="cancel-order-form" action="{{ route('account.orders.cancel', $order->id) }}" method="POST" data-submit-once
                         class="{{ $errors->has('cancel_reason') ? '' : 'hidden' }} mt-4 space-y-4">
                         @csrf
                         @method('PATCH')

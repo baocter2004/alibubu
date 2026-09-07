@@ -68,10 +68,10 @@ return [
             'subtitle' => 'Sản phẩm được tìm kiếm nhiều nhất',
         ],
         'newsletter' => [
-            'title' => 'Đăng ký nhận ưu đãi',
-            'subtitle' => 'Nhận ngay voucher 50.000đ cho đơn hàng đầu tiên.',
+            'title' => 'Nhận ưu đãi đầu tiên',
+            'subtitle' => 'Đăng ký tài khoản để nhận voucher 50.000đ cho đơn hàng đầu tiên.',
             'placeholder' => 'Email của bạn',
-            'submit' => 'Đăng ký ngay',
+            'submit' => 'Đăng ký tài khoản',
         ],
     ],
 
@@ -352,6 +352,7 @@ return [
             'order_not_found' => 'Không tìm thấy đơn hàng.',
             'order_cancelled' => 'Đã huỷ đơn hàng thành công.',
             'cancel_not_allowed' => 'Đơn hàng này không thể huỷ được nữa. Vui lòng liên hệ bộ phận hỗ trợ.',
+            'ward_province_mismatch' => 'Phường/Xã không thuộc tỉnh/thành phố đã chọn.',
         ],
     ],
 

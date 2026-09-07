@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class AuthApiController extends Controller
@@ -13,13 +11,19 @@ class AuthApiController extends Controller
     public function resendEmail(Request $request)
     {
         try {
-            $userId = $request->input('user_id');
-            $user = User::findOrFail($userId);
+            $user = $request->user();
+
+            if (! $user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => __('client_auth.messages.must_login'),
+                ], 401);
+            }
 
             if ($user->hasVerifiedEmail()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Email đã được xác minh.'
+                    'message' => __('client_auth.messages.email_already_verified'),
                 ], 400);
             }
 
@@ -27,7 +31,7 @@ class AuthApiController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Email xác minh đã được gửi lại. Kiểm Tra Email để xác Nhận!'
+                'message' => __('client_auth.messages.verification_resent'),
             ]);
         } catch (\Throwable $th) {
             Log::error('ResendEmailError', [
@@ -38,7 +42,7 @@ class AuthApiController extends Controller
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gửi lại email thất bại. Vui lòng thử lại.'
+                'message' => __('client_auth.messages.verification_resend_failed'),
             ], 500);
         }
     }
