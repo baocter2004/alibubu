@@ -47,6 +47,7 @@ return [
         'method' => [
             1 => 'Cash on delivery (COD)',
             2 => 'Bank transfer',
+                    3 => 'Pay online with VNPay',
         ],
     ],
 

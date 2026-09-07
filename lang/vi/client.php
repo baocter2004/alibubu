@@ -255,6 +255,7 @@ return [
         'cod_description' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
         'method_cod_desc' => 'Bạn thanh toán bằng tiền mặt khi nhận được hàng.',
         'method_bank_desc' => 'Chuyển khoản tới tài khoản của shop, hàng được gửi sau khi xác nhận.',
+        'method_vnpay_desc' => 'Thanh toán qua thẻ/ứng dụng ngân hàng, xác nhận ngay lập tức.',
         'bank_details' => 'Thông tin chuyển khoản',
         'bank_name' => 'Ngân hàng',
         'bank_account' => 'Số tài khoản',
@@ -274,6 +275,7 @@ return [
         'title' => 'Đặt hàng thành công!',
         'description' => 'Cảm ơn bạn đã mua sắm tại Alibubu. Chúng tôi sẽ liên hệ để xác nhận đơn hàng trong thời gian sớm nhất.',
         'order_code' => 'Mã đơn hàng',
+        'guest_hint' => 'Hãy lưu lại mã đơn này. Bạn dùng mã cùng số điện thoại đặt hàng để tra cứu đơn.',
         'track' => 'Theo dõi đơn hàng',
         'continue' => 'Tiếp tục mua sắm',
         'home' => 'Về trang chủ',
@@ -477,6 +479,20 @@ return [
             'not_found' => 'Không tìm thấy đơn hàng với thông tin này.',
             'invalid_code' => 'Mã đơn hàng không đúng định dạng.',
             'invalid_phone' => 'Số điện thoại không đúng định dạng.',
+        ],
+    ],
+
+    'payment' => [
+        'order_info' => 'Thanh toan don hang :code',
+        'messages' => [
+            'paid' => 'Thanh toán thành công. Cảm ơn bạn!',
+            'failed' => 'Giao dịch chưa thành công. Vui lòng thử lại hoặc chọn phương thức khác.',
+            'invalid_signature' => 'Chữ ký giao dịch không hợp lệ.',
+            'order_not_found' => 'Không tìm thấy đơn hàng tương ứng với giao dịch.',
+            'amount_mismatch' => 'Số tiền giao dịch không khớp với đơn hàng.',
+            'already_confirmed' => 'Đơn hàng này đã được thanh toán trước đó.',
+            'gateway_disabled' => 'Cổng thanh toán online chưa được cấu hình.',
+            'gateway_unavailable' => 'Không kết nối được cổng thanh toán. Đơn hàng đã được tạo, vui lòng thanh toán lại sau.',
         ],
     ],
 

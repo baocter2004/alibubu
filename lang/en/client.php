@@ -255,6 +255,7 @@ return [
         'cod_description' => 'You pay in cash when the order arrives.',
         'method_cod_desc' => 'Pay in cash when the order arrives.',
         'method_bank_desc' => 'Transfer to our bank account, we ship after confirmation.',
+        'method_vnpay_desc' => 'Pay by card or banking app, confirmed instantly.',
         'bank_details' => 'Transfer details',
         'bank_name' => 'Bank',
         'bank_account' => 'Account number',
@@ -274,6 +275,7 @@ return [
         'title' => 'Order placed successfully!',
         'description' => 'Thank you for shopping at Alibubu. We will contact you shortly to confirm your order.',
         'order_code' => 'Order code',
+        'guest_hint' => 'Save this order code. Use it with your phone number to track the order.',
         'track' => 'Track my order',
         'continue' => 'Continue shopping',
         'home' => 'Back to home',
@@ -477,6 +479,20 @@ return [
             'not_found' => 'No order was found with these details.',
             'invalid_code' => 'The order code format is invalid.',
             'invalid_phone' => 'The phone number format is invalid.',
+        ],
+    ],
+
+    'payment' => [
+        'order_info' => 'Payment for order :code',
+        'messages' => [
+            'paid' => 'Payment successful. Thank you!',
+            'failed' => 'The payment did not go through. Please try again or pick another method.',
+            'invalid_signature' => 'The transaction signature is invalid.',
+            'order_not_found' => 'No order matches this transaction.',
+            'amount_mismatch' => 'The paid amount does not match the order total.',
+            'already_confirmed' => 'This order has already been paid.',
+            'gateway_disabled' => 'The online payment gateway is not configured.',
+            'gateway_unavailable' => 'Could not reach the payment gateway. Your order was created, please pay again later.',
         ],
     ],
 

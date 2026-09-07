@@ -62,6 +62,15 @@ return [
     ],
 
     'actions' => [
+        'move_to' => [
+            2 => 'Xác nhận đơn',
+            3 => 'Bắt đầu giao',
+            4 => 'Hoàn thành đơn',
+            5 => 'Huỷ đơn',
+        ],
+        'cancel_hint' => 'Nhập lý do huỷ để khách hàng nắm được.',
+        'cancel_confirm' => 'Xác nhận huỷ đơn',
+        'cancel_back' => 'Quay lại',
         'update_status' => 'Cập nhật trạng thái',
         'select_status' => 'Chọn trạng thái mới',
         'no_transition' => 'Đơn hàng đã ở trạng thái cuối.',

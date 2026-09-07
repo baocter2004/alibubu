@@ -171,6 +171,7 @@
 
                 <div class="space-y-3">
                     @foreach (\App\Const\PaymentConst::methods() as $value => $label)
+                        @continue(\App\Const\PaymentConst::isOnline((int) $value) && ! $vnpayEnabled)
                         <label class="block cursor-pointer">
                             <input type="radio" name="payment_method" value="{{ $value }}"
                                 @checked((int) old('payment_method', \App\Const\PaymentConst::METHOD_COD) === (int) $value)
@@ -183,7 +184,18 @@
                                 <span class="flex-1">
                                     <span class="block text-sm font-semibold text-foreground">{{ $label }}</span>
                                     <span class="block text-xs text-muted-foreground mt-0.5">
-                                        {{ (int) $value === \App\Const\PaymentConst::METHOD_BANK_TRANSFER ? __('client.checkout.method_bank_desc') : __('client.checkout.method_cod_desc') }}
+                                        @switch((int) $value)
+                                            @case(\App\Const\PaymentConst::METHOD_BANK_TRANSFER)
+                                                {{ __('client.checkout.method_bank_desc') }}
+                                            @break
+
+                                            @case(\App\Const\PaymentConst::METHOD_VNPAY)
+                                                {{ __('client.checkout.method_vnpay_desc') }}
+                                            @break
+
+                                            @default
+                                                {{ __('client.checkout.method_cod_desc') }}
+                                        @endswitch
                                     </span>
                                 </span>
                                 <i class="fa-solid fa-circle-check text-primary opacity-0 peer-checked:opacity-100 mt-2.5"></i>

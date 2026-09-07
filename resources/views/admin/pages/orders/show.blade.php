@@ -132,40 +132,61 @@
                     <p class="text-sm text-gray-500">{{ __('admin/order.actions.no_transition') }}</p>
                 @else
                     <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST"
-                        class="space-y-4">
+                        class="space-y-3" id="order-status-form">
                         @csrf
                         @method('PATCH')
 
-                        <div>
-                            <label for="status"
-                                class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.actions.select_status') }}</label>
-                            <select id="status" name="status"
-                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has('status') ? 'is-invalid' : 'border-gray-300' }}">
-                                @foreach ($transitions as $status)
-                                    <option value="{{ $status }}">{{ \App\Const\OrderConst::statusLabel($status) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('status')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                        <div class="grid gap-2" id="status-actions">
+                            @foreach ($transitions as $status)
+                                @if ($status === \App\Const\OrderConst::STATUS_CANCELLED)
+                                    <button type="button" id="cancel-order-toggle"
+                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors {{ \App\Const\OrderConst::statusActionClass($status) }}">
+                                        <i class="fas {{ \App\Const\OrderConst::statusActionIcon($status) }}"></i>
+                                        {{ __('admin/order.actions.move_to.' . $status) }}
+                                    </button>
+                                @else
+                                    <button type="submit" name="status" value="{{ $status }}"
+                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors {{ \App\Const\OrderConst::statusActionClass($status) }}">
+                                        <i class="fas {{ \App\Const\OrderConst::statusActionIcon($status) }}"></i>
+                                        {{ __('admin/order.actions.move_to.' . $status) }}
+                                    </button>
+                                @endif
+                            @endforeach
                         </div>
 
-                        <div id="cancel-reason-wrap" class="hidden">
-                            <label for="cancel_reason"
-                                class="block text-sm font-medium text-gray-700 mb-1">{{ __('admin/order.fields.cancel_reason') }}</label>
-                            <textarea id="cancel_reason" name="cancel_reason" rows="3"
-                                class="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-accent/30 {{ $errors->has('cancel_reason') ? 'is-invalid' : 'border-gray-300' }}">{{ old('cancel_reason') }}</textarea>
-                            @error('cancel_reason')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @if (in_array(\App\Const\OrderConst::STATUS_CANCELLED, $transitions, true))
+                            <div id="cancel-reason-wrap"
+                                class="{{ $errors->has('cancel_reason') ? '' : 'hidden' }} rounded-lg border border-red-200 bg-red-50/60 p-3 space-y-3">
+                                <div>
+                                    <label for="cancel_reason" class="block text-sm font-medium text-gray-700 mb-1">
+                                        {{ __('admin/order.fields.cancel_reason') }}
+                                    </label>
+                                    <textarea id="cancel_reason" name="cancel_reason" rows="3"
+                                        placeholder="{{ __('admin/order.actions.cancel_hint') }}"
+                                        class="w-full border rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 {{ $errors->has('cancel_reason') ? 'is-invalid' : 'border-gray-300' }}">{{ old('cancel_reason') }}</textarea>
+                                    @error('cancel_reason')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                        <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
-                            <i class="fas fa-arrows-rotate"></i>
-                            {{ __('admin/order.actions.update_status') }}
-                        </button>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="submit" name="status"
+                                        value="{{ \App\Const\OrderConst::STATUS_CANCELLED }}"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                                        <i class="fas fa-ban"></i>
+                                        {{ __('admin/order.actions.cancel_confirm') }}
+                                    </button>
+                                    <button type="button" id="cancel-order-back"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                        {{ __('admin/order.actions.cancel_back') }}
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
+                        @error('status')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
                     </form>
                 @endif
             </div>
@@ -213,14 +234,26 @@
 @push('scripts')
     <script>
         $(function() {
-            const CANCELLED = '{{ \App\Const\OrderConst::STATUS_CANCELLED }}';
+            function showCancelPanel(show) {
+                $('#cancel-reason-wrap').toggleClass('hidden', !show);
+                $('#status-actions').toggleClass('hidden', show);
 
-            function toggleCancelReason() {
-                $('#cancel-reason-wrap').toggleClass('hidden', $('#status').val() !== CANCELLED);
+                if (show) {
+                    $('#cancel_reason').trigger('focus');
+                }
             }
 
-            $('#status').on('change', toggleCancelReason);
-            toggleCancelReason();
+            $('#cancel-order-toggle').on('click', function() {
+                showCancelPanel(true);
+            });
+
+            $('#cancel-order-back').on('click', function() {
+                showCancelPanel(false);
+            });
+
+            if (!$('#cancel-reason-wrap').hasClass('hidden')) {
+                showCancelPanel(true);
+            }
         });
     </script>
 @endpush

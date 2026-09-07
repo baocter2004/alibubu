@@ -47,6 +47,7 @@ return [
         'method' => [
             1 => 'Thanh toán khi nhận hàng (COD)',
             2 => 'Chuyển khoản ngân hàng',
+                    3 => 'Thanh toán online qua VNPay',
         ],
     ],
 

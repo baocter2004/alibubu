@@ -45,6 +45,12 @@
                     {{ __('client.footer.support') }}
                 </h4>
                 <ul class="space-y-3">
+                    <li>
+                        <a href="{{ route('order.track') }}"
+                            class="inline-block py-1.5 text-sm text-white/60 hover:text-white transition-colors">
+                            {{ __('client.tracking.title') }}
+                        </a>
+                    </li>
                     @foreach (['help_center', 'shipping', 'returns', 'warranty'] as $link)
                         <li>
                             <a href="#" class="inline-block py-1.5 text-sm text-white/60 hover:text-white transition-colors">

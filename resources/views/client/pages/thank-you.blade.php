@@ -15,12 +15,22 @@
             <div class="inline-flex flex-col items-center gap-1 px-6 py-4 bg-card border border-border rounded-xl mb-7">
                 <span class="text-xs text-muted-foreground uppercase tracking-wide">{{ __('client.thank_you.order_code') }}</span>
                 <span class="text-lg font-bold text-primary tracking-wider">{{ $orderCode }}</span>
+                @guest
+                    <span class="mt-1 text-xs text-muted-foreground max-w-xs">
+                        {{ __('client.thank_you.guest_hint') }}
+                    </span>
+                @endguest
             </div>
         @endif
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             @auth
                 <a href="{{ $orderId ? route('account.orders.show', $orderId) : route('account.orders') }}"
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
+                    <i class="fa-solid fa-receipt"></i> {{ __('client.thank_you.track') }}
+                </a>
+            @else
+                <a href="{{ route('order.track') }}"
                     class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold btn-primary rounded-xl">
                     <i class="fa-solid fa-receipt"></i> {{ __('client.thank_you.track') }}
                 </a>

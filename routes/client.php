@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\CouponController;
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ReviewController;
 use App\Http\Controllers\Client\ShopController;
 use App\Http\Controllers\Client\OrderTrackingController;
@@ -75,6 +76,11 @@ Route::prefix('account')
 Route::prefix('coupon')->name('coupon.')->controller(CouponController::class)->group(function () {
     Route::post('/', 'store')->name('store');
     Route::delete('/', 'destroy')->name('destroy');
+});
+
+Route::prefix('payment/vnpay')->name('payment.vnpay.')->controller(PaymentController::class)->group(function () {
+    Route::get('/return', 'vnpayReturn')->name('return');
+    Route::get('/ipn', 'vnpayIpn')->withoutMiddleware(['web'])->name('ipn');
 });
 
 Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
