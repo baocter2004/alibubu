@@ -261,6 +261,33 @@
                 @endif
             </div>
 
+            @if ($order->histories->isNotEmpty())
+                <div class="bg-white rounded-lg shadow-lg p-4 md:p-6">
+                    <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/order.sections.history') }}</h2>
+
+                    <ul class="space-y-3 text-sm">
+                        @foreach ($order->histories as $history)
+                            <li class="flex items-start gap-3">
+                                <span class="w-8 h-8 shrink-0 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center">
+                                    <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                                </span>
+                                <span>
+                                    <span class="block text-gray-700 font-medium">
+                                        {{ \App\Const\OrderConst::actorLabel($history->actor_type) }}{{ $history->actorName() ? ' · ' . $history->actorName() : '' }}
+                                    </span>
+                                    <span class="block text-xs text-gray-500">
+                                        {{ $history->created_at?->format('d/m/Y H:i') }}
+                                        @if ($history->note)
+                                            · {{ $history->note }}
+                                        @endif
+                                    </span>
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if ($order->paymentTransactions->isNotEmpty())
                 <div class="bg-white rounded-lg shadow-lg p-4 md:p-6">
                     <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/order.fields.payment') }}</h2>

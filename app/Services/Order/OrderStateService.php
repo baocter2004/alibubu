@@ -21,6 +21,7 @@ use App\Notifications\Refunded;
 use App\Notifications\RefundRequired;
 use App\Services\Client\MembershipService;
 use Closure;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 class OrderStateService
@@ -225,7 +226,7 @@ class OrderStateService
         $label = PaymentConst::gatewayLabel($gateway);
 
         if ($locked->isPaid() || in_array((int) $locked->payment_status, [PaymentConst::STATUS_REFUND_PENDING, PaymentConst::STATUS_REFUNDED], true)) {
-            $this->logTransaction($locked, $transaction);
+            $this->logTransactionSafely($locked, $transaction);
             $this->recordHistory($locked, OrderConst::EVENT_PAYMENT_PROBLEM, OrderConst::ACTOR_GATEWAY, null, __('admin/order.problems.' . PaymentConst::PROBLEM_DUPLICATE_PAYMENT));
             $this->notifier->admins(
                 new PaymentProblem($locked, PaymentConst::PROBLEM_DUPLICATE_PAYMENT, $gateway, (float) $transaction['amount']),
@@ -348,6 +349,15 @@ class OrderStateService
             'is_successful' => false,
             'amount' => 0,
         ], $data));
+    }
+
+    public function logTransactionSafely(Order $order, array $data): ?PaymentTransaction
+    {
+        try {
+            return $this->logTransaction($order, $data);
+        } catch (QueryException $e) {
+            return null;
+        }
     }
 
     protected function applyPaid(Order $locked): void

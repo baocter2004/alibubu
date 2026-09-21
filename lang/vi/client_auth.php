@@ -65,6 +65,11 @@ return [
             'line' => 'Tài khoản Google của bạn vừa được liên kết với tài khoản Alibubu này lúc :time.',
             'warning' => 'Nếu không phải bạn thực hiện, vui lòng đổi mật khẩu ngay.',
         ],
+        'email_changed' => [
+            'subject' => 'Email tài khoản của bạn đã được thay đổi',
+            'line' => 'Email đăng nhập cho tài khoản Alibubu của bạn đã được đổi thành :new_email lúc :time.',
+            'warning' => 'Nếu không phải bạn thực hiện, vui lòng liên hệ hỗ trợ ngay.',
+        ],
     ],
 
     'messages' => [

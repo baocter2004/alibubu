@@ -119,6 +119,10 @@
                     <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
                 </div>
 
+                <div class="mt-5">
+                    <x-bank-transfer-instructions :order="$order" />
+                </div>
+
                 @if ($order->canPayOnline())
                     <form action="{{ route('order.track.pay-again') }}" method="POST" class="mt-5">
                         @csrf

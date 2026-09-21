@@ -9,7 +9,6 @@ use App\Http\Requests\Client\PlaceOrderRequest;
 use App\Services\Client\CartService;
 use App\Services\Client\CouponService;
 use App\Services\Client\OrderService;
-use App\Services\Order\OrderStateService;
 use App\Services\Payment\MomoService;
 use App\Services\Payment\VnpayService;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +21,7 @@ class CheckoutController extends Controller
         protected CouponService $couponService,
         protected OrderService $orderService,
         protected VnpayService $vnpayService,
-        protected MomoService $momoService,
-        protected OrderStateService $orderState
+        protected MomoService $momoService
     ) {}
 
     public function index()

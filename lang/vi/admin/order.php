@@ -43,6 +43,7 @@ return [
         'customer' => 'Thông tin khách hàng',
         'items' => 'Sản phẩm trong đơn',
         'timeline' => 'Dòng thời gian',
+        'history' => 'Lịch sử trạng thái',
         'actions' => 'Cập nhật trạng thái',
     ],
 

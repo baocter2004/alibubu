@@ -65,6 +65,11 @@ return [
             'line' => 'Your Google account was linked to this Alibubu account at :time.',
             'warning' => 'If you did not do this, please change your password immediately.',
         ],
+        'email_changed' => [
+            'subject' => 'Your account email has been changed',
+            'line' => 'The sign-in email for your Alibubu account was changed to :new_email at :time.',
+            'warning' => 'If you did not make this change, please contact support immediately.',
+        ],
     ],
 
     'messages' => [

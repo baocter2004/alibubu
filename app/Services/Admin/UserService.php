@@ -6,6 +6,7 @@ use App\Const\UserConst;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
+use App\Notifications\EmailChanged;
 use App\Repositories\UserAddressRepository;
 use App\Repositories\UserRepository;
 use App\Services\Auth\AuthService;
@@ -13,6 +14,7 @@ use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class UserService extends BaseCrudService
@@ -35,6 +37,16 @@ class UserService extends BaseCrudService
         $this->authService->sendResetLinkEmail(['email' => $user->email]);
 
         return true;
+    }
+
+    protected function notifyEmailChanged(string $oldEmail, User $user): void
+    {
+        try {
+            Notification::route('mail', $oldEmail)
+                ->notify((new EmailChanged($user->email))->locale(app()->getLocale()));
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'user_id' => $user->id]);
+        }
     }
 
     protected function getRepository(): UserRepository
@@ -125,11 +137,16 @@ class UserService extends BaseCrudService
             return DB::transaction(function () use ($id, $params) {
                 $status = $params['status'] ?? null;
                 $attributes = Arr::except($params, ['user_addresses', 'id', 'status', 'role']);
+                $oldEmail = $this->find($id)?->email;
 
                 $user = parent::update($id, $attributes);
 
                 if ($status !== null) {
                     $user->forceFill(['status' => $status])->save();
+                }
+
+                if ($oldEmail && isset($attributes['email']) && $attributes['email'] !== $oldEmail) {
+                    $this->notifyEmailChanged($oldEmail, $user);
                 }
 
                 $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);

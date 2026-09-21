@@ -61,7 +61,10 @@ class HomeController extends Controller
 
     public function thankYou()
     {
+        $order = session('order_id') ? Order::find(session('order_id')) : null;
+
         return view('client.pages.thank-you', [
+            'order' => $order,
             'orderCode' => session('order_code'),
             'orderId' => session('order_id'),
         ]);

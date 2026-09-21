@@ -108,4 +108,21 @@ class BankConst
     {
         return self::BANKS[$code]['bin'] ?? null;
     }
+
+    public static function vietQrUrl(string $bankCode, string $accountNumber, float $amount, string $note, ?string $accountName = null, string $template = 'compact2'): ?string
+    {
+        $bin = self::getBin($bankCode);
+
+        if (! $bin || ! $accountNumber) {
+            return null;
+        }
+
+        $params = http_build_query(array_filter([
+            'amount' => (int) round($amount),
+            'addInfo' => $note,
+            'accountName' => $accountName,
+        ]));
+
+        return "https://img.vietqr.io/image/{$bin}-{$accountNumber}-{$template}.png?{$params}";
+    }
 }

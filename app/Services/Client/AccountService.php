@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Exceptions\OrderStateException;
+use App\Notifications\PasswordChanged;
 use App\Services\Auth\SessionService;
 use App\Services\Order\OrderStateService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -95,6 +96,8 @@ class AccountService
         $user->update(['password' => Hash::make($password)]);
 
         $this->sessionService->terminateOtherSessions($user, $exceptSessionId);
+
+        $user->notify(new PasswordChanged());
     }
 
     public function storeAddress(User $user, array $params): UserAddress

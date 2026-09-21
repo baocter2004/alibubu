@@ -15,7 +15,7 @@ class CartService
 
     protected ?Collection $itemsCache = null;
 
-    public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): void
+    public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): bool
     {
         $items = $this->rawItems();
         $key = $this->makeKey((string) $product->id, $variant?->id ? (string) $variant->id : null);
@@ -27,7 +27,11 @@ class CartService
             unset($items[$key]);
             $this->persist($items);
 
-            return;
+            return true;
+        }
+
+        if (! isset($items[$key]) && count($items) >= CartConst::MAX_LINES) {
+            return false;
         }
 
         $items[$key] = [
@@ -37,6 +41,8 @@ class CartService
         ];
 
         $this->persist($items);
+
+        return true;
     }
 
     public function update(string $key, int $quantity): void

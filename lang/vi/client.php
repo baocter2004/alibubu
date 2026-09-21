@@ -143,7 +143,6 @@ return [
             'title' => 'Phụ kiện mua kèm',
             'subtitle' => 'Chọn thêm để dùng trọn bộ, tiết kiệm hơn khi mua cùng lúc.',
         ],
-        'recently_viewed' => 'Sản phẩm bạn vừa xem',
         'add_to_cart' => 'Thêm vào giỏ hàng',
         'buy_now' => 'Mua ngay',
         'quantity' => 'Số lượng',
@@ -323,6 +322,7 @@ return [
             'empty_cta' => 'Mua sắm ngay',
             'detail' => 'Chi tiết đơn hàng',
             'timeline_title' => 'Theo dõi đơn hàng',
+            'history_title' => 'Lịch sử đơn hàng',
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',
@@ -653,6 +653,7 @@ return [
 
     'messages' => [
         'cart_added' => 'Đã thêm sản phẩm vào giỏ hàng.',
+        'cart_full' => 'Giỏ hàng đã đạt số lượng sản phẩm tối đa, vui lòng xoá bớt trước khi thêm mới.',
         'cart_updated' => 'Đã cập nhật giỏ hàng.',
         'cart_removed' => 'Đã xoá sản phẩm khỏi giỏ hàng.',
         'cart_cleared' => 'Đã xoá toàn bộ giỏ hàng.',

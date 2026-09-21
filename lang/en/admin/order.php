@@ -43,6 +43,7 @@ return [
         'customer' => 'Customer information',
         'items' => 'Order items',
         'timeline' => 'Timeline',
+        'history' => 'Status history',
         'actions' => 'Update status',
     ],
 
