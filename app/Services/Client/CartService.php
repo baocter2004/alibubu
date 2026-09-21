@@ -5,7 +5,9 @@ namespace App\Services\Client;
 use App\Const\CartConst;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Repositories\CartItemRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class CartService
 {
@@ -14,6 +16,10 @@ class CartService
     public const MAX_QUANTITY = CartConst::MAX_QUANTITY;
 
     protected ?Collection $itemsCache = null;
+
+    protected ?array $rawItemsCache = null;
+
+    public function __construct(protected CartItemRepository $cartItemRepository) {}
 
     public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): bool
     {
@@ -83,8 +89,60 @@ class CartService
 
     public function clear(): void
     {
-        session()->forget(self::SESSION_KEY);
+        if ($userId = Auth::guard('user')->id()) {
+            $this->cartItemRepository->replaceForUser((string) $userId, []);
+        } else {
+            session()->forget(self::SESSION_KEY);
+        }
+
         $this->itemsCache = null;
+        $this->rawItemsCache = [];
+    }
+
+    public function mergeGuestCartIntoUser(): void
+    {
+        $guestItems = session()->get(self::SESSION_KEY, []);
+
+        if ($guestItems === [] || ! Auth::guard('user')->check()) {
+            return;
+        }
+
+        $items = $this->rawItems();
+
+        $products = Product::query()
+            ->with('variants')
+            ->whereIn('id', collect($guestItems)->pluck('product_id')->unique())
+            ->get()
+            ->keyBy('id');
+
+        foreach ($guestItems as $key => $line) {
+            $product = $products->get($line['product_id']);
+
+            if (! $product) {
+                continue;
+            }
+
+            $variant = $line['product_variant_id']
+                ? $product->variants->firstWhere('id', $line['product_variant_id'])
+                : null;
+
+            $stock = $variant?->stock ?? $product->stock;
+            $current = $items[$key]['quantity'] ?? 0;
+            $quantity = $this->clamp($current + $line['quantity'], $stock);
+
+            if ($quantity < 1) {
+                continue;
+            }
+
+            $items[$key] = [
+                'product_id' => $product->id,
+                'product_variant_id' => $variant?->id,
+                'quantity' => $quantity,
+            ];
+        }
+
+        $this->persist($items);
+        session()->forget(self::SESSION_KEY);
     }
 
     public function items(): Collection
@@ -175,7 +233,15 @@ class CartService
 
     protected function rawItems(): array
     {
-        return session()->get(self::SESSION_KEY, []);
+        if ($this->rawItemsCache !== null) {
+            return $this->rawItemsCache;
+        }
+
+        if ($userId = Auth::guard('user')->id()) {
+            return $this->rawItemsCache = $this->cartItemRepository->rawItemsForUser((string) $userId);
+        }
+
+        return $this->rawItemsCache = session()->get(self::SESSION_KEY, []);
     }
 
     protected function persist(array $items): void
@@ -184,6 +250,14 @@ class CartService
 
         if ($items === []) {
             $this->clear();
+
+            return;
+        }
+
+        $this->rawItemsCache = $items;
+
+        if ($userId = Auth::guard('user')->id()) {
+            $this->cartItemRepository->replaceForUser((string) $userId, $items);
 
             return;
         }
