@@ -180,6 +180,22 @@
                 @endif
             </section>
 
+            @if ($order->canPayOnline())
+                <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
+                    <h2 class="text-base font-bold text-foreground mb-1">
+                        {{ __('client.payment.messages.pending') }}
+                    </h2>
+                    <form action="{{ route('account.orders.pay-again', $order->id) }}" method="POST" data-submit-once class="mt-3">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
+                            <i class="fa-solid fa-credit-card"></i>
+                            {{ __('client.payment.messages.pay_again') }}
+                        </button>
+                    </form>
+                </section>
+            @endif
+
             @if (\App\Const\OrderConst::isCancellableByCustomer($order->status))
                 <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
                     <h2 class="text-base font-bold text-foreground mb-1">
