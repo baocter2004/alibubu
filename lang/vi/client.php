@@ -522,6 +522,8 @@ return [
         'fields' => [
             'question' => 'Câu hỏi',
             'fullname' => 'Tên của bạn',
+            'email' => 'Email nhận thông báo',
+            'email_hint' => 'Không bắt buộc. Chúng tôi sẽ gửi email khi câu hỏi được trả lời.',
             'question_placeholder' => 'Ví dụ: Máy này có hỗ trợ sạc nhanh không?',
         ],
         'messages' => [
@@ -550,6 +552,56 @@ return [
         'to_next' => 'Còn :points điểm để lên hạng :tier',
         'max_tier' => 'Bạn đang ở hạng cao nhất.',
         'earn_hint' => 'Mỗi 100.000đ giá trị đơn hoàn thành được cộng 1 điểm.',
+    ],
+
+    'notifications' => [
+        'title' => 'Thông báo',
+        'subtitle' => 'Cập nhật về đơn hàng, đánh giá và câu hỏi của bạn.',
+        'empty' => 'Bạn chưa có thông báo nào.',
+        'empty_unread' => 'Bạn đã đọc hết thông báo.',
+        'unread' => 'Chưa đọc',
+        'mark_all_read' => 'Đánh dấu đã đọc tất cả',
+        'view' => 'Xem',
+        'view_all' => 'Xem tất cả thông báo',
+        'bell' => 'Thông báo, :count chưa đọc',
+        'reason' => 'Lý do: :reason',
+        'filters' => [
+            'all' => 'Tất cả',
+            'unread' => 'Chưa đọc',
+        ],
+        'messages' => [
+            'marked_read' => 'Đã đánh dấu thông báo là đã đọc.',
+            'marked_all_read' => 'Đã đánh dấu tất cả thông báo là đã đọc.',
+            'not_found' => 'Không tìm thấy thông báo.',
+        ],
+        'mail' => [
+            'greeting' => 'Xin chào :name,',
+            'action' => 'Xem chi tiết',
+            'salutation' => 'Trân trọng, đội ngũ Alibubu',
+            'question' => 'Câu hỏi của bạn: “:question”',
+            'answer' => 'Trả lời: “:answer”',
+        ],
+        'types' => [
+            'default' => [
+                'title' => 'Thông báo mới',
+            ],
+            'review' => [
+                'approved' => [
+                    'title' => 'Đánh giá của bạn đã được duyệt',
+                    'body' => 'Đánh giá :rating/5 sao cho :product đã hiển thị trên trang sản phẩm. Cảm ơn bạn!',
+                ],
+                'rejected' => [
+                    'title' => 'Đánh giá của bạn chưa được hiển thị',
+                    'body' => 'Đánh giá cho :product không được duyệt để hiển thị.',
+                ],
+            ],
+            'question' => [
+                'answered' => [
+                    'title' => 'Câu hỏi về :product đã được trả lời',
+                    'body' => 'Alibubu đã trả lời câu hỏi “:question” của bạn.',
+                ],
+            ],
+        ],
     ],
 
     'messages' => [

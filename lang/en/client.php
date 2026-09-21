@@ -522,6 +522,8 @@ return [
         'fields' => [
             'question' => 'Question',
             'fullname' => 'Your name',
+            'email' => 'Email for updates',
+            'email_hint' => 'Optional. We will email you when your question is answered.',
             'question_placeholder' => 'For example: does this support fast charging?',
         ],
         'messages' => [
@@ -550,6 +552,56 @@ return [
         'to_next' => ':points points to reach :tier',
         'max_tier' => 'You are at the highest tier.',
         'earn_hint' => 'Earn 1 point for every 100,000đ of completed orders.',
+    ],
+
+    'notifications' => [
+        'title' => 'Notifications',
+        'subtitle' => 'Updates about your orders, reviews and questions.',
+        'empty' => 'You have no notifications yet.',
+        'empty_unread' => 'You are all caught up.',
+        'unread' => 'Unread',
+        'mark_all_read' => 'Mark all as read',
+        'view' => 'View',
+        'view_all' => 'View all notifications',
+        'bell' => 'Notifications, :count unread',
+        'reason' => 'Reason: :reason',
+        'filters' => [
+            'all' => 'All',
+            'unread' => 'Unread',
+        ],
+        'messages' => [
+            'marked_read' => 'Notification marked as read.',
+            'marked_all_read' => 'All notifications marked as read.',
+            'not_found' => 'Notification not found.',
+        ],
+        'mail' => [
+            'greeting' => 'Hello :name,',
+            'action' => 'View details',
+            'salutation' => 'Best regards, the Alibubu team',
+            'question' => 'Your question: “:question”',
+            'answer' => 'Answer: “:answer”',
+        ],
+        'types' => [
+            'default' => [
+                'title' => 'New notification',
+            ],
+            'review' => [
+                'approved' => [
+                    'title' => 'Your review has been approved',
+                    'body' => 'Your :rating/5 review of :product is now live on the product page. Thank you!',
+                ],
+                'rejected' => [
+                    'title' => 'Your review was not published',
+                    'body' => 'Your review of :product was not approved for publication.',
+                ],
+            ],
+            'question' => [
+                'answered' => [
+                    'title' => 'Your question about :product has been answered',
+                    'body' => 'Alibubu has answered your question “:question”.',
+                ],
+            ],
+        ],
     ],
 
     'messages' => [

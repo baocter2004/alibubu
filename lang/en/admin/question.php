@@ -12,6 +12,9 @@ return [
     'show' => 'Show',
     'hide' => 'Hide',
     'asked_by' => 'Asked by',
+    'notify_email' => 'Notification email: :email',
+    'notify_account' => 'The customer is notified in their account and by email when answered.',
+    'no_contact' => 'No email left, the asker will not be notified.',
     'filters' => [
         'all' => 'All',
         'pending' => 'Awaiting answer',
