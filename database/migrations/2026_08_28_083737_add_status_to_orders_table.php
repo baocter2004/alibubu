@@ -19,9 +19,11 @@ return new class extends Migration
                 ->index();
 
             $table->timestamp('confirmed_at')->nullable()->after('status');
-            $table->timestamp('completed_at')->nullable()->after('confirmed_at');
+            $table->timestamp('shipped_at')->nullable()->after('confirmed_at');
+            $table->timestamp('completed_at')->nullable()->after('shipped_at');
             $table->timestamp('cancelled_at')->nullable()->after('completed_at');
-            $table->string('cancel_reason')->nullable()->after('cancelled_at');
+            $table->timestamp('returned_at')->nullable()->after('cancelled_at');
+            $table->string('cancel_reason')->nullable()->after('returned_at');
         });
     }
 
@@ -32,7 +34,7 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropIndex(['status']);
-            $table->dropColumn(['status', 'confirmed_at', 'completed_at', 'cancelled_at', 'cancel_reason']);
+            $table->dropColumn(['status', 'confirmed_at', 'shipped_at', 'completed_at', 'cancelled_at', 'returned_at', 'cancel_reason']);
         });
     }
 };

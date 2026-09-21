@@ -1,6 +1,5 @@
 <?php
 
-use App\Const\AdminConst;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,11 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('admins', function (Blueprint $table) {
-            $table->unsignedTinyInteger('role')->default(AdminConst::ROLE_STAFF)->change();
-            $table->boolean('is_active')->default(true)->after('role');
-        });
-
         Schema::create('admin_role_permissions', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('role');
@@ -41,10 +35,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('admin_activity_logs');
         Schema::dropIfExists('admin_role_permissions');
-
-        Schema::table('admins', function (Blueprint $table) {
-            $table->dropColumn('is_active');
-            $table->unsignedTinyInteger('role')->default(AdminConst::ROLE_SUPER_ADMIN)->change();
-        });
     }
 };

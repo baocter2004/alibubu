@@ -6,20 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('order_status_histories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('order_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('from_status')->nullable();
+            $table->unsignedTinyInteger('to_status')->nullable();
+            $table->string('event', 40);
+            $table->string('actor_type', 20);
+            $table->string('actor_id', 36)->nullable();
+            $table->text('note')->nullable();
+            $table->timestamp('created_at')->nullable();
+
+            $table->index(['order_id', 'created_at']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('order_status_histories');

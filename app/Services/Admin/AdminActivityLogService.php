@@ -2,7 +2,9 @@
 
 namespace App\Services\Admin;
 
+use App\Const\AdminActivityConst;
 use App\Repositories\AdminActivityLogRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +30,26 @@ class AdminActivityLogService
                 'message' => $th->getMessage(),
             ]);
         }
+    }
+
+    public function paginate(array $filters = [], int $perPage = AdminActivityConst::PER_PAGE): LengthAwarePaginator
+    {
+        return app(AdminActivityLogRepository::class)->newQuery()
+            ->with('admin')
+            ->when($filters['action'] ?? null, fn ($query, $action) => $query->where('action', $action))
+            ->when($filters['admin_id'] ?? null, fn ($query, $adminId) => $query->where('admin_id', $adminId))
+            ->latest('id')
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    public function actions(): array
+    {
+        return app(AdminActivityLogRepository::class)->newQuery()
+            ->distinct()
+            ->orderBy('action')
+            ->pluck('action')
+            ->all();
     }
 
     protected static function resolveSubject($subject): array

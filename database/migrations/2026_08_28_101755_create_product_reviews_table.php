@@ -24,6 +24,8 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->boolean('is_approved')->default(false);
             $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->string('rejection_reason', 500)->nullable();
             $table->timestamps();
 
             $table->unique(['product_id', 'user_id']);

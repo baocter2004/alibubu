@@ -3,6 +3,7 @@
 use App\Http\Middleware\OverwriteAuthenticate;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\EnsureAdminIsActive;
+use App\Http\Middleware\EnsureAdminCanWrite;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => OverwriteAuthenticate::class,
             'admin.role' => EnsureAdminRole::class,
             'admin.active' => EnsureAdminIsActive::class,
+            'admin.can_write' => EnsureAdminCanWrite::class,
         ]);
 
         $middleware->web(append: [

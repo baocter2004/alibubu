@@ -5,6 +5,7 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\CouponController;
+use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\QuestionController;
 use App\Http\Controllers\Client\ReviewController;
@@ -76,6 +77,16 @@ Route::prefix('account')
         Route::post('/addresses', 'storeAddress')->name('addresses.store');
         Route::patch('/addresses/{id}', 'updateAddress')->name('addresses.update');
         Route::delete('/addresses/{id}', 'destroyAddress')->name('addresses.destroy');
+    });
+
+Route::prefix('account/notifications')
+    ->name('account.notifications.')
+    ->middleware('auth')
+    ->controller(NotificationController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/read-all', 'readAll')->name('read-all');
+        Route::post('/{id}/read', 'read')->name('read');
     });
 
 Route::prefix('coupon')->name('coupon.')->controller(CouponController::class)->group(function () {

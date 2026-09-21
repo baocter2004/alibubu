@@ -58,6 +58,8 @@ class PermissionConst
 
     const SUPER_ADMIN_MARKER = '*';
 
+    const CACHE_KEY = 'admin.role_permissions';
+
     public static function groups(): array
     {
         return [

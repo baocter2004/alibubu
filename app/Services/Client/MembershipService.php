@@ -6,22 +6,18 @@ use App\Const\MembershipConst;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\MembershipTierChanged;
+use App\Services\Order\OrderNotifierService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class MembershipService
 {
+    public function __construct(protected OrderNotifierService $notifier) {}
+
     public function awardForOrder(Order $order): int
     {
         if (! $order->user_id) {
-            return 0;
-        }
-
-        $already = LoyaltyPointTransaction::where('order_id', $order->id)
-            ->where('type', MembershipConst::TYPE_ORDER)
-            ->exists();
-
-        if ($already) {
             return 0;
         }
 
@@ -31,7 +27,15 @@ class MembershipService
             return 0;
         }
 
-        DB::transaction(function () use ($order, $points) {
+        return DB::transaction(function () use ($order, $points) {
+            $already = LoyaltyPointTransaction::where('order_id', $order->id)
+                ->where('type', MembershipConst::TYPE_ORDER)
+                ->exists();
+
+            if ($already) {
+                return 0;
+            }
+
             LoyaltyPointTransaction::create([
                 'user_id' => $order->user_id,
                 'order_id' => $order->id,
@@ -41,10 +45,46 @@ class MembershipService
                 'earned_at' => now(),
             ]);
 
-            $this->refresh(User::find($order->user_id));
-        });
+            $this->promote(User::query()->lockForUpdate()->find($order->user_id), $order->locale);
 
-        return $points;
+            return $points;
+        });
+    }
+
+    public function reverseForOrder(Order $order): int
+    {
+        if (! $order->user_id) {
+            return 0;
+        }
+
+        return DB::transaction(function () use ($order) {
+            $award = LoyaltyPointTransaction::where('order_id', $order->id)
+                ->where('type', MembershipConst::TYPE_ORDER)
+                ->first();
+
+            $reversed = LoyaltyPointTransaction::where('order_id', $order->id)
+                ->where('type', MembershipConst::TYPE_REVERSAL)
+                ->exists();
+
+            if (! $award || $reversed || $award->points < 1) {
+                return 0;
+            }
+
+            LoyaltyPointTransaction::create([
+                'user_id' => $order->user_id,
+                'order_id' => $order->id,
+                'points' => -$award->points,
+                'type' => MembershipConst::TYPE_REVERSAL,
+                'description' => $order->code,
+                'earned_at' => $award->earned_at,
+            ]);
+
+            $user = User::query()->lockForUpdate()->find($order->user_id);
+
+            $user?->forceFill(['loyalty_points' => max(0, $this->pointsInWindow($user))])->save();
+
+            return (int) $award->points;
+        });
     }
 
     public function pointsInWindow(User $user, ?Carbon $now = null): int
@@ -63,7 +103,7 @@ class MembershipService
             return null;
         }
 
-        $points = $this->pointsInWindow($user, $now);
+        $points = max(0, $this->pointsInWindow($user, $now));
 
         $user->forceFill([
             'loyalty_points' => $points,
@@ -83,11 +123,16 @@ class MembershipService
         $user->forceFill(['tier_reviewed_at' => $now])->save();
 
         $after = $user->fresh()->membership_tier;
+        $changed = $before !== $after;
+
+        if ($changed) {
+            $this->notifier->user($user, new MembershipTierChanged($before, $after, (int) $user->loyalty_points));
+        }
 
         return [
             'from' => $before,
             'to' => $after,
-            'changed' => $before !== $after,
+            'changed' => $changed,
             'demoted' => MembershipConst::threshold($after) < MembershipConst::threshold($before),
         ];
     }
@@ -114,5 +159,25 @@ class MembershipService
             });
 
         return $summary;
+    }
+
+    protected function promote(?User $user, ?string $locale = null): void
+    {
+        if (! $user) {
+            return;
+        }
+
+        $points = max(0, $this->pointsInWindow($user));
+        $before = $user->membership_tier ?: MembershipConst::TIER_MEMBER;
+        $after = MembershipConst::higherTier($before, MembershipConst::tierFor($points));
+
+        $user->forceFill([
+            'loyalty_points' => $points,
+            'membership_tier' => $after,
+        ])->save();
+
+        if ($after !== $before) {
+            $this->notifier->user($user, new MembershipTierChanged($before, $after, $points, $locale));
+        }
     }
 }

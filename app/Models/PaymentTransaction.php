@@ -13,6 +13,7 @@ class PaymentTransaction extends Model
     protected $fillable = [
         'order_id',
         'gateway',
+        'type',
         'reference',
         'transaction_no',
         'bank_code',
@@ -20,6 +21,8 @@ class PaymentTransaction extends Model
         'amount',
         'is_successful',
         'source',
+        'admin_id',
+        'note',
         'payload',
     ];
 
@@ -35,5 +38,10 @@ class PaymentTransaction extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class)->withTrashed();
     }
 }

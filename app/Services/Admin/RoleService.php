@@ -2,17 +2,15 @@
 
 namespace App\Services\Admin;
 
+use App\Const\AdminActivityConst;
 use App\Const\AdminConst;
 use App\Const\PermissionConst;
 use App\Repositories\AdminRepository;
 use App\Repositories\AdminRolePermissionRepository;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class RoleService
 {
-    const CACHE_KEY = 'admin.role_permissions';
-
     protected ?array $matrix = null;
 
     public function __construct(
@@ -63,7 +61,7 @@ class RoleService
 
         $this->persist($matrix);
 
-        AdminActivityLogService::log('roles.permissions_updated', null, [
+        AdminActivityLogService::log(AdminActivityConst::ROLES_PERMISSIONS_UPDATED, null, [
             'changes' => $this->diff($before, $matrix),
         ]);
 
@@ -77,7 +75,7 @@ class RoleService
 
         $this->persist($matrix);
 
-        AdminActivityLogService::log('roles.permissions_reset', null, [
+        AdminActivityLogService::log(AdminActivityConst::ROLES_PERMISSIONS_RESET, null, [
             'changes' => $this->diff($before, $matrix),
         ]);
 
@@ -109,7 +107,7 @@ class RoleService
     public function flush(): void
     {
         $this->matrix = null;
-        Cache::forget(self::CACHE_KEY);
+        Cache::forget(PermissionConst::CACHE_KEY);
     }
 
     protected function persist(array $matrix): void
@@ -122,23 +120,7 @@ class RoleService
 
     protected function stored(): array
     {
-        $cached = Cache::get(self::CACHE_KEY);
-
-        if (is_array($cached)) {
-            return $cached;
-        }
-
-        try {
-            $stored = $this->rolePermissionRepository->groupedByRole();
-        } catch (\Throwable $th) {
-            Log::error(__METHOD__, ['message' => $th->getMessage()]);
-
-            return [];
-        }
-
-        Cache::forever(self::CACHE_KEY, $stored);
-
-        return $stored;
+        return Cache::rememberForever(PermissionConst::CACHE_KEY, fn () => $this->rolePermissionRepository->groupedByRole());
     }
 
     protected function load(): array

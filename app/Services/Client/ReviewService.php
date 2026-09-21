@@ -3,17 +3,25 @@
 namespace App\Services\Client;
 
 use App\Const\OrderConst;
+use App\Const\PermissionConst;
+use App\Const\ReviewConst;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
+use App\Notifications\NewProductReview;
+use App\Services\Admin\AdminNotifierService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ReviewService
 {
-    public function paginateFor(Product $product, int $limit = 5): LengthAwarePaginator
+    public function paginateFor(Product $product, int $limit = ReviewConst::CLIENT_PER_PAGE): LengthAwarePaginator
     {
         return $product->reviews()
             ->where('is_approved', true)
@@ -53,8 +61,6 @@ class ReviewService
         return $this->purchasedOrder($product, $user) !== null;
     }
 
-    public const MAX_IMAGES = 4;
-
     public function store(Product $product, User $user, array $params): array
     {
         if ($product->reviews()->where('user_id', $user->id)->exists()) {
@@ -69,8 +75,8 @@ class ReviewService
 
         $images = $this->storeImages($params['images'] ?? []);
 
-        DB::transaction(function () use ($product, $user, $order, $params, $images) {
-            ProductReview::create([
+        try {
+            $review = DB::transaction(fn () => ProductReview::create([
                 'product_id' => $product->id,
                 'user_id' => $user->id,
                 'order_id' => $order->id,
@@ -79,17 +85,43 @@ class ReviewService
                 'comment' => $params['comment'] ?? null,
                 'images' => $images ?: null,
                 'is_approved' => false,
-            ]);
-        });
+            ]));
+        } catch (UniqueConstraintViolationException) {
+            $this->deleteImages($images);
+
+            return ['status' => false, 'message' => __('client.review.messages.already_reviewed')];
+        } catch (Throwable $e) {
+            $this->deleteImages($images);
+
+            throw $e;
+        }
+
+        $this->notifyAdmins($review);
 
         return ['status' => true, 'message' => __('client.review.messages.submitted')];
+    }
+
+    protected function notifyAdmins(ProductReview $review): void
+    {
+        try {
+            AdminNotifierService::notify(new NewProductReview($review->loadMissing(['product', 'user'])), PermissionConst::REVIEWS_MODERATE);
+        } catch (Throwable $e) {
+            Log::error(__METHOD__, ['message' => $e->getMessage(), 'review_id' => $review->id]);
+        }
+    }
+
+    protected function deleteImages(array $paths): void
+    {
+        if ($paths !== []) {
+            Storage::disk('public')->delete($paths);
+        }
     }
 
     protected function storeImages(array $files): array
     {
         $paths = [];
 
-        foreach (array_slice($files, 0, self::MAX_IMAGES) as $file) {
+        foreach (array_slice($files, 0, ReviewConst::MAX_IMAGES) as $file) {
             if (! $file instanceof UploadedFile || ! $file->isValid()) {
                 continue;
             }

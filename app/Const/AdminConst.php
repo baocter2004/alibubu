@@ -8,6 +8,8 @@ class AdminConst
     const ROLE_MANAGER = 2;
     const ROLE_STAFF = 3;
 
+    const PER_PAGE = 20;
+
     const ROLE_NAMES = [
         'SUPER_ADMIN' => self::ROLE_SUPER_ADMIN,
         'MANAGER' => self::ROLE_MANAGER,
@@ -37,6 +39,11 @@ class AdminConst
     public static function editableRoleIds(): array
     {
         return [self::ROLE_MANAGER, self::ROLE_STAFF];
+    }
+
+    public static function delegableRoleIds(): array
+    {
+        return [self::ROLE_STAFF];
     }
 
     public static function isValidRole(mixed $role): bool

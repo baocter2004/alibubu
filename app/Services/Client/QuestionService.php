@@ -2,25 +2,22 @@
 
 namespace App\Services\Client;
 
-use App\Models\Admin;
+use App\Const\PermissionConst;
+use App\Const\QuestionConst;
 use App\Models\Product;
 use App\Models\ProductQuestion;
 use App\Models\User;
 use App\Notifications\NewProductQuestion;
+use App\Services\Admin\AdminNotifierService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 
 class QuestionService
 {
-    public const PER_PAGE = 5;
-
-    public const SESSION_KEY = 'asked_questions';
-
     public function ownPending(Product $product): Collection
     {
-        $ids = session()->get(self::SESSION_KEY, []);
+        $ids = session()->get(QuestionConst::SESSION_KEY, []);
 
         if ($ids === []) {
             return new Collection();
@@ -36,29 +33,51 @@ class QuestionService
 
     protected function remember(ProductQuestion $question): void
     {
-        session()->put(self::SESSION_KEY, array_slice(
-            array_merge([(string) $question->id], session()->get(self::SESSION_KEY, [])),
+        session()->put(QuestionConst::SESSION_KEY, array_slice(
+            array_merge([(string) $question->id], session()->get(QuestionConst::SESSION_KEY, [])),
             0,
-            20
+            QuestionConst::SESSION_LIMIT
         ));
     }
 
     protected function notifyAdmins(ProductQuestion $question): void
     {
         try {
-            $admins = Admin::query()->get();
-
-            if ($admins->isEmpty()) {
-                return;
-            }
-
-            Notification::send($admins, new NewProductQuestion($question->loadMissing('product')));
+            AdminNotifierService::notify(new NewProductQuestion($question->loadMissing(['product', 'user'])), PermissionConst::QUESTIONS_ANSWER);
         } catch (\Throwable $th) {
             Log::error(__METHOD__, ['message' => $th->getMessage(), 'question_id' => $question->id]);
         }
     }
 
-    public function paginateFor(Product $product, int $limit = self::PER_PAGE): LengthAwarePaginator
+    protected function askedRecently(Product $product, ?User $user, ?string $ip): bool
+    {
+        $query = ProductQuestion::query()
+            ->where('product_id', $product->id)
+            ->where('created_at', '>=', now()->subMinutes(QuestionConst::COOLDOWN_MINUTES));
+
+        if ($user) {
+            return $query->where('user_id', $user->id)->exists();
+        }
+
+        $sessionIds = session()->get(QuestionConst::SESSION_KEY, []);
+
+        if ($sessionIds === [] && blank($ip)) {
+            return false;
+        }
+
+        return $query
+            ->whereNull('user_id')
+            ->where(function ($sub) use ($sessionIds, $ip) {
+                $sub->whereIn('id', $sessionIds);
+
+                if (filled($ip)) {
+                    $sub->orWhere('ip_address', $ip);
+                }
+            })
+            ->exists();
+    }
+
+    public function paginateFor(Product $product, int $limit = QuestionConst::CLIENT_PER_PAGE): LengthAwarePaginator
     {
         return $product->publishedQuestions()
             ->with(['user', 'admin'])
@@ -67,13 +86,9 @@ class QuestionService
 
     public function ask(Product $product, ?User $user, array $params): array
     {
-        $recent = ProductQuestion::query()
-            ->where('product_id', $product->id)
-            ->when($user, fn ($query) => $query->where('user_id', $user->id))
-            ->where('created_at', '>=', now()->subMinutes(2))
-            ->exists();
+        $ip = request()->ip();
 
-        if ($recent) {
+        if ($this->askedRecently($product, $user, $ip)) {
             return [
                 'status' => false,
                 'message' => __('client.question.messages.too_fast'),
@@ -84,6 +99,8 @@ class QuestionService
             'product_id' => $product->id,
             'user_id' => $user?->id,
             'fullname' => $user?->fullname ?: ($params['fullname'] ?? null),
+            'email' => $user ? null : ($params['email'] ?? null),
+            'ip_address' => $ip,
             'question' => $params['question'],
             'is_published' => false,
         ]);

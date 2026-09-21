@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'earned_at']);
+            $table->unique(['order_id', 'type']);
         });
 
         Schema::table('users', function (Blueprint $table) {

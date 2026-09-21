@@ -17,6 +17,7 @@ class StoreQuestionRequest extends FormRequest
         return [
             'question' => ['required', 'string', 'min:10', 'max:500'],
             'fullname' => [Rule::requiredIf(! $this->user()), 'nullable', 'string', 'max:120'],
+            'email' => ['nullable', 'string', 'email:rfc', 'max:255'],
         ];
     }
 
@@ -25,6 +26,7 @@ class StoreQuestionRequest extends FormRequest
         return [
             'question' => __('client.question.fields.question'),
             'fullname' => __('client.question.fields.fullname'),
+            'email' => __('client.question.fields.email'),
         ];
     }
 }
