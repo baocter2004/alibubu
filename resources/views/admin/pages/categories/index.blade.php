@@ -11,16 +11,20 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.categories.trash') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-trash"></i>
-                    <span class="hidden sm:inline">{{ __('common.labels.trash') }}</span>
-                </a>
-                <a href="{{ route('admin.categories.create') }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
-                    <i class="fas fa-plus"></i>
-                    {{ __('common.actions.create') }}
-                </a>
+                @can('categories.manage')
+                    <a href="{{ route('admin.categories.trash') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-trash"></i>
+                        <span class="hidden sm:inline">{{ __('common.labels.trash') }}</span>
+                    </a>
+                @endcan
+                @can('categories.manage')
+                    <a href="{{ route('admin.categories.create') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors">
+                        <i class="fas fa-plus"></i>
+                        {{ __('common.actions.create') }}
+                    </a>
+                @endcan
             </div>
         </div>
 
@@ -114,21 +118,25 @@
                                         class="text-primary hover:text-primary" title="{{ __('common.actions.view') }}">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.categories.edit', $category->id) }}"
-                                        class="text-yellow-500 hover:text-yellow-700"
-                                        title="{{ __('common.actions.edit') }}">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST"
-                                        data-confirm="{{ __('common.confirm.delete_text') }}"
-                                        data-confirm-title="{{ __('common.confirm.delete_title') }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-700"
-                                            title="{{ __('common.actions.delete') }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    @can('categories.manage')
+                                        <a href="{{ route('admin.categories.edit', $category->id) }}"
+                                            class="text-yellow-500 hover:text-yellow-700"
+                                            title="{{ __('common.actions.edit') }}">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    @endcan
+                                    @can('categories.manage')
+                                        <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST"
+                                            data-confirm="{{ __('common.confirm.delete_text') }}"
+                                            data-confirm-title="{{ __('common.confirm.delete_title') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700"
+                                                title="{{ __('common.actions.delete') }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

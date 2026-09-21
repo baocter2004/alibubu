@@ -138,6 +138,19 @@
                 </a>
 
                 @auth
+                    <a href="{{ route('account.notifications.index') }}"
+                        class="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted transition-colors relative"
+                        aria-label="{{ __('client.notifications.bell', ['count' => $customerUnreadCount ?? 0]) }}"
+                        title="{{ __('client.notifications.title') }}">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                        @if (($customerUnreadCount ?? 0) > 0)
+                            <span
+                                class="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+                                {{ $customerUnreadCount > 99 ? '99+' : $customerUnreadCount }}
+                            </span>
+                        @endif
+                    </a>
+
                     <div class="relative hidden md:block" id="account-menu">
                         <button type="button"
                             id="account-menu-toggle" aria-controls="account-dropdown" aria-expanded="false" aria-haspopup="true"

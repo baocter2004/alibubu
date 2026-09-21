@@ -2,53 +2,37 @@
 
 namespace App\Notifications;
 
+use App\Const\SecurityConst;
+use App\Models\Admin;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EmailChanged extends Notification
+class EmailChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public $afterCommit = true;
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
+    public function __construct(public string $newEmail) {}
+
     public function via(object $notifiable): array
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
-        return [
-            //
+        $prefix = $notifiable instanceof Admin ? 'admin/profile.mail.email_changed' : 'client_auth.mail.email_changed';
+        $params = [
+            'new_email' => $this->newEmail,
+            'time' => now()->format(SecurityConst::NOTICE_TIME_FORMAT),
         ];
+
+        return (new MailMessage)
+            ->subject(__("{$prefix}.subject"))
+            ->line(__("{$prefix}.line", $params))
+            ->line(__("{$prefix}.warning"));
     }
 }

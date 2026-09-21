@@ -2,31 +2,32 @@
 
 namespace App\Notifications;
 
+use App\Const\NotificationConst;
 use App\Models\Order;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewOrderPlaced extends Notification
+class NewOrderPlaced extends Notification implements ShouldQueue
 {
-    public function __construct(public Order $order) {}
+    use Queueable;
+
+    public $afterCommit = true;
+
+    public function __construct(public Order $order)
+    {
+        $this->locale(config('app.locale'));
+    }
 
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
     }
 
-    public function toArray(object $notifiable): array
+    public function viaConnections(): array
     {
-        return [
-            'type' => 'order.placed',
-            'order_id' => $this->order->id,
-            'order_code' => $this->order->code,
-            'customer' => $this->order->fullname,
-            'phone_number' => $this->order->phone_number,
-            'total_amount' => (float) $this->order->total_amount,
-            'payment_method' => (int) $this->order->payment_method,
-            'items_count' => $this->order->items()->count(),
-        ];
+        return ['database' => 'sync'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -42,5 +43,22 @@ class NewOrderPlaced extends Notification
                 'total' => format_price($this->order->total_amount),
             ]))
             ->action(__('admin/notification.mail.action'), route('admin.orders.show', $this->order->id));
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'type' => 'order.placed',
+            'url' => route('admin.orders.show', $this->order->id),
+            'icon' => 'fa-cart-shopping',
+            'level' => NotificationConst::LEVEL_INFO,
+            'params' => [
+                'code' => $this->order->code,
+                'customer' => $this->order->fullname,
+                'items' => $this->order->items()->count(),
+                'total' => format_price($this->order->total_amount),
+            ],
+            'order_id' => $this->order->id,
+        ];
     }
 }

@@ -44,6 +44,38 @@ return [
                 'body' => ':customer đã đánh giá :rating/5 sao và đang chờ duyệt.',
             ],
         ],
+        'order' => [
+            'placed' => [
+                'title' => 'Đơn hàng mới :code',
+                'body' => ':customer · :items sản phẩm · :total',
+            ],
+            'cancelled_by_customer' => [
+                'title' => 'Đơn :code bị khách huỷ',
+                'body' => ':customer đã huỷ đơn hàng này. Lý do: :reason',
+            ],
+        ],
+        'payment' => [
+            'received' => [
+                'title' => 'Đã nhận thanh toán cho :code',
+                'body' => 'Đã nhận :total qua :gateway.',
+            ],
+            'problem' => [
+                'title' => 'Sự cố thanh toán trên đơn :code',
+                'body' => ':amount qua :gateway: :problem',
+            ],
+        ],
+        'refund' => [
+            'required' => [
+                'title' => 'Cần hoàn tiền cho :code',
+                'body' => 'Đơn :code đã chuyển sang :status khi đã thanh toán (:total). Cần xử lý hoàn tiền.',
+            ],
+        ],
+        'product' => [
+            'low_stock' => [
+                'title' => 'Sắp hết hàng: :name',
+                'body' => ':sku chỉ còn :stock sản phẩm.',
+            ],
+        ],
     ],
     'question' => [
         'asked' => 'Câu hỏi mới về :product',

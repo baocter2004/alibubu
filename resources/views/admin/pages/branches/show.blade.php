@@ -15,11 +15,13 @@
                     <i class="fas fa-arrow-left"></i>
                     {{ __('common.actions.back') }}
                 </a>
-                <a href="{{ route('admin.branches.edit', $branch->id) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition-colors">
-                    <i class="fas fa-edit"></i>
-                    {{ __('common.actions.edit') }}
-                </a>
+                @can('branches.manage')
+                    <a href="{{ route('admin.branches.edit', $branch->id) }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-edit"></i>
+                        {{ __('common.actions.edit') }}
+                    </a>
+                @endcan
             </div>
         </div>
 

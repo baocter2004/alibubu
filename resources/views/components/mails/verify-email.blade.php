@@ -15,7 +15,7 @@
     </div>
 
     <p style="font-size:12px; color:#888;">
-        {{ __('client_auth.mail.verify.expires', ['minutes' => 60]) }}
+        {{ __('client_auth.mail.verify.expires', ['minutes' => $expireMinutes]) }}
     </p>
 
     <p style="font-size:12px; color:#888;">

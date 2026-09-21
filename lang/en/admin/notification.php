@@ -44,6 +44,38 @@ return [
                 'body' => ':customer rated it :rating/5 and is waiting for moderation.',
             ],
         ],
+        'order' => [
+            'placed' => [
+                'title' => 'New order :code',
+                'body' => ':customer · :items items · :total',
+            ],
+            'cancelled_by_customer' => [
+                'title' => 'Order :code cancelled by customer',
+                'body' => ':customer cancelled this order. Reason: :reason',
+            ],
+        ],
+        'payment' => [
+            'received' => [
+                'title' => 'Payment received for :code',
+                'body' => ':total received via :gateway.',
+            ],
+            'problem' => [
+                'title' => 'Payment problem on order :code',
+                'body' => ':amount via :gateway: :problem',
+            ],
+        ],
+        'refund' => [
+            'required' => [
+                'title' => 'Refund required for :code',
+                'body' => 'Order :code moved to :status while paid (:total). A refund is required.',
+            ],
+        ],
+        'product' => [
+            'low_stock' => [
+                'title' => 'Low stock: :name',
+                'body' => ':sku only has :stock units left.',
+            ],
+        ],
     ],
     'question' => [
         'asked' => 'New question about :product',

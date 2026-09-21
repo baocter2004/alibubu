@@ -508,6 +508,13 @@ return [
             'already_confirmed' => 'This order has already been paid.',
             'gateway_disabled' => 'The online payment gateway is not configured.',
             'gateway_unavailable' => 'Could not reach the payment gateway. Your order was created, please pay again later.',
+            'refund_pending' => 'This payment has been flagged for a refund.',
+            'pending' => 'Your payment is being processed.',
+            'error' => 'Something went wrong while processing the payment.',
+            'method_disabled' => 'The selected payment method is not available.',
+            'amount_range' => 'The order total is outside the limits allowed by this payment method.',
+            'pay_again' => 'Pay again',
+            'not_payable' => 'This order can no longer be paid online.',
         ],
     ],
 
@@ -580,6 +587,8 @@ return [
             'salutation' => 'Best regards, the Alibubu team',
             'question' => 'Your question: “:question”',
             'answer' => 'Answer: “:answer”',
+            'note' => 'Note: :note',
+            'points_earned' => 'You just earned :points loyalty points.',
         ],
         'types' => [
             'default' => [
@@ -599,6 +608,34 @@ return [
                 'answered' => [
                     'title' => 'Your question about :product has been answered',
                     'body' => 'Alibubu has answered your question “:question”.',
+                ],
+            ],
+            'order' => [
+                'status_changed' => [
+                    'title' => 'Order :code: :status',
+                    'body' => 'Your order :code is now “:status”.',
+                ],
+                'payment_succeeded' => [
+                    'title' => 'Payment for :code succeeded',
+                    'body' => 'We received your payment of :total for order :code. Thank you!',
+                ],
+                'payment_failed' => [
+                    'title' => 'Payment for :code did not succeed',
+                    'body' => 'The payment for order :code did not go through. Please try again or choose another method.',
+                ],
+                'refund_pending' => [
+                    'title' => 'Order :code refund pending',
+                    'body' => 'Order :code (:total) is being processed for a refund. We will contact you soon.',
+                ],
+                'refunded' => [
+                    'title' => 'Order :code has been refunded',
+                    'body' => 'We refunded :total for order :code.',
+                ],
+            ],
+            'membership' => [
+                'tier_changed' => [
+                    'title' => 'Your membership tier has changed',
+                    'body' => 'You moved from :from to :to with :points loyalty points.',
                 ],
             ],
         ],

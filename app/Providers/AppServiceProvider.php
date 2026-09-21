@@ -64,7 +64,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer(['client.layouts.app', 'client.pages.account.nav'], function ($view) {
-            $user = Auth::guard('web')->user();
+            $user = Auth::guard('user')->user();
 
             $view->with('customerUnreadCount', $user ? app(ClientNotificationService::class)->unreadCount($user) : 0);
         });

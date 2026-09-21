@@ -23,4 +23,17 @@ return [
         'profile_updated' => 'Your account details have been updated.',
         'password_updated' => 'Your password has been changed.',
     ],
+
+    'mail' => [
+        'password_changed' => [
+            'subject' => 'Your admin password has been changed',
+            'line' => 'The password for your admin account was changed at :time.',
+            'warning' => 'If you did not make this change, please contact a Super Admin immediately.',
+        ],
+        'email_changed' => [
+            'subject' => 'Your admin email has been changed',
+            'line' => 'The sign-in email for your admin account was changed to :new_email at :time.',
+            'warning' => 'If you did not make this change, please contact a Super Admin immediately.',
+        ],
+    ],
 ];

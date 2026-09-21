@@ -5,17 +5,15 @@
 @section('content')
     @php
         $admin = Auth::guard('admin')->user();
-        $adminRole = (int) ($admin?->role ?? 0);
-        $managementRoles = \App\Const\AdminConst::managementRoleIds();
-        $canManageUsers = in_array($adminRole, $managementRoles, true);
+        $canManageUsers = $admin?->can('users.view') ?? false;
         $cards = collect([
-            ['key' => 'revenue', 'icon' => 'fa-sack-dollar', 'tone' => 'rose', 'value' => format_price($stats['revenue']), 'route' => 'admin.orders.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
-            ['key' => 'orders', 'icon' => 'fa-receipt', 'tone' => 'sky', 'value' => number_format($stats['orders']), 'route' => 'admin.orders.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
-            ['key' => 'products', 'icon' => 'fa-mobile-screen-button', 'tone' => 'purple', 'value' => number_format($stats['products']), 'route' => 'admin.products.index', 'roles' => \App\Const\AdminConst::allRoleIds()],
-            ['key' => 'users', 'icon' => 'fa-user-group', 'tone' => 'blue', 'value' => number_format($stats['users']), 'route' => 'admin.users.index', 'roles' => $managementRoles],
-            ['key' => 'categories', 'icon' => 'fa-sitemap', 'tone' => 'amber', 'value' => number_format($stats['categories']), 'route' => 'admin.categories.index', 'roles' => $managementRoles],
-            ['key' => 'branches', 'icon' => 'fa-award', 'tone' => 'emerald', 'value' => number_format($stats['branches']), 'route' => 'admin.branches.index', 'roles' => $managementRoles],
-        ])->filter(fn ($card) => in_array($adminRole, $card['roles'], true))->values();
+            ['key' => 'revenue', 'icon' => 'fa-sack-dollar', 'tone' => 'rose', 'value' => format_price($stats['revenue'] ?? 0), 'route' => 'admin.orders.index', 'can' => 'dashboard.finance'],
+            ['key' => 'orders', 'icon' => 'fa-receipt', 'tone' => 'sky', 'value' => number_format($stats['orders']), 'route' => 'admin.orders.index', 'can' => 'orders.view'],
+            ['key' => 'products', 'icon' => 'fa-mobile-screen-button', 'tone' => 'purple', 'value' => number_format($stats['products']), 'route' => 'admin.products.index', 'can' => 'products.view'],
+            ['key' => 'users', 'icon' => 'fa-user-group', 'tone' => 'blue', 'value' => number_format($stats['users']), 'route' => 'admin.users.index', 'can' => 'users.view'],
+            ['key' => 'categories', 'icon' => 'fa-sitemap', 'tone' => 'amber', 'value' => number_format($stats['categories']), 'route' => 'admin.categories.index', 'can' => 'categories.view'],
+            ['key' => 'branches', 'icon' => 'fa-award', 'tone' => 'emerald', 'value' => number_format($stats['branches']), 'route' => 'admin.branches.index', 'can' => 'branches.view'],
+        ])->filter(fn ($card) => $admin?->can($card['can']))->values();
         $cardGridClass = $cards->count() >= 6 ? 'grid-cols-2 md:grid-cols-3 xl:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 xl:grid-cols-3';
         $tones = [
             'blue' => ['bg-primary-soft', 'text-primary'],
@@ -25,12 +23,12 @@
             'sky' => ['bg-primary-soft', 'text-primary'],
             'rose' => ['bg-accent-soft', 'text-accent'],
         ];
-        $periodCards = [
-            ['label' => __('admin/dashboard.period.revenue'), 'value' => format_price($period['revenue']), 'icon' => 'fa-chart-line'],
-            ['label' => __('admin/dashboard.period.orders'), 'value' => number_format($period['orders']), 'icon' => 'fa-bag-shopping'],
-            ['label' => __('admin/dashboard.period.paid_orders'), 'value' => number_format($period['paid_orders']), 'icon' => 'fa-circle-check'],
-            ['label' => __('admin/dashboard.period.average_order'), 'value' => format_price($period['average_order']), 'icon' => 'fa-calculator'],
-        ];
+        $periodCards = collect([
+            ['key' => 'revenue', 'label' => __('admin/dashboard.period.revenue'), 'value' => format_price($period['revenue'] ?? 0), 'icon' => 'fa-chart-line', 'finance' => true],
+            ['key' => 'orders', 'label' => __('admin/dashboard.period.orders'), 'value' => number_format($period['orders']), 'icon' => 'fa-bag-shopping', 'finance' => false],
+            ['key' => 'paid_orders', 'label' => __('admin/dashboard.period.paid_orders'), 'value' => number_format($period['paid_orders']), 'icon' => 'fa-circle-check', 'finance' => false],
+            ['key' => 'average_order', 'label' => __('admin/dashboard.period.average_order'), 'value' => format_price($period['average_order'] ?? 0), 'icon' => 'fa-calculator', 'finance' => true],
+        ])->filter(fn ($card) => ! $card['finance'] || $canFinance)->values();
         $dashboardChartData = [
             'labels' => $chart['labels'],
             'revenue' => $chart['revenue'],
@@ -131,19 +129,21 @@
         data-inventory-total-label="{{ __('admin/dashboard.charts.total') }}"
         data-payment-total-label="{{ __('admin/dashboard.charts.total') }}"
         data-chart-error="{{ __('admin/dashboard.charts.render_error') }}">
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6 items-stretch">
-        <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-revenue-title">
-            <div class="mb-4">
-                <h2 id="dashboard-revenue-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.revenue') }}</h2>
-                <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.revenue_hint') }}</p>
-            </div>
-            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="revenue-chart" role="img" aria-label="{{ __('admin/dashboard.charts.revenue_accessible') }}"></canvas></div>
-            <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
-                <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
-                <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
-                <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['revenue']['max']) }}</span>
-            </div>
-        </section>
+    <div class="grid grid-cols-1 {{ $canFinance ? 'xl:grid-cols-2' : '' }} gap-4 mb-6 items-stretch">
+        @if ($canFinance)
+            <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-revenue-title">
+                <div class="mb-4">
+                    <h2 id="dashboard-revenue-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.revenue') }}</h2>
+                    <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.revenue_hint') }}</p>
+                </div>
+                <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="revenue-chart" role="img" aria-label="{{ __('admin/dashboard.charts.revenue_accessible') }}"></canvas></div>
+                <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
+                    <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['revenue']['max']) }}</span>
+                </div>
+            </section>
+        @endif
 
         <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-orders-title">
             <div class="mb-4">
@@ -159,37 +159,41 @@
         </section>
     </div>
 
-    <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6" aria-labelledby="dashboard-area-title">
-        <div class="mb-4">
-            <h2 id="dashboard-area-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.area') }}</h2>
-            <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.area_hint') }}</p>
-        </div>
-        <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="sales-area-chart" role="img" aria-label="{{ __('admin/dashboard.charts.area_accessible') }}"></canvas></div>
-        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
-            <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['cumulative_revenue']['min']) }}</span>
-            <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['cumulative_revenue']['step']) }}</span>
-            <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['cumulative_revenue']['max']) }}</span>
-        </div>
-    </section>
-
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6 items-stretch">
-        <section class="flex min-w-0 flex-col xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-mixed-title">
+    @if ($canFinance)
+        <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6" aria-labelledby="dashboard-area-title">
             <div class="mb-4">
-                <h2 id="dashboard-mixed-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.mixed') }}</h2>
-                <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.mixed_hint') }}</p>
+                <h2 id="dashboard-area-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.area') }}</h2>
+                <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.area_hint') }}</p>
             </div>
-            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="mixed-performance-chart" role="img" aria-label="{{ __('admin/dashboard.charts.mixed_accessible') }}"></canvas></div>
+            <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="sales-area-chart" role="img" aria-label="{{ __('admin/dashboard.charts.area_accessible') }}"></canvas></div>
             <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
-                <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
-                <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
-                <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['revenue']['max']) }}</span>
-                <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['orders']['min']) }}</span>
-                <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['orders']['step']) }}</span>
-                <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['orders']['max']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['cumulative_revenue']['min']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['cumulative_revenue']['step']) }}</span>
+                <span>{{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['cumulative_revenue']['max']) }}</span>
             </div>
         </section>
+    @endif
 
-        <section class="flex min-w-0 flex-col bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-payment-title">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6 items-stretch">
+        @if ($canFinance)
+            <section class="flex min-w-0 flex-col xl:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-mixed-title">
+                <div class="mb-4">
+                    <h2 id="dashboard-mixed-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.mixed') }}</h2>
+                    <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.mixed_hint') }}</p>
+                </div>
+                <div class="relative h-80 sm:h-96"><canvas class="block w-full h-full" id="mixed-performance-chart" role="img" aria-label="{{ __('admin/dashboard.charts.mixed_accessible') }}"></canvas></div>
+                <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 pt-3 border-t border-gray-100">
+                    <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['revenue']['min']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['revenue']['step']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.revenue') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['revenue']['max']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_min') }}: {{ number_format($chartConfig['orders']['min']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_step') }}: {{ number_format($chartConfig['orders']['step']) }}</span>
+                    <span>{{ __('admin/dashboard.charts.orders') }} · {{ __('admin/dashboard.charts.axis_max') }}: {{ number_format($chartConfig['orders']['max']) }}</span>
+                </div>
+            </section>
+        @endif
+
+        <section class="flex min-w-0 flex-col {{ $canFinance ? '' : 'xl:col-span-3' }} bg-white rounded-xl border border-gray-100 shadow-sm p-5" aria-labelledby="dashboard-payment-title">
             <div class="mb-5">
                 <h2 id="dashboard-payment-title" class="font-semibold text-gray-900">{{ __('admin/dashboard.charts.payment') }}</h2>
                 <p class="text-xs text-gray-500 mt-1">{{ __('admin/dashboard.charts.payment_hint') }}</p>

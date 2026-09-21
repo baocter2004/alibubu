@@ -38,5 +38,16 @@ return [
         'reset_success' => 'Password updated successfully. Please sign in again!',
         'reset_failed' => 'This password reset link is invalid or has expired.',
         'forbidden' => 'You do not have permission to access this area.',
+        'throttled' => 'Too many attempts. Please try again in :seconds seconds.',
+    ],
+
+    'mail' => [
+        'reset_password' => [
+            'subject' => 'Administrator password reset',
+            'line' => 'You are receiving this email because a password reset was requested for your administrator account.',
+            'action' => 'Reset password',
+            'expires' => 'This password reset link expires in :minutes minutes.',
+            'ignore' => 'If you did not request a password reset, no further action is required.',
+        ],
     ],
 ];

@@ -39,7 +39,7 @@ class Admin extends Authenticatable
 
     public function sendPasswordResetNotification($token): void
     {
-        $this->notify(new AdminResetPassword($token));
+        $this->notify((new AdminResetPassword($token))->locale(config('app.locale')));
     }
 
     public function isSuperAdmin(): bool

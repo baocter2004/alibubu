@@ -81,6 +81,23 @@ return [
         'status_updated' => 'Order status updated successfully.',
         'invalid_transition' => 'That status change is not allowed for this order.',
         'marked_paid' => 'Order marked as paid.',
+        'marked_refunded' => 'Order marked as refunded.',
         'already_paid' => 'This order is already marked as paid.',
+        'cannot_mark_paid_void' => 'Cancelled or returned orders cannot be marked as paid.',
+        'not_refund_pending' => 'This order has no refund pending.',
+        'requires_payment' => 'This order must be paid before moving to that status.',
+        'note_required' => 'Please enter a note for this action.',
+    ],
+
+    'problems' => [
+        'amount_mismatch' => 'The amount received from the gateway does not match the order total.',
+        'paid_after_cancel' => 'A payment arrived for an order that was already cancelled or returned.',
+        'duplicate_payment' => 'A duplicate payment notification was received for an already-settled order.',
+    ],
+
+    'refund' => [
+        'title' => 'Mark as refunded',
+        'note' => 'Refund note',
+        'reference' => 'Reference',
     ],
 ];

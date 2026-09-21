@@ -508,6 +508,13 @@ return [
             'already_confirmed' => 'Đơn hàng này đã được thanh toán trước đó.',
             'gateway_disabled' => 'Cổng thanh toán online chưa được cấu hình.',
             'gateway_unavailable' => 'Không kết nối được cổng thanh toán. Đơn hàng đã được tạo, vui lòng thanh toán lại sau.',
+            'refund_pending' => 'Giao dịch này đã được đánh dấu chờ hoàn tiền.',
+            'pending' => 'Thanh toán của bạn đang được xử lý.',
+            'error' => 'Đã xảy ra lỗi khi xử lý thanh toán.',
+            'method_disabled' => 'Phương thức thanh toán đã chọn hiện không khả dụng.',
+            'amount_range' => 'Tổng đơn hàng vượt quá giới hạn cho phép của phương thức thanh toán này.',
+            'pay_again' => 'Thanh toán lại',
+            'not_payable' => 'Đơn hàng này không còn có thể thanh toán online.',
         ],
     ],
 
@@ -580,6 +587,8 @@ return [
             'salutation' => 'Trân trọng, đội ngũ Alibubu',
             'question' => 'Câu hỏi của bạn: “:question”',
             'answer' => 'Trả lời: “:answer”',
+            'note' => 'Ghi chú: :note',
+            'points_earned' => 'Bạn vừa nhận được :points điểm thưởng.',
         ],
         'types' => [
             'default' => [
@@ -599,6 +608,34 @@ return [
                 'answered' => [
                     'title' => 'Câu hỏi về :product đã được trả lời',
                     'body' => 'Alibubu đã trả lời câu hỏi “:question” của bạn.',
+                ],
+            ],
+            'order' => [
+                'status_changed' => [
+                    'title' => 'Đơn hàng :code: :status',
+                    'body' => 'Đơn hàng :code của bạn hiện đang ở trạng thái “:status”.',
+                ],
+                'payment_succeeded' => [
+                    'title' => 'Thanh toán đơn :code thành công',
+                    'body' => 'Chúng tôi đã nhận được thanh toán :total cho đơn hàng :code. Cảm ơn bạn!',
+                ],
+                'payment_failed' => [
+                    'title' => 'Thanh toán đơn :code chưa thành công',
+                    'body' => 'Giao dịch thanh toán cho đơn :code chưa thành công. Vui lòng thử lại hoặc chọn phương thức khác.',
+                ],
+                'refund_pending' => [
+                    'title' => 'Đơn :code đang chờ hoàn tiền',
+                    'body' => 'Đơn hàng :code (:total) đang được xử lý hoàn tiền. Chúng tôi sẽ liên hệ sớm nhất.',
+                ],
+                'refunded' => [
+                    'title' => 'Đơn :code đã được hoàn tiền',
+                    'body' => 'Chúng tôi đã hoàn :total cho đơn hàng :code.',
+                ],
+            ],
+            'membership' => [
+                'tier_changed' => [
+                    'title' => 'Hạng thành viên của bạn đã thay đổi',
+                    'body' => 'Bạn đã chuyển từ hạng :from sang hạng :to với :points điểm tích luỹ.',
                 ],
             ],
         ],

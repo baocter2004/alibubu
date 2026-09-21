@@ -34,25 +34,29 @@
                             <td class="px-4 py-3">{{ $coupon->deleted_at?->format('d/m/Y H:i') ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-center gap-3">
-                                    <form action="{{ route('admin.coupons.restore', $coupon->id) }}" method="POST"
-                                        data-confirm="{{ __('common.confirm.restore_text') }}"
-                                        data-confirm-title="{{ __('common.confirm.restore_title') }}">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-800"
-                                            title="{{ __('common.actions.restore') }}">
-                                            <i class="fas fa-rotate-left"></i>
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('admin.coupons.force-destroy', $coupon->id) }}" method="POST"
-                                        data-confirm="{{ __('common.confirm.force_delete_text') }}"
-                                        data-confirm-title="{{ __('common.confirm.force_delete_title') }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:text-red-700"
-                                            title="{{ __('common.actions.force_delete') }}">
-                                            <i class="fas fa-trash-can"></i>
-                                        </button>
-                                    </form>
+                                    @can('coupons.manage')
+                                        <form action="{{ route('admin.coupons.restore', $coupon->id) }}" method="POST"
+                                            data-confirm="{{ __('common.confirm.restore_text') }}"
+                                            data-confirm-title="{{ __('common.confirm.restore_title') }}">
+                                            @csrf
+                                            <button type="submit" class="text-green-600 hover:text-green-800"
+                                                title="{{ __('common.actions.restore') }}">
+                                                <i class="fas fa-rotate-left"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                    @can('coupons.force_delete')
+                                        <form action="{{ route('admin.coupons.force-destroy', $coupon->id) }}" method="POST"
+                                            data-confirm="{{ __('common.confirm.force_delete_text') }}"
+                                            data-confirm-title="{{ __('common.confirm.force_delete_title') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700"
+                                                title="{{ __('common.actions.force_delete') }}">
+                                                <i class="fas fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
