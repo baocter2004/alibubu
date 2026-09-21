@@ -15,15 +15,16 @@ class OrderStatusChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(
         public Order $order,
         public int $from,
         public int $to,
         public ?string $note = null,
         public int $points = 0
-    ) {}
+    )
+    {
+        $this->afterCommit();
+    }
 
     public function via(object $notifiable): array
     {

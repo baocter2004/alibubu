@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\OverwriteAuthenticate;
-use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\EnsureAdminIsActive;
 use App\Http\Middleware\EnsureAdminCanWrite;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -26,7 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'auth' => OverwriteAuthenticate::class,
-            'admin.role' => EnsureAdminRole::class,
             'admin.active' => EnsureAdminIsActive::class,
             'admin.can_write' => EnsureAdminCanWrite::class,
         ]);
@@ -50,5 +48,23 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            if ($request->expectsJson() || ! $request->is('admin', 'admin/*')) {
+                return null;
+            }
+
+            $status = $e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
+                ? $e->getStatusCode()
+                : 500;
+
+            if ($status === 500 && config('app.debug')) {
+                return null;
+            }
+
+            if (! view()->exists("errors.admin.{$status}")) {
+                return null;
+            }
+
+            return response()->view("errors.admin.{$status}", [], $status);
+        });
     })->create();

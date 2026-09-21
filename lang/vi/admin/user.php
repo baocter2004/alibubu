@@ -31,7 +31,7 @@ return [
     ],
 
     'hints' => [
-        'password_optional' => 'Để trống cả hai ô mật khẩu nếu không muốn thay đổi.',
+        'password_via_reset_link' => 'Người dùng đặt mật khẩu qua liên kết đặt lại được gửi tới email của họ.',
         'default_address' => 'Nếu có nhiều hơn một địa chỉ, hãy chọn một địa chỉ mặc định.',
         'loading' => 'Đang tải...',
         'load_failed' => 'Không tải được dữ liệu.',
@@ -41,6 +41,7 @@ return [
         'create' => 'Tạo người dùng',
         'update' => 'Cập nhật người dùng',
         'back_to_list' => 'Quay lại danh sách',
+        'send_reset_link' => 'Gửi liên kết đặt lại mật khẩu',
     ],
 
     'fields' => [
@@ -86,5 +87,6 @@ return [
         'force_deleted' => 'Đã xoá vĩnh viễn người dùng.',
         'restored' => 'Khôi phục người dùng thành công.',
         'not_found' => 'Không tìm thấy người dùng.',
+        'reset_link_sent' => 'Đã gửi liên kết đặt lại mật khẩu tới email người dùng.',
     ],
 ];

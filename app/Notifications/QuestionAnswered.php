@@ -16,10 +16,9 @@ class QuestionAnswered extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(public ProductQuestion $question)
     {
+        $this->afterCommit();
         $this->locale(config('app.locale'));
     }
 

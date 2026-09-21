@@ -5,19 +5,21 @@ namespace App\Services\Client;
 use App\Const\MembershipConst;
 use App\Const\OrderConst;
 use App\Const\PaymentConst;
+use App\Const\PermissionConst;
 use App\Mail\OrderPlaced;
-use App\Models\Admin;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\User;
+use App\Notifications\LowStock;
 use App\Notifications\NewOrderPlaced;
+use App\Services\Admin\AdminNotifierService;
+use App\Services\Order\OrderInventoryService;
+use App\Services\Order\OrderStateService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -25,7 +27,9 @@ class OrderService
 {
     public function __construct(
         protected CartService $cartService,
-        protected CouponService $couponService
+        protected CouponService $couponService,
+        protected OrderInventoryService $inventory,
+        protected OrderStateService $orderState
     ) {}
 
     public function place(array $params, int|string|null $userId = null): Order
@@ -39,13 +43,15 @@ class OrderService
         $subtotal = $this->cartService->subtotal($items);
         $user = $userId ? User::find($userId) : null;
 
-        $order = DB::transaction(function () use ($items, $params, $userId, $subtotal, $user) {
-            $applied = $this->couponService->currentForOrder($items, $subtotal, $user);
+        [$order, $alerts] = DB::transaction(function () use ($items, $params, $userId, $subtotal, $user) {
+            $applied = $this->couponService->currentForOrder($items, $subtotal, $user, $params['phone_number'] ?? null);
             $coupon = $applied['coupon'] ?? null;
             $discount = (float) ($applied['discount'] ?? 0);
 
             $tier = $user?->membershipTier();
             $membershipDiscount = $tier ? MembershipConst::discountFor($tier, $subtotal) : 0.0;
+            $total = max($subtotal - $discount - $membershipDiscount, 0);
+            $isFree = $total <= 0;
 
             $order = Order::create(array_merge([
                 'code' => $this->generateCode(),
@@ -55,46 +61,68 @@ class OrderService
                 'email' => $params['email'] ?? null,
                 'address' => $params['address'],
                 'note' => $params['note'] ?? null,
+                'locale' => App::getLocale(),
                 'membership_tier' => $tier,
                 'membership_discount' => $membershipDiscount,
-                'total_amount' => max($subtotal - $discount - $membershipDiscount, 0),
+                'total_amount' => $total,
                 'status' => OrderConst::STATUS_PENDING,
                 'payment_method' => (int) ($params['payment_method'] ?? PaymentConst::METHOD_COD),
-                'is_paid' => false,
+                'payment_status' => $isFree ? PaymentConst::STATUS_PAID : PaymentConst::STATUS_UNPAID,
+                'is_paid' => $isFree,
+                'paid_at' => $isFree ? now() : null,
             ], $this->couponSnapshot($coupon, $discount)));
 
             $this->createItems($order, $items);
-            $this->consumeStock($items);
+            $alerts = $this->inventory->consume($items);
             $this->consumeCoupon($coupon, $userId);
+
+            $this->orderState->recordHistory($order, OrderConst::EVENT_PLACED, OrderConst::ACTOR_CUSTOMER, $userId ? (string) $userId : null);
 
             $this->cartService->clear();
             $this->couponService->forget();
 
-            return $order;
+            return [$order, $alerts];
         });
 
         $this->sendConfirmationMail($order, $user);
         $this->notifyAdmins($order);
+        $this->notifyLowStock($alerts);
 
         return $order;
     }
 
     protected function notifyAdmins(Order $order): void
     {
-        try {
-            $admins = Admin::query()->get();
-
-            if ($admins->isEmpty()) {
-                return;
+        DB::afterCommit(function () use ($order) {
+            try {
+                AdminNotifierService::notify(new NewOrderPlaced($order), PermissionConst::ORDERS_VIEW);
+            } catch (\Throwable $th) {
+                Log::error(__METHOD__, [
+                    'message' => $th->getMessage(),
+                    'order_code' => $order->code,
+                ]);
             }
+        });
+    }
 
-            Notification::send($admins, new NewOrderPlaced($order));
-        } catch (\Throwable $th) {
-            Log::error(__METHOD__, [
-                'message' => $th->getMessage(),
-                'order_code' => $order->code,
-            ]);
+    protected function notifyLowStock(array $alerts): void
+    {
+        if (empty($alerts)) {
+            return;
         }
+
+        DB::afterCommit(function () use ($alerts) {
+            foreach ($alerts as $alert) {
+                try {
+                    AdminNotifierService::notify(new LowStock($alert), PermissionConst::PRODUCTS_VIEW);
+                } catch (\Throwable $th) {
+                    Log::error(__METHOD__, [
+                        'message' => $th->getMessage(),
+                        'product_id' => $alert['product_id'] ?? null,
+                    ]);
+                }
+            }
+        });
     }
 
     protected function sendConfirmationMail(Order $order, ?User $user = null): void
@@ -105,45 +133,16 @@ class OrderService
             return;
         }
 
-        try {
-            Mail::to($email)->send(new OrderPlaced($order));
-        } catch (\Throwable $th) {
-            Log::error(__METHOD__, [
-                'message' => $th->getMessage(),
-                'order_code' => $order->code,
-            ]);
-        }
-    }
-
-    protected function consumeStock(Collection $items): void
-    {
-        foreach ($items as $item) {
-            $product = $item['product'];
-            $quantity = (int) $item['quantity'];
-
-            if ($item['variant']) {
-                $variantAffected = ProductVariant::whereKey($item['variant']->id)
-                    ->where('stock', '>=', $quantity)
-                    ->update([
-                        'stock' => DB::raw('stock - ' . $quantity),
-                    ]);
-
-                if ($variantAffected === 0) {
-                    throw new \RuntimeException(__('client.messages.out_of_stock', ['name' => $product->name]));
-                }
-            }
-
-            $affected = Product::whereKey($product->id)
-                ->where('stock', '>=', $quantity)
-                ->update([
-                    'stock' => DB::raw('stock - ' . $quantity),
-                    'sold' => DB::raw('sold + ' . $quantity),
+        DB::afterCommit(function () use ($order, $email) {
+            try {
+                Mail::to($email)->queue(new OrderPlaced($order));
+            } catch (\Throwable $th) {
+                Log::error(__METHOD__, [
+                    'message' => $th->getMessage(),
+                    'order_code' => $order->code,
                 ]);
-
-            if ($affected === 0) {
-                throw new \RuntimeException(__('client.messages.out_of_stock', ['name' => $product->name]));
             }
-        }
+        });
     }
 
     protected function couponSnapshot(?Coupon $coupon, float $discount): array

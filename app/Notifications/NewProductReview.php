@@ -15,9 +15,10 @@ class NewProductReview extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
-    public function __construct(public ProductReview $review) {}
+    public function __construct(public ProductReview $review)
+    {
+        $this->afterCommit();
+    }
 
     public function via(object $notifiable): array
     {

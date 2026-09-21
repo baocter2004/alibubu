@@ -23,6 +23,9 @@ Route::get('/track-order', [OrderTrackingController::class, 'show'])->name('orde
 Route::post('/track-order', [OrderTrackingController::class, 'lookup'])
     ->middleware('throttle:10,1')
     ->name('order.track.lookup');
+Route::post('/track-order/pay-again', [OrderTrackingController::class, 'payAgain'])
+    ->middleware('throttle:' . \App\Const\OrderConst::LIMITER_PAYMENT_RETRY)
+    ->name('order.track.pay-again');
 
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::controller(ShopController::class)->group(function () {
@@ -52,13 +55,17 @@ Route::prefix('compare')->name('compare.')->controller(CompareController::class)
     Route::delete('/{id}', 'destroy')->name('destroy');
 });
 
-Route::prefix('cart')->name('cart.')->controller(CartController::class)->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::post('/', 'store')->name('store');
-    Route::patch('/{key}', 'update')->name('update');
-    Route::delete('/clear', 'clear')->name('clear');
-    Route::delete('/{key}', 'destroy')->name('destroy');
-});
+Route::prefix('cart')
+    ->name('cart.')
+    ->middleware('throttle:' . \App\Const\OrderConst::LIMITER_CART)
+    ->controller(CartController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->name('store');
+        Route::patch('/{key}', 'update')->name('update');
+        Route::delete('/clear', 'clear')->name('clear');
+        Route::delete('/{key}', 'destroy')->name('destroy');
+    });
 
 Route::prefix('account')
     ->name('account.')
@@ -71,6 +78,9 @@ Route::prefix('account')
         Route::get('/orders', 'orders')->name('orders');
         Route::get('/orders/{id}', 'showOrder')->name('orders.show');
         Route::patch('/orders/{id}/cancel', 'cancelOrder')->name('orders.cancel');
+        Route::post('/orders/{id}/pay-again', 'payAgainOrder')
+            ->middleware('throttle:' . \App\Const\OrderConst::LIMITER_PAYMENT_RETRY)
+            ->name('orders.pay-again');
         Route::get('/wishlist', [WishlistController::class, 'index'])->withoutMiddleware([])->name('wishlist');
         Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
         Route::get('/addresses', 'addresses')->name('addresses');
@@ -89,10 +99,14 @@ Route::prefix('account/notifications')
         Route::post('/{id}/read', 'read')->name('read');
     });
 
-Route::prefix('coupon')->name('coupon.')->controller(CouponController::class)->group(function () {
-    Route::post('/', 'store')->name('store');
-    Route::delete('/', 'destroy')->name('destroy');
-});
+Route::prefix('coupon')
+    ->name('coupon.')
+    ->middleware('throttle:' . \App\Const\OrderConst::LIMITER_COUPON)
+    ->controller(CouponController::class)
+    ->group(function () {
+        Route::post('/', 'store')->name('store');
+        Route::delete('/', 'destroy')->name('destroy');
+    });
 
 Route::prefix('payment/vnpay')->name('payment.vnpay.')->controller(PaymentController::class)->group(function () {
     Route::get('/return', 'vnpayReturn')->name('return');
@@ -104,7 +118,10 @@ Route::prefix('payment/momo')->name('payment.momo.')->controller(PaymentControll
     Route::post('/ipn', 'momoIpn')->withoutMiddleware(['web'])->name('ipn');
 });
 
-Route::prefix('checkout')->name('checkout.')->controller(CheckoutController::class)->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::post('/', 'store')->name('store');
-});
+Route::prefix('checkout')
+    ->name('checkout.')
+    ->controller(CheckoutController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->middleware('throttle:' . \App\Const\OrderConst::LIMITER_CHECKOUT)->name('store');
+    });

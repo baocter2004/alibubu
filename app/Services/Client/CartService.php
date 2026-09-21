@@ -2,15 +2,18 @@
 
 namespace App\Services\Client;
 
+use App\Const\CartConst;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Collection;
 
 class CartService
 {
-    public const SESSION_KEY = 'cart';
+    public const SESSION_KEY = CartConst::SESSION_KEY;
 
-    public const MAX_QUANTITY = 20;
+    public const MAX_QUANTITY = CartConst::MAX_QUANTITY;
+
+    protected ?Collection $itemsCache = null;
 
     public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): void
     {
@@ -75,9 +78,19 @@ class CartService
     public function clear(): void
     {
         session()->forget(self::SESSION_KEY);
+        $this->itemsCache = null;
     }
 
     public function items(): Collection
+    {
+        if ($this->itemsCache !== null) {
+            return $this->itemsCache;
+        }
+
+        return $this->itemsCache = $this->loadItems();
+    }
+
+    protected function loadItems(): Collection
     {
         $raw = collect($this->rawItems());
 
@@ -161,6 +174,8 @@ class CartService
 
     protected function persist(array $items): void
     {
+        $this->itemsCache = null;
+
         if ($items === []) {
             $this->clear();
 

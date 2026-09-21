@@ -87,6 +87,7 @@ return [
         'not_refund_pending' => 'This order has no refund pending.',
         'requires_payment' => 'This order must be paid before moving to that status.',
         'note_required' => 'Please enter a note for this action.',
+        'expired_unpaid' => 'Automatically cancelled: payment was not received in time.',
     ],
 
     'problems' => [

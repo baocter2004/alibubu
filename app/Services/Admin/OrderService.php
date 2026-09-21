@@ -3,19 +3,20 @@
 namespace App\Services\Admin;
 
 use App\Const\OrderConst;
-use App\Models\Coupon;
+use App\Exceptions\OrderStateException;
 use App\Models\Order;
-use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Repositories\OrderRepository;
 use App\Services\BaseCrudService;
+use App\Services\Order\OrderStateService;
 use Illuminate\Support\Arr;
-use App\Services\Client\MembershipService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderService extends BaseCrudService
 {
+    public function __construct(protected OrderStateService $orderState)
+    {
+        parent::__construct();
+    }
+
     protected function getRepository(): OrderRepository
     {
         if (empty($this->repository)) {
@@ -76,109 +77,7 @@ class OrderService extends BaseCrudService
         ];
     }
 
-    public function updateStatus(int|string $id, int $status, ?string $reason = null): array
-    {
-        try {
-            $order = $this->find($id);
-
-            if (! $order) {
-                return [
-                    'status' => false,
-                    'message' => __('admin/order.messages.not_found'),
-                ];
-            }
-
-            if (! $order->canTransitionTo($status)) {
-                return [
-                    'status' => false,
-                    'message' => __('admin/order.messages.invalid_transition'),
-                ];
-            }
-
-            DB::transaction(function () use ($order, $status, $reason) {
-                $attributes = ['status' => $status];
-
-                if ($status === OrderConst::STATUS_CONFIRMED) {
-                    $attributes['confirmed_at'] = now();
-                }
-
-                if ($status === OrderConst::STATUS_COMPLETED) {
-                    $attributes['completed_at'] = now();
-                    $attributes['is_paid'] = true;
-
-                    $this->awardLoyaltyPoints($order);
-                }
-
-                if ($status === OrderConst::STATUS_CANCELLED) {
-                    $attributes['cancelled_at'] = now();
-                    $attributes['cancel_reason'] = $reason;
-
-                    $this->restoreStock($order);
-                    $this->releaseCoupon($order);
-                }
-
-                $order->update($attributes);
-            });
-
-            return [
-                'status' => true,
-                'message' => __('admin/order.messages.status_updated'),
-            ];
-        } catch (\Throwable $th) {
-            Log::error(__METHOD__, ['message' => $th->getMessage(), 'id' => $id, 'status' => $status]);
-
-            throw $th;
-        }
-    }
-
-    protected function awardLoyaltyPoints(Order $order): void
-    {
-        if ($order->status === OrderConst::STATUS_COMPLETED) {
-            return;
-        }
-
-        app(MembershipService::class)->awardForOrder($order);
-    }
-
-    protected function releaseCoupon(Order $order): void
-    {
-        if (! $order->coupon_id) {
-            return;
-        }
-
-        Coupon::whereKey($order->coupon_id)
-            ->where('usage_count', '>', 0)
-            ->decrement('usage_count');
-
-        if ($order->user_id) {
-            DB::table('coupon_user')
-                ->where('coupon_id', $order->coupon_id)
-                ->where('user_id', $order->user_id)
-                ->delete();
-        }
-    }
-
-    protected function restoreStock(Order $order): void
-    {
-        foreach ($order->items()->get() as $item) {
-            if (! $item->product_id) {
-                continue;
-            }
-
-            if ($item->product_variant_id) {
-                ProductVariant::whereKey($item->product_variant_id)->update([
-                    'stock' => DB::raw('stock + ' . (int) $item->quantity),
-                ]);
-            }
-
-            Product::whereKey($item->product_id)->update([
-                'stock' => DB::raw('stock + ' . (int) $item->quantity),
-                'sold' => DB::raw('MAX(sold - ' . (int) $item->quantity . ', 0)'),
-            ]);
-        }
-    }
-
-    public function markAsPaid(int|string $id): array
+    public function updateStatus(int|string $id, int $status, string $adminId, ?string $reason = null): array
     {
         $order = $this->find($id);
 
@@ -189,18 +88,52 @@ class OrderService extends BaseCrudService
             ];
         }
 
-        if ($order->is_paid) {
+        try {
+            $this->orderState->transition($order, $status, OrderConst::ACTOR_ADMIN, $adminId, $reason);
+        } catch (OrderStateException $e) {
             return [
                 'status' => false,
-                'message' => __('admin/order.messages.already_paid'),
+                'message' => $e->getMessage(),
             ];
         }
 
-        $order->update(['is_paid' => true]);
+        return [
+            'status' => true,
+            'message' => __('admin/order.messages.status_updated'),
+        ];
+    }
+
+    public function markAsPaid(int|string $id, string $adminId, ?string $reference = null, ?string $note = null): array
+    {
+        try {
+            $this->orderState->markPaidManually($id, $adminId, $reference, $note);
+        } catch (OrderStateException $e) {
+            return [
+                'status' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
 
         return [
             'status' => true,
             'message' => __('admin/order.messages.marked_paid'),
+        ];
+    }
+
+    public function markRefunded(int|string $id, string $adminId, string $note, ?string $reference = null): array
+    {
+        try {
+            $this->orderState->markRefunded($id, $adminId, $note, $reference);
+        } catch (OrderStateException $e) {
+            return [
+                'status' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+
+        return [
+            'status' => true,
+            'message' => __('admin/order.messages.marked_refunded'),
         ];
     }
 

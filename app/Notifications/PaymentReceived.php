@@ -13,10 +13,9 @@ class PaymentReceived extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(public Order $order, public string $gateway)
     {
+        $this->afterCommit();
         $this->locale(config('app.locale'));
     }
 

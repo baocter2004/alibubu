@@ -14,14 +14,13 @@ class PaymentProblem extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(
         public Order $order,
         public string $problem,
         public string $gateway,
         public float $amount
     ) {
+        $this->afterCommit();
         $this->locale(config('app.locale'));
     }
 

@@ -15,6 +15,10 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        if (! app()->environment(['local', 'testing'])) {
+            return;
+        }
+
         $provinces = Province::with('wards')->get();
 
         foreach ($this->data() as $index => $item) {

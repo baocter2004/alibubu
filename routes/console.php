@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('membership:review')->dailyAt('02:00');
+Schedule::command('orders:expire-unpaid')->everyFiveMinutes()->withoutOverlapping();

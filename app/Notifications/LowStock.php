@@ -11,10 +11,9 @@ class LowStock extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(public array $alert)
     {
+        $this->afterCommit();
         $this->locale(config('app.locale'));
     }
 

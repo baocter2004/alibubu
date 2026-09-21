@@ -11,9 +11,10 @@ class AdminResetPassword extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
-    public function __construct(public string $token) {}
+    public function __construct(public string $token)
+    {
+        $this->afterCommit();
+    }
 
     public function via(object $notifiable): array
     {

@@ -8,18 +8,29 @@ use Illuminate\Database\Seeder;
 
 class AdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Admin::updateOrCreate(
-            ['email' => 'admin@alibubu.test'],
-            [
-                'name' => 'Quản trị viên',
-                'password' => 'password',
+        $email = config('auth.initial_admin.email');
+        $password = config('auth.initial_admin.password');
+
+        if (filled($email) && filled($password) && ! Admin::where('email', $email)->exists()) {
+            Admin::create([
+                'name' => config('auth.initial_admin.name'),
+                'email' => $email,
+                'password' => $password,
                 'role' => AdminConst::ROLE_SUPER_ADMIN,
-            ]
-        );
+            ]);
+        }
+
+        if (app()->environment(['local', 'testing'])) {
+            Admin::updateOrCreate(
+                ['email' => 'admin@alibubu.test'],
+                [
+                    'name' => 'Quản trị viên',
+                    'password' => 'password',
+                    'role' => AdminConst::ROLE_SUPER_ADMIN,
+                ]
+            );
+        }
     }
 }

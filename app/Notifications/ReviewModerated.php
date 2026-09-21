@@ -13,13 +13,12 @@ class ReviewModerated extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(
         public ProductReview $review,
         public bool $approved,
         public ?string $reason = null
     ) {
+        $this->afterCommit();
         $this->locale($review->order?->getAttribute('locale') ?: config('app.locale'));
     }
 

@@ -87,14 +87,16 @@ Route::prefix('/admin')
                     Route::delete('/{id}', 'destroy')->middleware('can:products.delete')->name('destroy');
                 });
 
-            foreach ([
-                'users' => UserController::class,
-                'branches' => BranchController::class,
-                'categories' => CategoryController::class,
-                'coupons' => CouponController::class,
-                'attributes' => AttributeController::class,
-                'tags' => TagController::class,
-            ] as $slug => $controller) {
+            foreach (
+                [
+                    'users' => UserController::class,
+                    'branches' => BranchController::class,
+                    'categories' => CategoryController::class,
+                    'coupons' => CouponController::class,
+                    'attributes' => AttributeController::class,
+                    'tags' => TagController::class,
+                ] as $slug => $controller
+            ) {
                 $view = 'can:' . $slug . '.view';
                 $manage = 'can:' . $slug . '.manage';
                 $forceDelete = 'can:' . $slug . '.force_delete';
@@ -116,6 +118,10 @@ Route::prefix('/admin')
                         Route::delete('/{id}', 'destroy')->middleware($manage)->name('destroy');
                     });
             }
+
+            Route::post('/users/{id}/send-reset-link', [UserController::class, 'sendResetLink'])
+                ->middleware('can:users.manage')
+                ->name('users.send-reset-link');
 
             Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
                 Route::get('/', 'index')->middleware('can:reviews.view')->name('index');
@@ -139,6 +145,7 @@ Route::prefix('/admin')
                 Route::get('/{id}', 'show')->middleware('can:orders.view')->name('show');
                 Route::patch('/{id}/status', 'updateStatus')->middleware('can:orders.update_status')->name('update-status');
                 Route::post('/{id}/mark-paid', 'markPaid')->middleware('can:orders.mark_paid')->name('mark-paid');
+                Route::post('/{id}/mark-refunded', 'markRefunded')->middleware('can:orders.refund')->name('mark-refunded');
             });
 
             Route::prefix('provinces')->name('provinces.')->middleware('can:locations.view')->controller(ProvinceController::class)->group(function () {

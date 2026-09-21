@@ -87,6 +87,7 @@ return [
         'not_refund_pending' => 'Đơn hàng này không ở trạng thái chờ hoàn tiền.',
         'requires_payment' => 'Đơn hàng phải được thanh toán trước khi chuyển sang trạng thái này.',
         'note_required' => 'Vui lòng nhập ghi chú cho thao tác này.',
+        'expired_unpaid' => 'Tự động huỷ: quá hạn thanh toán.',
     ],
 
     'problems' => [

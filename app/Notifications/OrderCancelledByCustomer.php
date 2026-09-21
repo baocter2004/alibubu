@@ -13,10 +13,9 @@ class OrderCancelledByCustomer extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(public Order $order, public ?string $reason = null)
     {
+        $this->afterCommit();
         $this->locale(config('app.locale'));
     }
 

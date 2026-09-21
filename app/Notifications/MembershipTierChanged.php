@@ -13,14 +13,13 @@ class MembershipTierChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $afterCommit = true;
-
     public function __construct(
         public string $from,
         public string $to,
         public int $points,
         ?string $locale = null
     ) {
+        $this->afterCommit();
         $this->locale($locale ?: config('app.locale'));
     }
 

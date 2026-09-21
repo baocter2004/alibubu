@@ -14,16 +14,28 @@
                 <i class="fas fa-arrow-left"></i>
                 {{ __('common.actions.back') }}
             </a>
-            @if (! $order->is_paid)
-                <form action="{{ route('admin.orders.mark-paid', $order->id) }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors">
-                        <i class="fas fa-money-bill-wave"></i>
-                        {{ __('admin/order.payment.mark_paid') }}
+            @can('orders.mark_paid')
+                @if (\App\Const\PaymentConst::isPayable($order->payment_status) && ! \App\Const\OrderConst::isVoid($order->status))
+                    <form action="{{ route('admin.orders.mark-paid', $order->id) }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-money-bill-wave"></i>
+                            {{ __('admin/order.payment.mark_paid') }}
+                        </button>
+                    </form>
+                @endif
+            @endcan
+
+            @can('orders.refund')
+                @if ((int) $order->payment_status === \App\Const\PaymentConst::STATUS_REFUND_PENDING)
+                    <button type="button" id="mark-refunded-toggle"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors">
+                        <i class="fas fa-hand-holding-dollar"></i>
+                        {{ __('admin/order.refund.title') }}
                     </button>
-                </form>
-            @endif
+                @endif
+            @endcan
         </div>
     </div>
 
@@ -123,10 +135,31 @@
                         {{ \App\Const\OrderConst::statusLabel($order->status) }}
                     </span>
                     <span
-                        class="px-3 py-1.5 text-sm font-semibold rounded-full {{ $order->is_paid ? 'text-green-600 bg-green-100' : 'text-amber-600 bg-amber-100' }}">
-                        {{ $order->is_paid ? __('admin/order.payment.paid') : __('admin/order.payment.unpaid') }}
+                        class="px-3 py-1.5 text-sm font-semibold rounded-full {{ \App\Const\PaymentConst::statusBadgeClass($order->payment_status) }}">
+                        {{ \App\Const\PaymentConst::statusLabel($order->payment_status) }}
                     </span>
                 </div>
+
+                @can('orders.refund')
+                    @if ((int) $order->payment_status === \App\Const\PaymentConst::STATUS_REFUND_PENDING)
+                        <form action="{{ route('admin.orders.mark-refunded', $order->id) }}" method="POST"
+                            id="mark-refunded-form" class="hidden mb-5 space-y-2 rounded-lg border border-orange-200 bg-orange-50/60 p-3">
+                            @csrf
+                            <label for="refund_note" class="block text-sm font-medium text-gray-700">
+                                {{ __('admin/order.refund.note') }}
+                            </label>
+                            <textarea id="refund_note" name="note" rows="2"
+                                class="w-full border rounded-md p-2 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-200">{{ old('note') }}</textarea>
+                            <input type="text" name="reference" placeholder="{{ __('admin/order.refund.reference') }}"
+                                class="w-full border rounded-md p-2 text-sm border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                                value="{{ old('reference') }}">
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-colors">
+                                {{ __('admin/order.actions.update_status') }}
+                            </button>
+                        </form>
+                    @endif
+                @endcan
 
                 @if (empty($transitions))
                     <p class="text-sm text-gray-500">{{ __('admin/order.actions.no_transition') }}</p>
@@ -227,6 +260,27 @@
                     </div>
                 @endif
             </div>
+
+            @if ($order->paymentTransactions->isNotEmpty())
+                <div class="bg-white rounded-lg shadow-lg p-4 md:p-6">
+                    <h2 class="font-semibold text-gray-900 mb-4">{{ __('admin/order.fields.payment') }}</h2>
+
+                    <ul class="space-y-2 text-sm">
+                        @foreach ($order->paymentTransactions as $transaction)
+                            <li class="flex items-center justify-between gap-2 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
+                                <span class="text-gray-600">
+                                    {{ \App\Const\PaymentConst::gatewayLabel($transaction->gateway) }} ·
+                                    {{ $transaction->created_at?->format('d/m/Y H:i') }}
+                                </span>
+                                <span
+                                    class="font-medium {{ $transaction->is_successful ? 'text-green-600' : 'text-red-500' }}">
+                                    {{ format_price($transaction->amount) }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
@@ -254,6 +308,10 @@
             if (!$('#cancel-reason-wrap').hasClass('hidden')) {
                 showCancelPanel(true);
             }
+
+            $('#mark-refunded-toggle').on('click', function() {
+                $('#mark-refunded-form').toggleClass('hidden');
+            });
         });
     </script>
 @endpush

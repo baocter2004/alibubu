@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::table('admins', function (Blueprint $table) {
             $table->unsignedTinyInteger('role')->default(AdminConst::ROLE_STAFF)->after('password');
-            $table->boolean('is_active')->default(true)->after('role');
+            $table->boolean('is_active')->nullable()->default(true)->after('role');
         });
     }
 

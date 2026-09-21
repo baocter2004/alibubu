@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Const\PaymentConst;
 use App\Http\Controllers\Controller;
 use App\Services\Payment\MomoService;
 use App\Services\Payment\VnpayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class PaymentController extends Controller
 {
@@ -17,40 +21,50 @@ class PaymentController extends Controller
 
     public function vnpayReturn(Request $request)
     {
-        $result = $this->vnpayService->settle($request->query(), 'return');
+        $result = config('payment.settle_on_return')
+            ? $this->vnpayService->settle($request->query(), PaymentConst::SOURCE_RETURN)
+            : $this->vnpayService->resolve($request->query());
 
-        if ($result['order'] === null) {
-            return redirect()
-                ->route('index')
-                ->with('error', __('client.payment.messages.' . $result['message']));
-        }
-
-        if ($result['paid'] || $result['message'] === 'already_confirmed') {
-            return redirect()
-                ->route('thanks-you')
-                ->with('order_code', $result['order']->code)
-                ->with('order_id', $result['order']->id)
-                ->with('success', __('client.payment.messages.paid'));
-        }
-
-        return redirect()
-            ->route('order.track')
-            ->with('error', __('client.payment.messages.' . $result['message']));
+        return $this->finish($result);
     }
 
     public function momoReturn(Request $request)
     {
-        return $this->finish($this->momoService->settle($request->query(), 'return'));
+        $result = config('payment.settle_on_return')
+            ? $this->momoService->settle($request->query(), PaymentConst::SOURCE_RETURN)
+            : $this->momoService->resolve($request->query());
+
+        return $this->finish($result);
     }
 
-    public function momoIpn(Request $request): JsonResponse
+    public function momoIpn(Request $request): Response
     {
-        $result = $this->momoService->settle($request->all(), 'ipn');
+        try {
+            $this->momoService->settle($request->all(), PaymentConst::SOURCE_IPN);
+        } catch (Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage()]);
+        }
 
-        return response()->json([
-            'resultCode' => $result['code'],
-            'message' => $result['message'],
-        ]);
+        return response()->noContent();
+    }
+
+    public function vnpayIpn(Request $request): JsonResponse
+    {
+        try {
+            $result = $this->vnpayService->settle($request->query(), PaymentConst::SOURCE_IPN);
+
+            return response()->json([
+                'RspCode' => $result['code'],
+                'Message' => $result['message'],
+            ]);
+        } catch (Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage()]);
+
+            return response()->json([
+                'RspCode' => PaymentConst::VNPAY_RSP_UNKNOWN_ERROR,
+                'Message' => PaymentConst::RESULT_ERROR,
+            ]);
+        }
     }
 
     protected function finish(array $result)
@@ -61,7 +75,7 @@ class PaymentController extends Controller
                 ->with('error', __('client.payment.messages.' . $result['message']));
         }
 
-        if ($result['paid'] || $result['message'] === 'already_confirmed') {
+        if ($result['paid'] || $result['message'] === PaymentConst::RESULT_ALREADY_CONFIRMED) {
             return redirect()
                 ->route('thanks-you')
                 ->with('order_code', $result['order']->code)
@@ -72,15 +86,5 @@ class PaymentController extends Controller
         return redirect()
             ->route('order.track')
             ->with('error', __('client.payment.messages.' . $result['message']));
-    }
-
-    public function vnpayIpn(Request $request): JsonResponse
-    {
-        $result = $this->vnpayService->settle($request->query(), 'ipn');
-
-        return response()->json([
-            'RspCode' => $result['code'],
-            'Message' => $result['message'],
-        ]);
     }
 }
