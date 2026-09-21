@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Const\SecurityConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\AuthLoginRequest;
 use App\Http\Requests\Admin\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Admin\Auth\ResetPasswordRequest;
 use App\Services\Auth\AuthAdminService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AdminAuthController extends Controller
 {
@@ -21,7 +21,15 @@ class AdminAuthController extends Controller
 
     public function handleLogin(AuthLoginRequest $request)
     {
-        if (! $this->authService->login($request->validated())) {
+        $status = $this->authService->login($request, $request->validated());
+
+        if ($status === SecurityConst::LOGIN_INACTIVE) {
+            return back()
+                ->withInput($request->except('password'))
+                ->with('error', __('admin/administrator.messages.account_inactive'));
+        }
+
+        if ($status !== SecurityConst::LOGIN_OK) {
             return back()
                 ->withInput($request->except('password'))
                 ->with('error', __('admin/auth.messages.failed'));
@@ -39,11 +47,7 @@ class AdminAuthController extends Controller
 
     public function sendResetLinkEmail(ForgotPasswordRequest $request)
     {
-        if (! $this->authService->sendResetLinkEmail($request->validated())) {
-            return back()
-                ->withInput()
-                ->with('error', __('admin/auth.messages.reset_link_failed'));
-        }
+        $this->authService->sendResetLinkEmail($request->validated());
 
         return back()->with('success', __('admin/auth.messages.reset_link_sent'));
     }
@@ -69,12 +73,9 @@ class AdminAuthController extends Controller
             ->with('success', __('admin/auth.messages.reset_success'));
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
-
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()
             ->route('auth.admin.showFormLogin')

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Const\OrderConst;
+use App\Const\PaymentConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\PlaceOrderRequest;
 use App\Services\Client\CartService;
@@ -52,6 +54,7 @@ class CheckoutController extends Controller
             'defaultAddress' => $addresses->firstWhere('is_default', true) ?? $addresses->first(),
             'vnpayEnabled' => $this->vnpayService->isEnabled(),
             'momoEnabled' => $this->momoService->isEnabled(),
+            'bankTransferEnabled' => (bool) config('payment.bank_transfer.enabled'),
         ]);
     }
 
@@ -75,11 +78,11 @@ class CheckoutController extends Controller
                 ->with('error', __('client.messages.order_failed'));
         }
 
-        $gateway = match ((int) $order->payment_method) {
-            \App\Const\PaymentConst::METHOD_VNPAY => $this->vnpayService->isEnabled() ? 'vnpay' : null,
-            \App\Const\PaymentConst::METHOD_MOMO => $this->momoService->isEnabled() ? 'momo' : null,
+        $gateway = $order->canPayOnline() ? match ((int) $order->payment_method) {
+            PaymentConst::METHOD_VNPAY => $this->vnpayService->isEnabled() ? 'vnpay' : null,
+            PaymentConst::METHOD_MOMO => $this->momoService->isEnabled() ? 'momo' : null,
             default => null,
-        };
+        } : null;
 
         if ($gateway) {
             try {
@@ -90,7 +93,7 @@ class CheckoutController extends Controller
                 Log::error(__METHOD__, ['message' => $th->getMessage(), 'order_code' => $order->code]);
 
                 return redirect()
-                    ->route('order.track')
+                    ->route('order.track', ['code' => $order->code])
                     ->with('error', __('client.payment.messages.gateway_unavailable'));
             }
         }

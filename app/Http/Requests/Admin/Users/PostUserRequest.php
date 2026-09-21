@@ -116,12 +116,10 @@ class PostUserRequest extends FormRequest
                 'max:20',
                 Rule::unique('users', 'phone_number')->ignore($id)
             ],
-            'password' => 'nullable|min:8|confirmed',
             'avatar'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status'   => ['required', Rule::in(array_keys(UserConst::statuses()))],
             'gender'   => ['nullable', Rule::in(array_keys(UserConst::genders()))],
             'birthday' => 'nullable|date',
-            'role'     => ['required', Rule::in(array_keys(UserConst::roles()))],
 
             'bank_name' => [
                 'nullable',
@@ -155,12 +153,10 @@ class PostUserRequest extends FormRequest
             'fullname' => 'họ và tên',
             'email' => 'Email',
             'phone_number' => 'số điện thoại',
-            'password' => 'mật khẩu',
             'avatar' => 'ảnh đại diện',
             'status' => 'trạng thái',
             'gender' => 'giới tính',
             'birthday' => 'ngày sinh',
-            'role' => 'vai trò',
 
             'bank_name' => 'tên ngân hàng',
             'user_bank_name' => 'tên chủ tài khoản',

@@ -20,11 +20,13 @@
                     <i class="fas fa-arrow-up-right-from-square"></i>
                     {{ __('admin/nav.view_site') }}
                 </a>
-                <a href="{{ route('admin.products.edit', $product->id) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition-colors">
-                    <i class="fas fa-edit"></i>
-                    {{ __('common.actions.edit') }}
-                </a>
+                @can('products.update')
+                    <a href="{{ route('admin.products.edit', $product->id) }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-edit"></i>
+                        {{ __('common.actions.edit') }}
+                    </a>
+                @endcan
             </div>
         </div>
 

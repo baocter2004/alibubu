@@ -3,15 +3,17 @@
 namespace App\Services\Client;
 
 use App\Const\CouponConst;
+use App\Const\OrderConst;
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
 class CouponService
 {
-    public const SESSION_KEY = 'coupon_code';
+    public const SESSION_KEY = CouponConst::SESSION_KEY;
 
-    public function apply(string $code, Collection $items, float $subtotal, ?User $user = null): array
+    public function apply(string $code, Collection $items, float $subtotal, ?User $user = null, ?string $phone = null): array
     {
         $coupon = $this->findByCode($code);
 
@@ -19,7 +21,7 @@ class CouponService
             return $this->fail('not_found');
         }
 
-        if ($reason = $this->rejectionReason($coupon, $items, $subtotal, $user)) {
+        if ($reason = $this->rejectionReason($coupon, $items, $subtotal, $user, $phone)) {
             return $this->fail($reason);
         }
 
@@ -29,7 +31,7 @@ class CouponService
             'status' => true,
             'message' => __('client.coupon.messages.applied'),
             'coupon' => $coupon,
-            'discount' => $this->discountFor($coupon, $subtotal),
+            'discount' => $this->discountFor($coupon, $items, $subtotal),
         ];
     }
 
@@ -38,7 +40,7 @@ class CouponService
         session()->forget(self::SESSION_KEY);
     }
 
-    public function current(Collection $items, float $subtotal, ?User $user = null): ?array
+    public function current(Collection $items, float $subtotal, ?User $user = null, ?string $phone = null): ?array
     {
         $code = session()->get(self::SESSION_KEY);
 
@@ -48,7 +50,7 @@ class CouponService
 
         $coupon = $this->findByCode($code);
 
-        if (! $coupon || $this->rejectionReason($coupon, $items, $subtotal, $user)) {
+        if (! $coupon || $this->rejectionReason($coupon, $items, $subtotal, $user, $phone)) {
             $this->forget();
 
             return null;
@@ -56,7 +58,7 @@ class CouponService
 
         return [
             'coupon' => $coupon,
-            'discount' => $this->discountFor($coupon, $subtotal),
+            'discount' => $this->discountFor($coupon, $items, $subtotal),
         ];
     }
 
@@ -66,7 +68,7 @@ class CouponService
      * This prevents concurrent checkouts from both passing the usage-limit
      * check with the same remaining slot.
      */
-    public function currentForOrder(Collection $items, float $subtotal, ?User $user = null): ?array
+    public function currentForOrder(Collection $items, float $subtotal, ?User $user = null, ?string $phone = null): ?array
     {
         $code = session()->get(self::SESSION_KEY);
 
@@ -82,7 +84,7 @@ class CouponService
             throw new \RuntimeException(__('client.coupon.messages.not_found'));
         }
 
-        if ($reason = $this->rejectionReason($coupon, $items, $subtotal, $user)) {
+        if ($reason = $this->rejectionReason($coupon, $items, $subtotal, $user, $phone)) {
             $this->forget();
 
             throw new \RuntimeException($this->messageForReason($reason));
@@ -90,11 +92,11 @@ class CouponService
 
         return [
             'coupon' => $coupon,
-            'discount' => $this->discountFor($coupon, $subtotal),
+            'discount' => $this->discountFor($coupon, $items, $subtotal),
         ];
     }
 
-    public function availableFor(Collection $items, float $subtotal, ?User $user = null, int $limit = 6): Collection
+    public function availableFor(Collection $items, float $subtotal, ?User $user = null, int $limit = CouponConst::AVAILABLE_LIMIT): Collection
     {
         $now = now();
 
@@ -104,20 +106,21 @@ class CouponService
             ->where(fn ($query) => $query->whereNull('start_date')->orWhere('start_date', '<=', $now))
             ->where(fn ($query) => $query->whereNull('end_date')->orWhere('end_date', '>=', $now->copy()->startOfDay()))
             ->orderBy('end_date')
-            ->limit(30)
+            ->limit(CouponConst::AVAILABLE_SCAN_LIMIT)
             ->get()
             ->reject(fn (Coupon $coupon) => $this->rejectionReason($coupon, $items, $subtotal, $user) !== null)
             ->take($limit)
             ->values();
     }
 
-    public function discountFor(Coupon $coupon, float $subtotal): float
+    public function discountFor(Coupon $coupon, Collection $items, float $subtotal): float
     {
+        $eligible = $this->eligibleSubtotal($coupon, $items, $subtotal);
         $value = (float) $coupon->discount_value;
 
         $discount = $coupon->discount_type === CouponConst::PERCENT
-            ? $subtotal * $value / 100
-            : $value;
+            ? $eligible * $value / 100
+            : min($value, $eligible);
 
         $max = $coupon->restriction?->max_discount_value;
 
@@ -125,7 +128,37 @@ class CouponService
             $discount = min($discount, (float) $max);
         }
 
-        return (float) min(round($discount), $subtotal);
+        return (float) min(round($discount), $eligible);
+    }
+
+    protected function eligibleSubtotal(Coupon $coupon, Collection $items, float $subtotal): float
+    {
+        $restriction = $coupon->restriction;
+
+        if (! $restriction || (empty($restriction->valid_products) && empty($restriction->valid_categories))) {
+            return $subtotal;
+        }
+
+        return (float) $items
+            ->filter(fn (array $item) => $this->itemMatchesRestriction($item, $restriction))
+            ->sum('subtotal');
+    }
+
+    protected function itemMatchesRestriction(array $item, $restriction): bool
+    {
+        if (! empty($restriction->valid_products) && in_array($item['product']->id, $restriction->valid_products, true)) {
+            return true;
+        }
+
+        if (! empty($restriction->valid_categories)) {
+            $categoryIds = $item['product']->categories->pluck('id')->all();
+
+            if (array_intersect($categoryIds, $restriction->valid_categories) !== []) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function findByCode(string $code, bool $lock = false): ?Coupon
@@ -141,7 +174,7 @@ class CouponService
         return $query->first();
     }
 
-    protected function rejectionReason(Coupon $coupon, Collection $items, float $subtotal, ?User $user): ?string
+    protected function rejectionReason(Coupon $coupon, Collection $items, float $subtotal, ?User $user, ?string $phone = null): ?string
     {
         if (! $coupon->is_active) {
             return 'inactive';
@@ -161,7 +194,7 @@ class CouponService
             return 'exhausted';
         }
 
-        if ($user && $coupon->users()->whereKey($user->id)->exists()) {
+        if ($this->alreadyUsed($coupon, $user, $phone)) {
             return 'already_used';
         }
 
@@ -171,19 +204,40 @@ class CouponService
             return null;
         }
 
-        if ($restriction->min_order_value && $subtotal < (float) $restriction->min_order_value) {
+        $eligible = $this->eligibleSubtotal($coupon, $items, $subtotal);
+
+        if ($restriction->min_order_value && $eligible < (float) $restriction->min_order_value) {
             return 'min_order';
         }
 
-        if ($restriction->valid_products && ! $this->matchesProducts($items, $restriction->valid_products)) {
+        if (! empty($restriction->valid_products) && ! $this->matchesProducts($items, $restriction->valid_products)) {
             return 'not_applicable';
         }
 
-        if ($restriction->valid_categories && ! $this->matchesCategories($items, $restriction->valid_categories)) {
+        if (! empty($restriction->valid_categories) && ! $this->matchesCategories($items, $restriction->valid_categories)) {
             return 'not_applicable';
         }
 
         return null;
+    }
+
+    protected function alreadyUsed(Coupon $coupon, ?User $user, ?string $phone = null): bool
+    {
+        if ($user) {
+            return $coupon->users()->whereKey($user->id)->exists();
+        }
+
+        $phone = $phone ? trim($phone) : null;
+
+        if (! $phone) {
+            return false;
+        }
+
+        return Order::query()
+            ->where('coupon_id', $coupon->id)
+            ->where('phone_number', $phone)
+            ->whereNotIn('status', OrderConst::voidStatuses())
+            ->exists();
     }
 
     protected function matchesProducts(Collection $items, array $productIds): bool
@@ -213,6 +267,10 @@ class CouponService
 
     protected function messageForReason(string $reason): string
     {
+        if (in_array($reason, ['not_found', 'inactive', 'not_started'], true)) {
+            return __('client.coupon.messages.invalid');
+        }
+
         return __('client.coupon.messages.' . $reason);
     }
 }

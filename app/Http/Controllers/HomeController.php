@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
@@ -61,7 +62,10 @@ class HomeController extends Controller
 
     public function thankYou()
     {
+        $order = session('order_id') ? Order::find(session('order_id')) : null;
+
         return view('client.pages.thank-you', [
+            'order' => $order,
             'orderCode' => session('order_code'),
             'orderId' => session('order_id'),
         ]);

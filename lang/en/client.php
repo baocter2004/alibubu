@@ -143,7 +143,6 @@ return [
             'title' => 'Frequently bought together',
             'subtitle' => 'Add matching accessories and save on a single order.',
         ],
-        'recently_viewed' => 'Recently viewed',
         'add_to_cart' => 'Add to cart',
         'buy_now' => 'Buy now',
         'quantity' => 'Quantity',
@@ -236,6 +235,7 @@ return [
         'messages' => [
             'applied' => 'Discount code applied successfully.',
             'removed' => 'Discount code removed.',
+            'invalid' => 'This discount code is invalid.',
             'not_found' => 'This discount code does not exist.',
             'inactive' => 'This discount code is no longer active.',
             'not_started' => 'This discount code is not active yet.',
@@ -323,6 +323,7 @@ return [
             'empty_cta' => 'Start shopping',
             'detail' => 'Order detail',
             'timeline_title' => 'Order tracking',
+            'history_title' => 'Order history',
             'placed_at' => 'Placed at',
             'items' => 'Items',
             'search' => 'Search by order code',
@@ -410,13 +411,23 @@ return [
             'quantity' => 'Qty',
             'subtotal' => 'Subtotal',
             'discount' => 'Discount',
+            'membership_discount' => 'Membership discount',
             'total' => 'Order total',
             'recipient' => 'Recipient',
             'phone_number' => 'Phone number',
             'address' => 'Shipping address',
             'payment_method' => 'Payment method',
-            'action' => 'Continue shopping',
+            'payment_status' => 'Payment status',
+            'payment_status_paid' => 'Paid',
+            'payment_status_unpaid' => 'Awaiting payment',
+            'action' => 'View order',
             'outro' => 'If you did not place this order, please contact us right away.',
+            'bank_transfer_title' => 'Bank transfer details',
+            'bank_transfer_hint' => 'Please use the exact transfer note below so we can process your order quickly.',
+            'bank_name' => 'Bank',
+            'bank_account_number' => 'Account number',
+            'bank_account_name' => 'Account holder',
+            'transfer_note' => 'Transfer note',
         ],
     ],
 
@@ -508,6 +519,13 @@ return [
             'already_confirmed' => 'This order has already been paid.',
             'gateway_disabled' => 'The online payment gateway is not configured.',
             'gateway_unavailable' => 'Could not reach the payment gateway. Your order was created, please pay again later.',
+            'refund_pending' => 'This payment has been flagged for a refund.',
+            'pending' => 'Your payment is being processed.',
+            'error' => 'Something went wrong while processing the payment.',
+            'method_disabled' => 'The selected payment method is not available.',
+            'amount_range' => 'The order total is outside the limits allowed by this payment method.',
+            'pay_again' => 'Pay again',
+            'not_payable' => 'This order can no longer be paid online.',
         ],
     ],
 
@@ -522,6 +540,8 @@ return [
         'fields' => [
             'question' => 'Question',
             'fullname' => 'Your name',
+            'email' => 'Email for updates',
+            'email_hint' => 'Optional. We will email you when your question is answered.',
             'question_placeholder' => 'For example: does this support fast charging?',
         ],
         'messages' => [
@@ -550,6 +570,86 @@ return [
         'to_next' => ':points points to reach :tier',
         'max_tier' => 'You are at the highest tier.',
         'earn_hint' => 'Earn 1 point for every 100,000đ of completed orders.',
+    ],
+
+    'notifications' => [
+        'title' => 'Notifications',
+        'subtitle' => 'Updates about your orders, reviews and questions.',
+        'empty' => 'You have no notifications yet.',
+        'empty_unread' => 'You are all caught up.',
+        'unread' => 'Unread',
+        'mark_all_read' => 'Mark all as read',
+        'view' => 'View',
+        'view_all' => 'View all notifications',
+        'bell' => 'Notifications, :count unread',
+        'reason' => 'Reason: :reason',
+        'filters' => [
+            'all' => 'All',
+            'unread' => 'Unread',
+        ],
+        'messages' => [
+            'marked_read' => 'Notification marked as read.',
+            'marked_all_read' => 'All notifications marked as read.',
+            'not_found' => 'Notification not found.',
+        ],
+        'mail' => [
+            'greeting' => 'Hello :name,',
+            'action' => 'View details',
+            'salutation' => 'Best regards, the Alibubu team',
+            'question' => 'Your question: “:question”',
+            'answer' => 'Answer: “:answer”',
+            'note' => 'Note: :note',
+            'points_earned' => 'You just earned :points loyalty points.',
+        ],
+        'types' => [
+            'default' => [
+                'title' => 'New notification',
+            ],
+            'review' => [
+                'approved' => [
+                    'title' => 'Your review has been approved',
+                    'body' => 'Your :rating/5 review of :product is now live on the product page. Thank you!',
+                ],
+                'rejected' => [
+                    'title' => 'Your review was not published',
+                    'body' => 'Your review of :product was not approved for publication.',
+                ],
+            ],
+            'question' => [
+                'answered' => [
+                    'title' => 'Your question about :product has been answered',
+                    'body' => 'Alibubu has answered your question “:question”.',
+                ],
+            ],
+            'order' => [
+                'status_changed' => [
+                    'title' => 'Order :code: :status',
+                    'body' => 'Your order :code is now “:status”.',
+                ],
+                'payment_succeeded' => [
+                    'title' => 'Payment for :code succeeded',
+                    'body' => 'We received your payment of :total for order :code. Thank you!',
+                ],
+                'payment_failed' => [
+                    'title' => 'Payment for :code did not succeed',
+                    'body' => 'The payment for order :code did not go through. Please try again or choose another method.',
+                ],
+                'refund_pending' => [
+                    'title' => 'Order :code refund pending',
+                    'body' => 'Order :code (:total) is being processed for a refund. We will contact you soon.',
+                ],
+                'refunded' => [
+                    'title' => 'Order :code has been refunded',
+                    'body' => 'We refunded :total for order :code.',
+                ],
+            ],
+            'membership' => [
+                'tier_changed' => [
+                    'title' => 'Your membership tier has changed',
+                    'body' => 'You moved from :from to :to with :points loyalty points.',
+                ],
+            ],
+        ],
     ],
 
     'messages' => [

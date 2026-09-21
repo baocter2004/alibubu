@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Const\OrderConst;
 use App\Const\PaymentConst;
+use App\Const\PermissionConst;
 use App\Const\UserConst;
 use App\Models\Branch;
 use App\Models\Category;
@@ -13,11 +14,13 @@ use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
     {
+        $canFinance = (bool) Auth::guard('admin')->user()?->hasPermission(PermissionConst::DASHBOARD_FINANCE);
         $allowedRanges = [7, 30, 90, 365];
         $range = (int) $request->input('range', 30);
         $range = in_array($range, $allowedRanges, true) ? $range : 30;
@@ -90,17 +93,36 @@ class DashboardController extends Controller
         $ordersConfig = $this->axisConfig(max($orderValues ?: [0]), true);
         $topProductsConfig = $this->axisConfig((float) ($topProducts->max('revenue') ?? 0));
         $paymentConfig = $this->axisConfig((float) max(array_values($paymentCounts) ?: [0]), true);
+        $totalRevenue = (float) Order::where('is_paid', true)
+            ->where('status', '!=', OrderConst::STATUS_CANCELLED)
+            ->sum('total_amount');
+        $averageOrder = $paidOrders->count() > 0 ? $periodRevenue / $paidOrders->count() : 0;
+
+        if (! $canFinance) {
+            $totalRevenue = null;
+            $periodRevenue = null;
+            $averageOrder = null;
+            $revenueValues = array_fill(0, count($labels), 0);
+            $cumulativeRevenue = array_fill(0, count($labels), 0);
+            $revenueConfig = ['min' => 0, 'max' => 4, 'step' => 1];
+            $cumulativeRevenueConfig = $revenueConfig;
+            $topProducts = $topProducts->map(function ($product) {
+                $product->revenue = 0;
+
+                return $product;
+            });
+            $topProductsConfig = ['min' => 0, 'max' => 4, 'step' => 1];
+        }
 
         return view('admin.pages.dashboard', [
+            'canFinance' => $canFinance,
             'stats' => [
                 'users' => User::count(),
                 'products' => Product::count(),
                 'categories' => Category::count(),
                 'branches' => Branch::count(),
                 'orders' => Order::count(),
-                'revenue' => (float) Order::where('is_paid', true)
-                    ->where('status', '!=', OrderConst::STATUS_CANCELLED)
-                    ->sum('total_amount'),
+                'revenue' => $totalRevenue,
             ],
             'latestOrders' => Order::with('user')->latest('id')->limit(5)->get(),
             'latestUsers' => User::where('role', UserConst::ROLE_USER)->latest('id')->limit(5)->get(),
@@ -112,7 +134,7 @@ class DashboardController extends Controller
                 'revenue' => $periodRevenue,
                 'orders' => $periodOrders,
                 'paid_orders' => $paidOrders->count(),
-                'average_order' => $paidOrders->count() > 0 ? $periodRevenue / $paidOrders->count() : 0,
+                'average_order' => $averageOrder,
             ],
             'chart' => [
                 'labels' => $labels,

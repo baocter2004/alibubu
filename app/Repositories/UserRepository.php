@@ -18,6 +18,13 @@ class UserRepository extends BaseRepository
         return $this->model;
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        return $this->newQuery()
+            ->whereRaw('LOWER(email) = ?', [mb_strtolower(trim($email))])
+            ->first();
+    }
+
     public function filter(array $params): Builder
     {
         $query = parent::filter($params);

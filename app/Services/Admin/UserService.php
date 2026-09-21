@@ -6,18 +6,47 @@ use App\Const\UserConst;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Ward;
+use App\Notifications\EmailChanged;
 use App\Repositories\UserAddressRepository;
 use App\Repositories\UserRepository;
+use App\Services\Auth\AuthService;
 use App\Services\BaseCrudService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 class UserService extends BaseCrudService
 {
-    public function __construct(protected UserAddressRepository $userAddressRepository)
-    {
+    public function __construct(
+        protected UserAddressRepository $userAddressRepository,
+        protected AuthService $authService,
+    ) {
         parent::__construct();
+    }
+
+    public function sendResetLink(int|string $id): bool
+    {
+        $user = $this->find($id);
+
+        if (! $user) {
+            return false;
+        }
+
+        $this->authService->sendResetLinkEmail(['email' => $user->email]);
+
+        return true;
+    }
+
+    protected function notifyEmailChanged(string $oldEmail, User $user): void
+    {
+        try {
+            Notification::route('mail', $oldEmail)
+                ->notify((new EmailChanged($user->email))->locale(app()->getLocale()));
+        } catch (\Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'user_id' => $user->id]);
+        }
     }
 
     protected function getRepository(): UserRepository
@@ -78,7 +107,13 @@ class UserService extends BaseCrudService
     {
         try {
             return DB::transaction(function () use ($params) {
-                $user = parent::create(Arr::except($params, ['user_addresses', 'id']));
+                $status = $params['status'] ?? UserConst::STATUS_ACTIVE;
+                $attributes = Arr::except($params, ['user_addresses', 'id', 'status', 'role']);
+                $attributes['password'] = Str::random(40);
+
+                $user = parent::create($attributes);
+                $user->forceFill(['status' => $status])->save();
+
                 $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);
 
                 if ($addresses !== []) {
@@ -100,7 +135,20 @@ class UserService extends BaseCrudService
     {
         try {
             return DB::transaction(function () use ($id, $params) {
-                $user = parent::update($id, Arr::except($params, ['user_addresses', 'id']));
+                $status = $params['status'] ?? null;
+                $attributes = Arr::except($params, ['user_addresses', 'id', 'status', 'role']);
+                $oldEmail = $this->find($id)?->email;
+
+                $user = parent::update($id, $attributes);
+
+                if ($status !== null) {
+                    $user->forceFill(['status' => $status])->save();
+                }
+
+                if ($oldEmail && isset($attributes['email']) && $attributes['email'] !== $oldEmail) {
+                    $this->notifyEmailChanged($oldEmail, $user);
+                }
+
                 $addresses = $this->normalizeAddresses($params['user_addresses'] ?? [], $user->id);
 
                 $currentIds = $user->userAddresses()->pluck('id')->map(fn ($id) => (string) $id)->all();
@@ -190,7 +238,7 @@ class UserService extends BaseCrudService
             }
 
             DB::transaction(function () use ($user, $id) {
-                $user->update(['status' => UserConst::STATUS_INACTIVE]);
+                $user->forceFill(['status' => UserConst::STATUS_INACTIVE])->save();
                 parent::delete($id);
             });
 
@@ -210,7 +258,7 @@ class UserService extends BaseCrudService
         try {
             $restored = $this->getRepository()->restore($id);
 
-            $this->find($id)?->update(['status' => UserConst::STATUS_ACTIVE]);
+            $this->find($id)?->forceFill(['status' => UserConst::STATUS_ACTIVE])->save();
 
             return $restored;
         } catch (\Throwable $th) {

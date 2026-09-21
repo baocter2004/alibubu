@@ -136,4 +136,13 @@ class UserController extends Controller
             ->route('admin.users.index')
             ->with('success', __('admin/user.messages.restored'));
     }
+
+    public function sendResetLink(int|string $id)
+    {
+        if (! $this->userService->sendResetLink($id)) {
+            return back()->with('error', __('admin/user.messages.not_found'));
+        }
+
+        return back()->with('success', __('admin/user.messages.reset_link_sent'));
+    }
 }

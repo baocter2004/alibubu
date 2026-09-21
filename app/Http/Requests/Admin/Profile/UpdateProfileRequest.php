@@ -8,22 +8,14 @@ use Illuminate\Validation\Rule;
 
 class UpdateProfileRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return Auth::guard('admin')->check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
@@ -33,18 +25,20 @@ class UpdateProfileRequest extends FormRequest
                 Rule::unique('admins', 'email')->ignore(Auth::guard('admin')->id()),
             ],
         ];
+
+        if ($this->input('email') !== Auth::guard('admin')->user()?->email) {
+            $rules['current_password'] = ['required', 'current_password:admin'];
+        }
+
+        return $rules;
     }
 
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [
             'name' => __('admin/profile.fields.name'),
             'email' => __('admin/profile.fields.email'),
+            'current_password' => __('admin/profile.fields.current_password'),
         ];
     }
 }

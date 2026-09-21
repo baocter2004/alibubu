@@ -18,7 +18,6 @@
                         ['label' => __('admin/user.fields.phone_number'), 'value' => $data['phone_number'] ?? '-'],
                         ['label' => __('admin/user.fields.gender'), 'value' => \App\Const\UserConst::genderLabel($data['gender'] ?? null)],
                         ['label' => __('admin/user.fields.birthday'), 'value' => ! empty($data['birthday']) ? \Illuminate\Support\Carbon::parse($data['birthday'])->format('d/m/Y') : '-'],
-                        ['label' => __('admin/user.fields.role'), 'value' => \App\Const\UserConst::roleLabel($data['role'] ?? null)],
                         ['label' => __('admin/user.fields.status'), 'value' => \App\Const\UserConst::statusLabel($data['status'] ?? null)],
                         ['label' => __('admin/user.fields.bank_name'), 'value' => \App\Const\BankConst::getOptions()[$data['bank_name'] ?? ''] ?? '-'],
                         ['label' => __('admin/user.fields.user_bank_name'), 'value' => $data['user_bank_name'] ?? '-'],

@@ -173,6 +173,7 @@
                     @foreach (\App\Const\PaymentConst::methods() as $value => $label)
                         @continue((int) $value === \App\Const\PaymentConst::METHOD_VNPAY && ! $vnpayEnabled)
                         @continue((int) $value === \App\Const\PaymentConst::METHOD_MOMO && ! $momoEnabled)
+                        @continue((int) $value === \App\Const\PaymentConst::METHOD_BANK_TRANSFER && ! $bankTransferEnabled)
                         <label class="block cursor-pointer">
                             <input type="radio" name="payment_method" value="{{ $value }}"
                                 @checked((int) old('payment_method', \App\Const\PaymentConst::METHOD_COD) === (int) $value)
@@ -218,11 +219,11 @@
                     <p class="font-semibold text-foreground">{{ __('client.checkout.bank_details') }}</p>
                     <dl class="grid grid-cols-3 gap-2">
                         <dt class="text-muted-foreground">{{ __('client.checkout.bank_name') }}</dt>
-                        <dd class="col-span-2 text-foreground font-medium">Vietcombank</dd>
+                        <dd class="col-span-2 text-foreground font-medium">{{ \App\Const\BankConst::getShortName((string) config('payment.bank_transfer.bank_code')) }}</dd>
                         <dt class="text-muted-foreground">{{ __('client.checkout.bank_account') }}</dt>
-                        <dd class="col-span-2 text-foreground font-medium">0123 4567 8910</dd>
+                        <dd class="col-span-2 text-foreground font-medium">{{ config('payment.bank_transfer.account_number') }}</dd>
                         <dt class="text-muted-foreground">{{ __('client.checkout.bank_holder') }}</dt>
-                        <dd class="col-span-2 text-foreground font-medium">CONG TY ALIBUBU</dd>
+                        <dd class="col-span-2 text-foreground font-medium">{{ config('payment.bank_transfer.account_name') }}</dd>
                     </dl>
                     <p class="text-xs text-muted-foreground pt-1">{{ __('client.checkout.bank_note_hint') }}</p>
                 </div>

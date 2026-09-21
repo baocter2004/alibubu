@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('fullname');
             $table->text('address');
             $table->text('note')->nullable();
+            $table->string('locale', 5)->nullable();
             $table->decimal('total_amount', 12, 2);
             $table->boolean('is_paid')->default(false);
             $table->boolean('is_refund')->default(0);

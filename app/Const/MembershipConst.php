@@ -15,6 +15,8 @@ class MembershipConst
 
     const TYPE_ADJUSTMENT = 'adjustment';
 
+    const TYPE_REVERSAL = 'reversal';
+
     public static function tiers(): array
     {
         return [
@@ -74,6 +76,13 @@ class MembershipConst
     public static function threshold(string $tier): int
     {
         return self::tiers()[$tier] ?? 0;
+    }
+
+    public static function higherTier(?string $current, string $candidate): string
+    {
+        $current = $current ?: self::TIER_MEMBER;
+
+        return self::threshold($candidate) > self::threshold($current) ? $candidate : $current;
     }
 
     public static function label(string $tier): string

@@ -2,65 +2,46 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Const\ReviewConst;
 use App\Http\Controllers\Controller;
-use App\Models\ProductReview;
+use App\Http\Requests\Admin\Review\RejectReviewRequest;
+use App\Services\Admin\ReviewService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function __construct(protected ReviewService $reviewService) {}
+
     public function index(Request $request)
     {
-        $reviews = ProductReview::query()
-            ->with(['product:id,name,slug,thumbnail', 'user:id,fullname,email'])
-            ->when($request->filled('status'), function ($query) use ($request) {
-                $query->where('is_approved', $request->input('status') === 'approved');
-            })
-            ->when($request->filled('keyword'), function ($query) use ($request) {
-                $keyword = $request->input('keyword');
-                $query->where(function ($sub) use ($keyword) {
-                    $sub->where('title', 'like', "%{$keyword}%")
-                        ->orWhere('comment', 'like', "%{$keyword}%")
-                        ->orWhereHas('product', fn ($p) => $p->where('name', 'like', "%{$keyword}%"));
-                });
-            })
-            ->latest('id')
-            ->paginate(15);
+        $stats = $this->reviewService->stats();
 
         return view('admin.pages.reviews.index', [
-            'reviews' => $reviews,
-            'pending' => ProductReview::where('is_approved', false)->count(),
-            'approved' => ProductReview::where('is_approved', true)->count(),
+            'reviews' => $this->reviewService->paginate($request->only(['status', 'keyword'])),
+            'stats' => $stats,
+            'pending' => $stats[ReviewConst::STATUS_PENDING],
+            'approved' => $stats[ReviewConst::STATUS_APPROVED],
         ]);
     }
 
-    public function approve(int|string $id)
+    public function approve(string $id): RedirectResponse
     {
-        $review = ProductReview::findOrFail($id);
-
-        $review->update(['is_approved' => true, 'approved_at' => now()]);
-        $review->product->refreshRating();
-
-        return back()->with('success', __('admin/review.messages.approved'));
+        return $this->respond($this->reviewService->approve($id));
     }
 
-    public function reject(int|string $id)
+    public function reject(RejectReviewRequest $request, string $id): RedirectResponse
     {
-        $review = ProductReview::findOrFail($id);
-
-        $review->update(['is_approved' => false, 'approved_at' => null]);
-        $review->product->refreshRating();
-
-        return back()->with('success', __('admin/review.messages.rejected'));
+        return $this->respond($this->reviewService->reject($id, $request->validated('reason')));
     }
 
-    public function destroy(int|string $id)
+    public function destroy(string $id): RedirectResponse
     {
-        $review = ProductReview::findOrFail($id);
-        $product = $review->product;
+        return $this->respond($this->reviewService->delete($id));
+    }
 
-        $review->delete();
-        $product->refreshRating();
-
-        return back()->with('success', __('admin/review.messages.deleted'));
+    protected function respond(array $result): RedirectResponse
+    {
+        return back()->with($result['status'] ? 'success' : 'error', $result['message']);
     }
 }

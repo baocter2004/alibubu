@@ -4,6 +4,7 @@
         ['route' => 'account.orders', 'icon' => 'fa-receipt', 'label' => __('client.account.nav.orders')],
         ['route' => 'account.wishlist', 'icon' => 'fa-heart', 'label' => __('client.account.nav.wishlist')],
         ['route' => 'account.addresses', 'icon' => 'fa-location-dot', 'label' => __('client.account.nav.addresses')],
+        ['route' => 'account.notifications.index', 'icon' => 'fa-bell', 'label' => __('client.notifications.title'), 'badge' => $customerUnreadCount ?? 0],
     ];
 @endphp
 
@@ -62,6 +63,11 @@
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors {{ request()->routeIs($link['route'] . '*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted' }}">
                 <i class="fa-solid {{ $link['icon'] }} w-4 text-center"></i>
                 {{ $link['label'] }}
+                @if (! empty($link['badge']))
+                    <span class="ml-auto min-w-5 h-5 px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {{ $link['badge'] > 99 ? '99+' : $link['badge'] }}
+                    </span>
+                @endif
             </a>
         @endforeach
 

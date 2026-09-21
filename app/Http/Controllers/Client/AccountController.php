@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Const\OrderConst;
+use App\Const\PaymentConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\CancelOrderRequest;
 use App\Http\Requests\Client\StoreAddressRequest;
@@ -10,13 +11,21 @@ use App\Http\Requests\Client\UpdatePasswordRequest;
 use App\Http\Requests\Client\UpdateProfileRequest;
 use App\Models\Province;
 use App\Services\Client\AccountService;
+use App\Services\Payment\MomoService;
+use App\Services\Payment\VnpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class AccountController extends Controller
 {
-    public function __construct(protected AccountService $accountService) {}
+    public function __construct(
+        protected AccountService $accountService,
+        protected VnpayService $vnpayService,
+        protected MomoService $momoService
+    ) {}
 
     public function profile()
     {
@@ -34,7 +43,11 @@ class AccountController extends Controller
 
     public function updatePassword(UpdatePasswordRequest $request)
     {
-        $this->accountService->updatePassword(Auth::user(), $request->validated()['password']);
+        $this->accountService->updatePassword(
+            Auth::user(),
+            $request->validated()['password'],
+            $request->session()->getId()
+        );
 
         return back()->with('success', __('client.account.messages.password_updated'));
     }
@@ -69,6 +82,31 @@ class AccountController extends Controller
         return redirect()
             ->route('account.orders.show', $id)
             ->with($result['status'] ? 'success' : 'error', $result['message']);
+    }
+
+    public function payAgainOrder(Request $request, int|string $id)
+    {
+        $order = $this->accountService->findOrder(Auth::user(), $id);
+
+        if (! $order || ! $order->canPayOnline()) {
+            return redirect()
+                ->route('account.orders.show', $id)
+                ->with('error', __('client.payment.messages.not_payable'));
+        }
+
+        try {
+            $url = (int) $order->payment_method === PaymentConst::METHOD_VNPAY
+                ? $this->vnpayService->createPaymentUrl($order, $request->ip())
+                : $this->momoService->createPaymentUrl($order);
+
+            return redirect()->away($url);
+        } catch (Throwable $th) {
+            Log::error(__METHOD__, ['message' => $th->getMessage(), 'order_code' => $order->code]);
+
+            return redirect()
+                ->route('account.orders.show', $id)
+                ->with('error', $th->getMessage());
+        }
     }
 
     public function addresses()

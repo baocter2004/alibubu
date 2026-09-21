@@ -24,6 +24,8 @@ return [
     'orders' => 'Orders',
     'users' => 'Users',
     'administrators' => 'Admin accounts',
+    'roles' => 'Permissions',
+    'activity_log' => 'Activity log',
     'provinces' => 'Provinces',
     'wards' => 'Wards',
 

@@ -12,6 +12,9 @@ return [
     'show' => 'Hiển thị',
     'hide' => 'Ẩn',
     'asked_by' => 'Người hỏi',
+    'notify_email' => 'Email nhận thông báo: :email',
+    'notify_account' => 'Khách sẽ nhận thông báo trong tài khoản và qua email khi có câu trả lời.',
+    'no_contact' => 'Khách không để lại email, sẽ không nhận được thông báo.',
     'filters' => [
         'all' => 'Tất cả',
         'pending' => 'Chờ trả lời',

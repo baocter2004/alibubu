@@ -53,29 +53,22 @@
                 ])
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                @include('components.input', [
-                    'name' => 'password',
-                    'label' => __('admin/user.fields.password'),
-                    'type' => 'password',
-                    'required' => empty($user->id),
-                    'icon' => 'lock',
-                ])
-
-                @include('components.input', [
-                    'name' => 'password_confirmation',
-                    'label' => __('admin/user.fields.password_confirmation'),
-                    'type' => 'password',
-                    'required' => empty($user->id),
-                    'icon' => 'lock',
-                ])
-            </div>
-
             @if (! empty($user))
-                <p class="flex items-start gap-2 text-sm text-gray-600 bg-amber-50 border border-amber-100 rounded-lg p-3">
-                    <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
-                    {{ __('admin/user.hints.password_optional') }}
-                </p>
+                <div class="flex items-start justify-between gap-3 text-sm text-gray-600 bg-amber-50 border border-amber-100 rounded-lg p-3">
+                    <p class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
+                        {{ __('admin/user.hints.password_via_reset_link') }}
+                    </p>
+
+                    <form action="{{ route('admin.users.send-reset-link', $user->id) }}" method="POST" class="shrink-0">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-amber-700 bg-white border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            {{ __('admin/user.buttons.send_reset_link') }}
+                        </button>
+                    </form>
+                </div>
             @endif
         </div>
     </section>
@@ -103,15 +96,6 @@
                 'name' => 'birthday',
                 'label' => __('admin/user.fields.birthday'),
                 'value' => $user->birthday ?? ($data['birthday'] ?? ''),
-            ])
-
-            @include('components.select', [
-                'name' => 'role',
-                'label' => __('admin/user.fields.role'),
-                'icon' => 'user-shield',
-                'required' => true,
-                'value' => $user->role ?? ($data['role'] ?? \App\Const\UserConst::ROLE_USER),
-                'options' => \App\Const\UserConst::roles(),
             ])
 
             @include('components.select', [

@@ -118,6 +118,23 @@
                     <span class="font-semibold text-foreground">{{ __('client.tracking.total') }}</span>
                     <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
                 </div>
+
+                <div class="mt-5">
+                    <x-bank-transfer-instructions :order="$order" />
+                </div>
+
+                @if ($order->canPayOnline())
+                    <form action="{{ route('order.track.pay-again') }}" method="POST" class="mt-5">
+                        @csrf
+                        <input type="hidden" name="code" value="{{ $order->code }}">
+                        <input type="hidden" name="phone_number" value="{{ $order->phone_number }}">
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
+                            <i class="fa-solid fa-credit-card"></i>
+                            {{ __('client.payment.messages.pay_again') }}
+                        </button>
+                    </form>
+                @endif
             </section>
         @endisset
     </div>

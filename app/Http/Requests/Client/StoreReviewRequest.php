@@ -2,41 +2,28 @@
 
 namespace App\Http\Requests\Client;
 
-use App\Services\Client\ReviewService;
+use App\Const\ReviewConst;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class StoreReviewRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return Auth::check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'title' => ['nullable', 'string', 'max:120'],
             'comment' => ['nullable', 'string', 'max:1000'],
-            'images' => ['nullable', 'array', 'max:' . ReviewService::MAX_IMAGES],
+            'images' => ['nullable', 'array', 'max:' . ReviewConst::MAX_IMAGES],
             'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

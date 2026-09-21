@@ -3,24 +3,18 @@
 namespace App\Http\Requests\Client;
 
 use App\Const\PaymentConst;
+use App\Services\Payment\MomoService;
+use App\Services\Payment\VnpayService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class PlaceOrderRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -29,27 +23,37 @@ class PlaceOrderRequest extends FormRequest
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
             'note' => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'integer', Rule::in(array_keys(PaymentConst::methods()))],
+            'payment_method' => ['required', 'integer', Rule::in($this->enabledPaymentMethods())],
         ];
     }
 
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array<string, string>
-     */
+    protected function enabledPaymentMethods(): array
+    {
+        $methods = [PaymentConst::METHOD_COD];
+
+        if ((bool) config('payment.bank_transfer.enabled')) {
+            $methods[] = PaymentConst::METHOD_BANK_TRANSFER;
+        }
+
+        if (app(VnpayService::class)->isEnabled()) {
+            $methods[] = PaymentConst::METHOD_VNPAY;
+        }
+
+        if (app(MomoService::class)->isEnabled()) {
+            $methods[] = PaymentConst::METHOD_MOMO;
+        }
+
+        return $methods;
+    }
+
     public function messages(): array
     {
         return [
             'phone_number.regex' => __('client.messages.phone_invalid'),
+            'payment_method.in' => __('client.payment.messages.method_disabled'),
         ];
     }
 
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

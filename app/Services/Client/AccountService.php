@@ -3,19 +3,25 @@
 namespace App\Services\Client;
 
 use App\Const\OrderConst;
-use App\Models\Coupon;
 use App\Models\Order;
-use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\User;
 use App\Models\UserAddress;
+use App\Exceptions\OrderStateException;
+use App\Notifications\PasswordChanged;
+use App\Services\Auth\SessionService;
+use App\Services\Order\OrderStateService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AccountService
 {
-    public function orders(User $user, array $params = [], int $limit = 10): LengthAwarePaginator
+    public function __construct(
+        protected OrderStateService $orderState,
+        protected SessionService $sessionService
+    ) {}
+
+    public function orders(User $user, array $params = [], int $limit = OrderConst::ACCOUNT_PER_PAGE): LengthAwarePaginator
     {
         return $user->orders()
             ->withCount('items')
@@ -36,7 +42,7 @@ class AccountService
     public function findOrder(User $user, int|string $id): ?Order
     {
         return $user->orders()
-            ->with(['items.product', 'items.productVariant'])
+            ->with(['items.product', 'items.productVariant', 'histories', 'paymentTransactions'])
             ->whereKey($id)
             ->first();
     }
@@ -52,66 +58,25 @@ class AccountService
             ];
         }
 
-        if (! OrderConst::isCancellableByCustomer($order->status)) {
+        try {
+            $this->orderState->transition(
+                $order,
+                OrderConst::STATUS_CANCELLED,
+                OrderConst::ACTOR_CUSTOMER,
+                (string) $user->id,
+                $reason
+            );
+        } catch (OrderStateException $e) {
             return [
                 'status' => false,
                 'message' => __('client.account.messages.cancel_not_allowed'),
             ];
         }
 
-        DB::transaction(function () use ($order, $reason) {
-            $this->restoreStock($order);
-            $this->releaseCoupon($order);
-
-            $order->update([
-                'status' => OrderConst::STATUS_CANCELLED,
-                'cancelled_at' => now(),
-                'cancel_reason' => $reason,
-            ]);
-        });
-
         return [
             'status' => true,
             'message' => __('client.account.messages.order_cancelled'),
         ];
-    }
-
-    protected function releaseCoupon(Order $order): void
-    {
-        if (! $order->coupon_id) {
-            return;
-        }
-
-        Coupon::whereKey($order->coupon_id)
-            ->where('usage_count', '>', 0)
-            ->decrement('usage_count');
-
-        if ($order->user_id) {
-            DB::table('coupon_user')
-                ->where('coupon_id', $order->coupon_id)
-                ->where('user_id', $order->user_id)
-                ->delete();
-        }
-    }
-
-    protected function restoreStock(Order $order): void
-    {
-        foreach ($order->items()->get() as $item) {
-            if (! $item->product_id) {
-                continue;
-            }
-
-            if ($item->product_variant_id) {
-                ProductVariant::whereKey($item->product_variant_id)->update([
-                    'stock' => DB::raw('stock + ' . (int) $item->quantity),
-                ]);
-            }
-
-            Product::whereKey($item->product_id)->update([
-                'stock' => DB::raw('stock + ' . (int) $item->quantity),
-                'sold' => DB::raw('MAX(sold - ' . (int) $item->quantity . ', 0)'),
-            ]);
-        }
     }
 
     public function updateProfile(User $user, array $params): User
@@ -126,9 +91,13 @@ class AccountService
         return $user->refresh();
     }
 
-    public function updatePassword(User $user, string $password): void
+    public function updatePassword(User $user, string $password, ?string $exceptSessionId = null): void
     {
         $user->update(['password' => Hash::make($password)]);
+
+        $this->sessionService->terminateOtherSessions($user, $exceptSessionId);
+
+        $user->notify(new PasswordChanged());
     }
 
     public function storeAddress(User $user, array $params): UserAddress

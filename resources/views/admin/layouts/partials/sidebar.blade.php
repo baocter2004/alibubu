@@ -1,45 +1,45 @@
 @php
-    $adminRole = (int) Auth::guard('admin')->user()?->role;
-    $allAdminRoles = \App\Const\AdminConst::allRoleIds();
-    $managementRoles = \App\Const\AdminConst::managementRoleIds();
+    $currentAdmin = Auth::guard('admin')->user();
+    $allows = fn (?string $ability) => $ability === null || (bool) $currentAdmin?->can($ability);
     $navGroups = [
         [
             'label' => __('admin/nav.groups.main'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'fa-gauge-high', 'label' => __('admin/nav.dashboard'), 'roles' => $allAdminRoles],
+                ['type' => 'link', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'fa-gauge-high', 'label' => __('admin/nav.dashboard'), 'can' => 'dashboard.view'],
             ],
         ],
         [
             'label' => __('admin/nav.groups.catalog'),
             'items' => [
-                ['type' => 'dropdown', 'active' => 'admin.products.*', 'icon' => 'fa-mobile-screen-button', 'label' => __('admin/nav.products'), 'base' => 'admin.products', 'roles' => $allAdminRoles],
-                ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories', 'roles' => $managementRoles],
-                ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches', 'roles' => $managementRoles],
-                ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes', 'roles' => $managementRoles],
-                ['type' => 'dropdown', 'active' => 'admin.tags.*', 'icon' => 'fa-tags', 'label' => __('admin/nav.tags'), 'base' => 'admin.tags', 'roles' => $managementRoles],
+                ['type' => 'dropdown', 'active' => 'admin.products.*', 'icon' => 'fa-mobile-screen-button', 'label' => __('admin/nav.products'), 'base' => 'admin.products', 'can' => 'products.view', 'children' => ['index' => 'products.view', 'create' => 'products.create', 'trash' => 'products.delete']],
+                ['type' => 'dropdown', 'active' => 'admin.categories.*', 'icon' => 'fa-sitemap', 'label' => __('admin/nav.categories'), 'base' => 'admin.categories', 'can' => 'categories.view'],
+                ['type' => 'dropdown', 'active' => 'admin.branches.*', 'icon' => 'fa-award', 'label' => __('admin/nav.branches'), 'base' => 'admin.branches', 'can' => 'branches.view'],
+                ['type' => 'dropdown', 'active' => 'admin.attributes.*', 'icon' => 'fa-sliders', 'label' => __('admin/nav.attributes'), 'base' => 'admin.attributes', 'can' => 'attributes.view'],
+                ['type' => 'dropdown', 'active' => 'admin.tags.*', 'icon' => 'fa-tags', 'label' => __('admin/nav.tags'), 'base' => 'admin.tags', 'can' => 'tags.view'],
             ],
         ],
         [
             'label' => __('admin/nav.groups.sales'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders'), 'roles' => $allAdminRoles],
-                ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews'), 'roles' => $allAdminRoles],
-                ['type' => 'link', 'route' => 'admin.questions.index', 'active' => 'admin.questions.*', 'icon' => 'fa-comments', 'label' => __('admin/nav.questions'), 'roles' => $allAdminRoles],
-                ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons', 'roles' => $managementRoles],
+                ['type' => 'link', 'route' => 'admin.orders.index', 'active' => 'admin.orders.*', 'icon' => 'fa-receipt', 'label' => __('admin/nav.orders'), 'can' => 'orders.view'],
+                ['type' => 'link', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'icon' => 'fa-star', 'label' => __('admin/nav.reviews'), 'can' => 'reviews.view'],
+                ['type' => 'link', 'route' => 'admin.questions.index', 'active' => 'admin.questions.*', 'icon' => 'fa-comments', 'label' => __('admin/nav.questions'), 'can' => 'questions.view'],
+                ['type' => 'dropdown', 'active' => 'admin.coupons.*', 'icon' => 'fa-ticket', 'label' => __('admin/nav.coupons'), 'base' => 'admin.coupons', 'can' => 'coupons.view'],
             ],
         ],
         [
             'label' => __('admin/nav.groups.system'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.administrators.index', 'active' => 'admin.administrators.*', 'icon' => 'fa-user-shield', 'label' => __('admin/nav.administrators'), 'roles' => [\App\Const\AdminConst::ROLE_SUPER_ADMIN]],
-                ['type' => 'dropdown', 'active' => 'admin.users.*', 'icon' => 'fa-user-group', 'label' => __('admin/nav.users'), 'base' => 'admin.users', 'roles' => $managementRoles],
+                ['type' => 'link', 'route' => 'admin.administrators.index', 'active' => 'admin.administrators.*', 'icon' => 'fa-user-shield', 'label' => __('admin/nav.administrators'), 'can' => 'administrators.manage'],
+                ['type' => 'link', 'route' => 'admin.roles.index', 'active' => 'admin.roles.*', 'icon' => 'fa-key', 'label' => __('admin/nav.roles'), 'can' => 'roles.manage'],
+                ['type' => 'dropdown', 'active' => 'admin.users.*', 'icon' => 'fa-user-group', 'label' => __('admin/nav.users'), 'base' => 'admin.users', 'can' => 'users.view'],
             ],
         ],
         [
             'label' => __('admin/nav.groups.address'),
             'items' => [
-                ['type' => 'link', 'route' => 'admin.provinces.index', 'active' => 'admin.provinces.*', 'icon' => 'fa-map-location-dot', 'label' => __('admin/nav.provinces'), 'roles' => $managementRoles],
-                ['type' => 'link', 'route' => 'admin.wards.index', 'active' => 'admin.wards.*', 'icon' => 'fa-location-dot', 'label' => __('admin/nav.wards'), 'roles' => $managementRoles],
+                ['type' => 'link', 'route' => 'admin.provinces.index', 'active' => 'admin.provinces.*', 'icon' => 'fa-map-location-dot', 'label' => __('admin/nav.provinces'), 'can' => 'locations.view'],
+                ['type' => 'link', 'route' => 'admin.wards.index', 'active' => 'admin.wards.*', 'icon' => 'fa-location-dot', 'label' => __('admin/nav.wards'), 'can' => 'locations.view'],
             ],
         ],
     ];
@@ -49,6 +49,16 @@
         ['suffix' => 'create', 'icon' => 'fa-circle-plus', 'label' => __('admin/nav.create')],
         ['suffix' => 'trash', 'icon' => 'fa-trash-can', 'label' => __('admin/nav.trash')],
     ];
+
+    $childAbility = function (array $item, string $suffix) {
+        if (isset($item['children'][$suffix])) {
+            return $item['children'][$suffix];
+        }
+
+        $resource = \Illuminate\Support\Str::after($item['base'], 'admin.');
+
+        return $resource . ($suffix === 'index' ? '.view' : '.manage');
+    };
 @endphp
 
 <aside id="sidebar">
@@ -75,9 +85,7 @@
     <nav class="sidebar-scroll py-3">
         @foreach ($navGroups as $group)
             @php
-                $visibleItems = collect($group['items'])->filter(
-                    fn ($item) => empty($item['roles']) || in_array($adminRole, $item['roles'], true)
-                );
+                $visibleItems = collect($group['items'])->filter(fn ($item) => $allows($item['can'] ?? null));
             @endphp
             @if ($visibleItems->isEmpty())
                 @continue
@@ -111,6 +119,7 @@
                         <div id="sidebar-submenu-{{ str_replace('.', '-', $item['base']) }}"
                             class="submenu hidden mx-3 mt-1 mb-1 pl-4 border-l border-white/10 space-y-0.5">
                             @foreach ($childLinks as $child)
+                                @continue(! $allows($childAbility($item, $child['suffix'])))
                                 @php $childRoute = $item['base'] . '.' . $child['suffix']; @endphp
                                 <a href="{{ route($childRoute) }}"
                                     class="submenu-link {{ request()->routeIs($childRoute) ? 'is-active' : '' }}">
@@ -118,7 +127,7 @@
                                     {{ $child['label'] }}
                                 </a>
                             @endforeach
-                            @if ($item['base'] === 'admin.products')
+                            @if ($item['base'] === 'admin.products' && $allows('products.import'))
                                 <a href="{{ route('admin.products.import') }}"
                                     class="submenu-link {{ request()->routeIs('admin.products.import*') ? 'is-active' : '' }}">
                                     <i class="fa-solid fa-file-import w-3.5 text-center text-xs"></i>

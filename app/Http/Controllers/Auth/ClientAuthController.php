@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Const\SecurityConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AuthLoginRequest;
 use App\Http\Requests\User\AuthRegisterRequest;
@@ -10,7 +11,6 @@ use App\Http\Requests\User\ResetPasswordRequest;
 use App\Services\Auth\AuthService;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -23,9 +23,9 @@ class ClientAuthController extends Controller
         return view('client.pages.auth.register');
     }
 
-    public function handleRegister(AuthRegisterRequest $request)
+    public function handleRegister(Request $request, AuthRegisterRequest $registerRequest)
     {
-        $user = $this->authService->register($request->validated());
+        $user = $this->authService->register($registerRequest->validated());
 
         if (! $user) {
             return back()
@@ -33,8 +33,7 @@ class ClientAuthController extends Controller
                 ->with('error', __('client_auth.messages.register_failed'));
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $this->authService->loginUser($request, $user);
 
         return redirect()
             ->route('index')
@@ -48,7 +47,15 @@ class ClientAuthController extends Controller
 
     public function handleLogin(AuthLoginRequest $request)
     {
-        if (! $this->authService->login($request->validated())) {
+        $result = $this->authService->login($request, $request->validated());
+
+        if ($result['status'] === SecurityConst::LOGIN_INACTIVE) {
+            return back()
+                ->withInput($request->except('password'))
+                ->with('error', $result['message']);
+        }
+
+        if ($result['status'] !== SecurityConst::LOGIN_OK) {
             return back()
                 ->withInput($request->except('password'))
                 ->with('error', __('client_auth.messages.login_failed'));
@@ -66,11 +73,7 @@ class ClientAuthController extends Controller
 
     public function sendResetLinkEmail(ForgotPasswordRequest $request)
     {
-        if (! $this->authService->sendResetLinkEmail($request->validated())) {
-            return back()
-                ->withInput()
-                ->with('error', __('client_auth.messages.reset_link_failed'));
-        }
+        $this->authService->sendResetLinkEmail($request->validated());
 
         return back()->with('success', __('client_auth.messages.reset_link_sent'));
     }
@@ -98,10 +101,7 @@ class ClientAuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()
             ->route('index')
@@ -129,20 +129,43 @@ class ClientAuthController extends Controller
                 ->with('error', __('client_auth.messages.google_failed'));
         }
 
-        $user = $this->authService->google($googleUser);
+        $result = $this->authService->google($request, $googleUser);
 
-        if (! $user) {
-            return redirect()
-                ->route('auth.client.showFormLogin')
-                ->with('error', __('client_auth.messages.account_locked'));
+        switch ($result['status']) {
+            case SecurityConst::GOOGLE_LOGGED_IN:
+            case SecurityConst::GOOGLE_LINKED:
+            case SecurityConst::GOOGLE_CREATED:
+                $this->authService->loginUser($request, $result['user']);
+
+                return redirect()
+                    ->intended(route('index'))
+                    ->with('success', __('client_auth.messages.logged_in'));
+
+            case SecurityConst::GOOGLE_LINK_REQUIRED:
+                return redirect()
+                    ->route('auth.client.showFormLogin')
+                    ->with('error', __('client_auth.messages.google_link_required', ['email' => $result['email']]));
+
+            case SecurityConst::GOOGLE_CONFLICT:
+                return redirect()
+                    ->route('auth.client.showFormLogin')
+                    ->with('error', __('client_auth.messages.google_conflict'));
+
+            case SecurityConst::GOOGLE_UNVERIFIED:
+                return redirect()
+                    ->route('auth.client.showFormLogin')
+                    ->with('error', __('client_auth.messages.google_unverified'));
+
+            case SecurityConst::GOOGLE_INACTIVE:
+                return redirect()
+                    ->route('auth.client.showFormLogin')
+                    ->with('error', $result['message']);
+
+            default:
+                return redirect()
+                    ->route('auth.client.showFormLogin')
+                    ->with('error', __('client_auth.messages.google_failed'));
         }
-
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()
-            ->route('index')
-            ->with('success', __('client_auth.messages.logged_in'));
     }
 
     public function verifyEmail(EmailVerificationRequest $request)
@@ -163,5 +186,20 @@ class ClientAuthController extends Controller
     public function showVerifySuccess()
     {
         return view('common.verification.success');
+    }
+
+    public function resendVerification(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()
+                ->route('index')
+                ->with('error', __('client_auth.messages.email_already_verified'));
+        }
+
+        $this->authService->sendVerificationEmail($user);
+
+        return back()->with('success', __('client_auth.messages.verification_resent'));
     }
 }

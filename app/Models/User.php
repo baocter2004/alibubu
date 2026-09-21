@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Const\MembershipConst;
 use App\Const\UserConst;
+use App\Mail\VerifyUserEmail;
+use App\Notifications\UserResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,57 +13,37 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasUuids;
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
+    use HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'fullname',
         'email',
         'password',
-        'email_verified_at',
         'avatar',
-        'role',
         'phone_number',
         'gender',
         'birthday',
-        'status',
-        'reason_lock',
         'bank_name',
         'user_bank_name',
         'bank_account',
-        'loyalty_points',
-        'membership_tier',
-        'tier_reviewed_at',
-        'google_id',
-        'remember_token'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    protected $attributes = [
+        'status' => UserConst::STATUS_ACTIVE,
+    ];
+
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -84,6 +66,34 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isLocked(): bool
     {
         return (int) $this->status === UserConst::STATUS_LOCKED;
+    }
+
+    public function isActive(): bool
+    {
+        return (int) ($this->status ?? UserConst::STATUS_ACTIVE) === UserConst::STATUS_ACTIVE;
+    }
+
+    public function inactiveMessage(): string
+    {
+        if ($this->isLocked()) {
+            return filled($this->reason_lock)
+                ? __('client_auth.messages.account_locked_reason', ['reason' => $this->reason_lock])
+                : __('client_auth.messages.account_locked');
+        }
+
+        return __('client_auth.messages.account_inactive');
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        Mail::to($this->email)
+            ->locale(app()->getLocale())
+            ->queue(new VerifyUserEmail($this));
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify((new UserResetPassword($token))->locale(app()->getLocale()));
     }
 
     protected ?array $wishlistedProductIds = null;

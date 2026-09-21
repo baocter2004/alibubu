@@ -4,15 +4,17 @@ namespace App\Models;
 
 use App\Const\ProductConst;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Product extends Model
 {
-    use SoftDeletes, HasUuids;
+    use HasFactory, SoftDeletes, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -219,11 +221,33 @@ class Product extends Model
             return false;
         }
 
-        if ($this->sale_price_end_at && $now->gt($this->sale_price_end_at)) {
+        if ($this->sale_price_end_at && $now->gt($this->saleEndsAt())) {
             return false;
         }
 
         return true;
+    }
+
+    public function saleEndsAt(): ?Carbon
+    {
+        $end = $this->sale_price_end_at;
+
+        if (! $end) {
+            return null;
+        }
+
+        return $end->format('H:i:s') === '00:00:00' ? $end->copy()->endOfDay() : $end;
+    }
+
+    public function setSalePriceEndAtAttribute($value): void
+    {
+        $date = $value ? Carbon::parse($value) : null;
+
+        if ($date && $date->format('H:i:s') === '00:00:00') {
+            $date = $date->endOfDay();
+        }
+
+        $this->attributes['sale_price_end_at'] = $date ? $this->fromDateTime($date) : null;
     }
 
     protected function sellableVariants()

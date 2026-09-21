@@ -22,6 +22,8 @@ return new class extends Migration
             $table->foreignUuid('product_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('fullname')->nullable();
+            $table->string('email')->nullable();
+            $table->string('ip_address', 45)->nullable();
             $table->text('question');
             $table->text('answer')->nullable();
             $table->uuid('answered_by')->nullable();

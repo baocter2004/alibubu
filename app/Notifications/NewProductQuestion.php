@@ -2,27 +2,47 @@
 
 namespace App\Notifications;
 
+use App\Const\NotificationConst;
+use App\Const\QuestionConst;
 use App\Models\ProductQuestion;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 
-class NewProductQuestion extends Notification
+class NewProductQuestion extends Notification implements ShouldQueue
 {
-    public function __construct(public ProductQuestion $question) {}
+    use Queueable;
+
+    public function __construct(public ProductQuestion $question)
+    {
+        $this->afterCommit();
+    }
 
     public function via(object $notifiable): array
     {
         return ['database'];
     }
 
+    public function viaConnections(): array
+    {
+        return ['database' => 'sync'];
+    }
+
     public function toArray(object $notifiable): array
     {
         return [
-            'type' => 'product.question',
+            'type' => 'question.asked',
+            'url' => route('admin.questions.index', ['status' => QuestionConst::FILTER_PENDING]) . '#question-' . $this->question->id,
+            'icon' => 'fa-comments',
+            'level' => NotificationConst::LEVEL_INFO,
+            'params' => [
+                'product' => $this->question->product?->name ?? '-',
+                'customer' => $this->question->askerName() ?: '-',
+                'question' => Str::limit($this->question->question, QuestionConst::EXCERPT_LENGTH),
+            ],
             'question_id' => $this->question->id,
             'product_id' => $this->question->product_id,
-            'product_name' => $this->question->product?->name,
-            'asked_by' => $this->question->user?->fullname ?: $this->question->fullname,
-            'question' => $this->question->question,
         ];
     }
 }

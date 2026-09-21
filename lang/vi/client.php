@@ -143,7 +143,6 @@ return [
             'title' => 'Phụ kiện mua kèm',
             'subtitle' => 'Chọn thêm để dùng trọn bộ, tiết kiệm hơn khi mua cùng lúc.',
         ],
-        'recently_viewed' => 'Sản phẩm bạn vừa xem',
         'add_to_cart' => 'Thêm vào giỏ hàng',
         'buy_now' => 'Mua ngay',
         'quantity' => 'Số lượng',
@@ -236,6 +235,7 @@ return [
         'messages' => [
             'applied' => 'Áp dụng mã giảm giá thành công.',
             'removed' => 'Đã bỏ mã giảm giá.',
+            'invalid' => 'Mã giảm giá không hợp lệ.',
             'not_found' => 'Mã giảm giá không tồn tại.',
             'inactive' => 'Mã giảm giá đã ngừng hoạt động.',
             'not_started' => 'Mã giảm giá chưa đến thời gian sử dụng.',
@@ -323,6 +323,7 @@ return [
             'empty_cta' => 'Mua sắm ngay',
             'detail' => 'Chi tiết đơn hàng',
             'timeline_title' => 'Theo dõi đơn hàng',
+            'history_title' => 'Lịch sử đơn hàng',
             'placed_at' => 'Thời gian đặt',
             'items' => 'Sản phẩm',
             'search' => 'Tìm theo mã đơn hàng',
@@ -410,13 +411,23 @@ return [
             'quantity' => 'SL',
             'subtotal' => 'Thành tiền',
             'discount' => 'Giảm giá',
+            'membership_discount' => 'Ưu đãi thành viên',
             'total' => 'Tổng thanh toán',
             'recipient' => 'Người nhận',
             'phone_number' => 'Số điện thoại',
             'address' => 'Địa chỉ nhận hàng',
             'payment_method' => 'Phương thức thanh toán',
-            'action' => 'Tiếp tục mua sắm',
+            'payment_status' => 'Trạng thái thanh toán',
+            'payment_status_paid' => 'Đã thanh toán',
+            'payment_status_unpaid' => 'Chờ thanh toán',
+            'action' => 'Xem đơn hàng',
             'outro' => 'Nếu bạn không thực hiện đơn hàng này, vui lòng liên hệ với chúng tôi ngay.',
+            'bank_transfer_title' => 'Thông tin chuyển khoản',
+            'bank_transfer_hint' => 'Vui lòng ghi đúng nội dung chuyển khoản để đơn hàng được xử lý nhanh nhất.',
+            'bank_name' => 'Ngân hàng',
+            'bank_account_number' => 'Số tài khoản',
+            'bank_account_name' => 'Chủ tài khoản',
+            'transfer_note' => 'Nội dung chuyển khoản',
         ],
     ],
 
@@ -508,6 +519,13 @@ return [
             'already_confirmed' => 'Đơn hàng này đã được thanh toán trước đó.',
             'gateway_disabled' => 'Cổng thanh toán online chưa được cấu hình.',
             'gateway_unavailable' => 'Không kết nối được cổng thanh toán. Đơn hàng đã được tạo, vui lòng thanh toán lại sau.',
+            'refund_pending' => 'Giao dịch này đã được đánh dấu chờ hoàn tiền.',
+            'pending' => 'Thanh toán của bạn đang được xử lý.',
+            'error' => 'Đã xảy ra lỗi khi xử lý thanh toán.',
+            'method_disabled' => 'Phương thức thanh toán đã chọn hiện không khả dụng.',
+            'amount_range' => 'Tổng đơn hàng vượt quá giới hạn cho phép của phương thức thanh toán này.',
+            'pay_again' => 'Thanh toán lại',
+            'not_payable' => 'Đơn hàng này không còn có thể thanh toán online.',
         ],
     ],
 
@@ -522,6 +540,8 @@ return [
         'fields' => [
             'question' => 'Câu hỏi',
             'fullname' => 'Tên của bạn',
+            'email' => 'Email nhận thông báo',
+            'email_hint' => 'Không bắt buộc. Chúng tôi sẽ gửi email khi câu hỏi được trả lời.',
             'question_placeholder' => 'Ví dụ: Máy này có hỗ trợ sạc nhanh không?',
         ],
         'messages' => [
@@ -552,8 +572,89 @@ return [
         'earn_hint' => 'Mỗi 100.000đ giá trị đơn hoàn thành được cộng 1 điểm.',
     ],
 
+    'notifications' => [
+        'title' => 'Thông báo',
+        'subtitle' => 'Cập nhật về đơn hàng, đánh giá và câu hỏi của bạn.',
+        'empty' => 'Bạn chưa có thông báo nào.',
+        'empty_unread' => 'Bạn đã đọc hết thông báo.',
+        'unread' => 'Chưa đọc',
+        'mark_all_read' => 'Đánh dấu đã đọc tất cả',
+        'view' => 'Xem',
+        'view_all' => 'Xem tất cả thông báo',
+        'bell' => 'Thông báo, :count chưa đọc',
+        'reason' => 'Lý do: :reason',
+        'filters' => [
+            'all' => 'Tất cả',
+            'unread' => 'Chưa đọc',
+        ],
+        'messages' => [
+            'marked_read' => 'Đã đánh dấu thông báo là đã đọc.',
+            'marked_all_read' => 'Đã đánh dấu tất cả thông báo là đã đọc.',
+            'not_found' => 'Không tìm thấy thông báo.',
+        ],
+        'mail' => [
+            'greeting' => 'Xin chào :name,',
+            'action' => 'Xem chi tiết',
+            'salutation' => 'Trân trọng, đội ngũ Alibubu',
+            'question' => 'Câu hỏi của bạn: “:question”',
+            'answer' => 'Trả lời: “:answer”',
+            'note' => 'Ghi chú: :note',
+            'points_earned' => 'Bạn vừa nhận được :points điểm thưởng.',
+        ],
+        'types' => [
+            'default' => [
+                'title' => 'Thông báo mới',
+            ],
+            'review' => [
+                'approved' => [
+                    'title' => 'Đánh giá của bạn đã được duyệt',
+                    'body' => 'Đánh giá :rating/5 sao cho :product đã hiển thị trên trang sản phẩm. Cảm ơn bạn!',
+                ],
+                'rejected' => [
+                    'title' => 'Đánh giá của bạn chưa được hiển thị',
+                    'body' => 'Đánh giá cho :product không được duyệt để hiển thị.',
+                ],
+            ],
+            'question' => [
+                'answered' => [
+                    'title' => 'Câu hỏi về :product đã được trả lời',
+                    'body' => 'Alibubu đã trả lời câu hỏi “:question” của bạn.',
+                ],
+            ],
+            'order' => [
+                'status_changed' => [
+                    'title' => 'Đơn hàng :code: :status',
+                    'body' => 'Đơn hàng :code của bạn hiện đang ở trạng thái “:status”.',
+                ],
+                'payment_succeeded' => [
+                    'title' => 'Thanh toán đơn :code thành công',
+                    'body' => 'Chúng tôi đã nhận được thanh toán :total cho đơn hàng :code. Cảm ơn bạn!',
+                ],
+                'payment_failed' => [
+                    'title' => 'Thanh toán đơn :code chưa thành công',
+                    'body' => 'Giao dịch thanh toán cho đơn :code chưa thành công. Vui lòng thử lại hoặc chọn phương thức khác.',
+                ],
+                'refund_pending' => [
+                    'title' => 'Đơn :code đang chờ hoàn tiền',
+                    'body' => 'Đơn hàng :code (:total) đang được xử lý hoàn tiền. Chúng tôi sẽ liên hệ sớm nhất.',
+                ],
+                'refunded' => [
+                    'title' => 'Đơn :code đã được hoàn tiền',
+                    'body' => 'Chúng tôi đã hoàn :total cho đơn hàng :code.',
+                ],
+            ],
+            'membership' => [
+                'tier_changed' => [
+                    'title' => 'Hạng thành viên của bạn đã thay đổi',
+                    'body' => 'Bạn đã chuyển từ hạng :from sang hạng :to với :points điểm tích luỹ.',
+                ],
+            ],
+        ],
+    ],
+
     'messages' => [
         'cart_added' => 'Đã thêm sản phẩm vào giỏ hàng.',
+        'cart_full' => 'Giỏ hàng đã đạt số lượng sản phẩm tối đa, vui lòng xoá bớt trước khi thêm mới.',
         'cart_updated' => 'Đã cập nhật giỏ hàng.',
         'cart_removed' => 'Đã xoá sản phẩm khỏi giỏ hàng.',
         'cart_cleared' => 'Đã xoá toàn bộ giỏ hàng.',

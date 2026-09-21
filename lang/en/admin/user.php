@@ -31,7 +31,7 @@ return [
     ],
 
     'hints' => [
-        'password_optional' => 'Leave both password fields empty to keep the current password.',
+        'password_via_reset_link' => 'The user sets their password via a reset link sent to their email.',
         'default_address' => 'With more than one address, mark one as the default delivery address.',
         'loading' => 'Loading...',
         'load_failed' => 'Could not load data.',
@@ -41,6 +41,7 @@ return [
         'create' => 'Create user',
         'update' => 'Update user',
         'back_to_list' => 'Back to list',
+        'send_reset_link' => 'Send password reset link',
     ],
 
     'fields' => [
@@ -86,5 +87,6 @@ return [
         'force_deleted' => 'User permanently deleted.',
         'restored' => 'User restored successfully.',
         'not_found' => 'User not found.',
+        'reset_link_sent' => 'A password reset link has been sent to the user email.',
     ],
 ];

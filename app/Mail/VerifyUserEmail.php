@@ -18,17 +18,15 @@ class VerifyUserEmail extends Mailable implements ShouldQueue
 
     public User $user;
     public string $verificationUrl;
+    public int $expireMinutes;
 
-
-    /**
-     * Create a new message instance.
-     */
     public function __construct(User $user)
     {
         $this->user = $user;
+        $this->expireMinutes = (int) config('auth.verification.expire', 60);
         $this->verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addMinutes(60),
+            Carbon::now()->addMinutes($this->expireMinutes),
             [
                 'id'   => $user->getKey(),
                 'hash' => sha1($user->getEmailForVerification()),
@@ -36,31 +34,21 @@ class VerifyUserEmail extends Mailable implements ShouldQueue
         );
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Xác Minh Email',
+            subject: __('client_auth.mail.verify.title'),
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
             view: 'components.mails.verify-email',
+            with: ['expireMinutes' => $this->expireMinutes],
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

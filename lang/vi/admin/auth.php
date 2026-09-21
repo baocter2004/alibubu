@@ -38,5 +38,16 @@ return [
         'reset_success' => 'Đổi mật khẩu thành công. Vui lòng đăng nhập lại!',
         'reset_failed' => 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.',
         'forbidden' => 'Bạn không có quyền truy cập khu vực này.',
+        'throttled' => 'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau :seconds giây.',
+    ],
+
+    'mail' => [
+        'reset_password' => [
+            'subject' => 'Đặt lại mật khẩu quản trị',
+            'line' => 'Bạn nhận được email này vì có yêu cầu đặt lại mật khẩu cho tài khoản quản trị của bạn.',
+            'action' => 'Đặt lại mật khẩu',
+            'expires' => 'Liên kết đặt lại mật khẩu sẽ hết hạn sau :minutes phút.',
+            'ignore' => 'Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.',
+        ],
     ],
 ];

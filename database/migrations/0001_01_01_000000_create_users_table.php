@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('phone_number')->unique()->nullable();
             $table->unsignedInteger('gender')->nullable();
             $table->datetime('birthday')->nullable();
-            $table->unsignedInteger('status')->nullable();
+            $table->unsignedInteger('status')->default(UserConst::STATUS_ACTIVE);
             $table->string('reason_lock')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('user_bank_name')->nullable();

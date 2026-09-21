@@ -7,8 +7,7 @@
 
     <p>{{ __('client.mail.order.intro') }}</p>
 
-    <table width="100%" cellpadding="0" cellspacing="0"
-        style="margin:20px 0; background:#f9fafb; border-radius:6px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0; background:#f9fafb; border-radius:6px;">
         <tr>
             <td style="padding:16px;">
                 <p style="margin:0 0 6px; font-size:13px; color:#6b7280;">
@@ -62,6 +61,17 @@
             </tr>
         @endif
 
+        @if ($order->membership_discount > 0)
+            <tr>
+                <td colspan="2" style="padding:10px 0; color:#6b7280;">
+                    {{ __('client.mail.order.membership_discount') }}
+                </td>
+                <td align="right" style="padding:10px 0; color:#16a34a; white-space:nowrap;">
+                    -{{ format_price($order->membership_discount) }}
+                </td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="2" style="padding:12px 0; font-weight:bold; border-top:2px solid #e5e7eb;">
                 {{ __('client.mail.order.total') }}
@@ -74,7 +84,7 @@
     </table>
 
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px; font-size:13px;">
-        @foreach ([['client.mail.order.recipient', $order->fullname], ['client.mail.order.phone_number', $order->phone_number], ['client.mail.order.address', $order->address], ['client.mail.order.payment_method', \App\Const\PaymentConst::methodLabel($order->payment_method)]] as [$labelKey, $value])
+        @foreach ([['client.mail.order.recipient', $order->fullname], ['client.mail.order.phone_number', $order->phone_number], ['client.mail.order.address', $order->address], ['client.mail.order.payment_method', \App\Const\PaymentConst::methodLabel($order->payment_method)], ['client.mail.order.payment_status', __('client.mail.order.' . ($order->isPaid() ? 'payment_status_paid' : 'payment_status_unpaid'))]] as [$labelKey, $value])
             <tr>
                 <td width="140" valign="top" style="padding:4px 0; color:#6b7280;">{{ __($labelKey) }}</td>
                 <td valign="top" style="padding:4px 0; color:#111;">{{ $value }}</td>
@@ -82,8 +92,24 @@
         @endforeach
     </table>
 
+    @if ((int) $order->payment_method === \App\Const\PaymentConst::METHOD_BANK_TRANSFER && !$order->isPaid())
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0; background:#f9fafb; border-radius:6px;">
+            <tr>
+                <td style="padding:16px;">
+                    <p style="margin:0 0 10px; font-weight:bold; color:#111;">
+                        {{ __('client.mail.order.bank_transfer_title') }}</p>
+                    <p style="margin:0 0 10px; color:#6b7280;">{{ __('client.mail.order.bank_transfer_hint') }}</p>
+                    @foreach ([['client.mail.order.bank_name', \App\Const\BankConst::getShortName((string) config('payment.bank_transfer.bank_code'))], ['client.mail.order.bank_account_number', config('payment.bank_transfer.account_number')], ['client.mail.order.bank_account_name', config('payment.bank_transfer.account_name')], ['client.mail.order.transfer_note', $order->code]] as [$labelKey, $value])
+                        <p style="margin:0 0 4px;"><span style="color:#6b7280;">{{ __($labelKey) }}:</span>
+                            <strong>{{ $value }}</strong></p>
+                    @endforeach
+                </td>
+            </tr>
+        </table>
+    @endif
+
     <div style="text-align:center; margin:28px 0 8px;">
-        <a href="{{ route('shop.index') }}"
+        <a href="{{ $order->customerUrl() }}"
             style="background:#2563eb;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block;">
             {{ __('client.mail.order.action') }}
         </a>

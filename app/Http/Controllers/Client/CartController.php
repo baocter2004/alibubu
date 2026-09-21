@@ -53,7 +53,9 @@ class CartController extends Controller
             return $this->failed($request, __('client.messages.out_of_stock', ['name' => $product->name]));
         }
 
-        $this->cartService->add($product, $variant, (int) ($data['quantity'] ?? 1));
+        if (! $this->cartService->add($product, $variant, (int) ($data['quantity'] ?? 1))) {
+            return $this->failed($request, __('client.messages.cart_full'));
+        }
 
         $message = __('client.messages.cart_added');
         $buyNow = $request->boolean('buy_now');

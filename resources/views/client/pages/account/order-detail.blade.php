@@ -78,9 +78,35 @@
                     @endforeach
                 </div>
 
-                <div class="flex items-baseline justify-between pt-5 mt-5 border-t border-border">
-                    <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
-                    <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
+                <div class="pt-5 mt-5 border-t border-border space-y-2 text-sm">
+                    <div class="flex items-baseline justify-between text-muted-foreground">
+                        <span>{{ __('client.cart.subtotal') }}</span>
+                        <span>{{ format_price($order->subtotal_amount) }}</span>
+                    </div>
+
+                    @if ($order->coupon_code)
+                        <div class="flex items-baseline justify-between text-success">
+                            <span>{{ __('client.mail.order.discount') }} ({{ $order->coupon_code }})</span>
+                            <span>-{{ format_price($order->coupon_discount_value) }}</span>
+                        </div>
+                    @endif
+
+                    @if ($order->membership_discount > 0)
+                        <div class="flex items-baseline justify-between text-success">
+                            <span>{{ __('client.mail.order.membership_discount') }}</span>
+                            <span>-{{ format_price($order->membership_discount) }}</span>
+                        </div>
+                    @endif
+
+                    <div class="flex items-baseline justify-between pt-2 border-t border-border">
+                        <span class="font-semibold text-foreground">{{ __('client.cart.total') }}</span>
+                        <span class="text-xl price-main">{{ format_price($order->total_amount) }}</span>
+                    </div>
+
+                    <div class="flex items-baseline justify-between text-muted-foreground">
+                        <span>{{ __('admin/order.fields.payment') }}</span>
+                        <span>{{ \App\Const\PaymentConst::methodLabel($order->payment_method) }} · {{ \App\Const\PaymentConst::statusLabel($order->payment_status) }}</span>
+                    </div>
                 </div>
             </section>
 
@@ -131,6 +157,35 @@
                 @endif
             </section>
 
+            <x-bank-transfer-instructions :order="$order" />
+
+            @if ($order->histories->isNotEmpty())
+                <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
+                    <h2 class="font-bold text-foreground mb-4">{{ __('client.account.orders.history_title') }}</h2>
+
+                    <ul class="space-y-3 text-sm">
+                        @foreach ($order->histories as $history)
+                            <li class="flex items-start gap-3">
+                                <span class="w-8 h-8 shrink-0 rounded-full bg-muted text-muted-foreground flex items-center justify-center">
+                                    <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                                </span>
+                                <span>
+                                    <span class="block text-foreground font-medium">
+                                        {{ \App\Const\OrderConst::actorLabel($history->actor_type) }}
+                                    </span>
+                                    <span class="block text-xs text-muted-foreground">
+                                        {{ $history->created_at?->format('d/m/Y H:i') }}
+                                        @if ($history->note)
+                                            · {{ $history->note }}
+                                        @endif
+                                    </span>
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
             <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
                 <h2 class="font-bold text-foreground mb-4">{{ __('client.checkout.shipping_info') }}</h2>
 
@@ -179,6 +234,22 @@
                     </p>
                 @endif
             </section>
+
+            @if ($order->canPayOnline())
+                <section class="bg-card border border-border rounded-2xl p-5 md:p-6">
+                    <h2 class="text-base font-bold text-foreground mb-1">
+                        {{ __('client.payment.messages.pending') }}
+                    </h2>
+                    <form action="{{ route('account.orders.pay-again', $order->id) }}" method="POST" data-submit-once class="mt-3">
+                        @csrf
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors">
+                            <i class="fa-solid fa-credit-card"></i>
+                            {{ __('client.payment.messages.pay_again') }}
+                        </button>
+                    </form>
+                </section>
+            @endif
 
             @if (\App\Const\OrderConst::isCancellableByCustomer($order->status))
                 <section class="bg-card border border-border rounded-2xl p-5 md:p-6">

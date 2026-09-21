@@ -2,81 +2,78 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Const\AdminConst;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Administrator\PostAdministratorRequest;
 use App\Models\Admin;
+use App\Services\Admin\AdministratorService;
 use Illuminate\Support\Facades\Auth;
 
 class AdministratorController extends Controller
 {
+    public function __construct(protected AdministratorService $administratorService) {}
+
     public function index()
     {
-        $administrators = Admin::query()->latest('created_at')->paginate(20);
+        $actor = $this->actor();
 
         return view('admin.pages.administrators.index', [
-            'administrators' => $administrators,
+            'administrators' => $this->administratorService->paginate(),
+            'canManage' => fn (Admin $administrator) => $this->administratorService->canManage($actor, $administrator),
         ]);
     }
 
     public function create()
     {
         return view('admin.pages.administrators.create', [
-            'roles' => AdminConst::roles(),
+            'roles' => $this->administratorService->assignableRoles($this->actor()),
         ]);
     }
 
     public function store(PostAdministratorRequest $request)
     {
-        Admin::create($request->validated());
+        $result = $this->administratorService->create($this->actor(), $request->validated());
 
-        return redirect()->route('admin.administrators.index')->with('success', __('admin/administrator.messages.created'));
+        if (! $result['status']) {
+            return back()->withInput($request->except('password', 'password_confirmation'))->with('error', $result['message']);
+        }
+
+        return redirect()->route('admin.administrators.index')->with('success', $result['message']);
     }
 
     public function edit(string $id)
     {
-        $administrator = Admin::query()->findOrFail($id);
+        $actor = $this->actor();
 
         return view('admin.pages.administrators.edit', [
-            'administrator' => $administrator,
-            'roles' => AdminConst::roles(),
+            'administrator' => $this->administratorService->findManageable($actor, $id),
+            'roles' => $this->administratorService->assignableRoles($actor),
         ]);
     }
 
     public function update(PostAdministratorRequest $request, string $id)
     {
-        $administrator = Admin::query()->findOrFail($id);
-        $data = $request->validated();
-        $currentId = (string) Auth::guard('admin')->id();
+        $result = $this->administratorService->update($this->actor(), $id, $request->validated());
 
-        if ((string) $administrator->id === $currentId && (int) $data['role'] !== AdminConst::ROLE_SUPER_ADMIN) {
-            return back()->withInput()->with('error', __('admin/administrator.messages.cannot_demote_self'));
+        if (! $result['status']) {
+            return back()->withInput($request->except('password', 'password_confirmation'))->with('error', $result['message']);
         }
 
-        if (empty($data['password'])) {
-            unset($data['password']);
-        }
-
-        $administrator->update($data);
-
-        return redirect()->route('admin.administrators.index')->with('success', __('admin/administrator.messages.updated'));
+        return redirect()->route('admin.administrators.index')->with('success', $result['message']);
     }
 
     public function destroy(string $id)
     {
-        $administrator = Admin::query()->findOrFail($id);
-        $currentId = (string) Auth::guard('admin')->id();
+        $result = $this->administratorService->delete($this->actor(), $id);
 
-        if ((string) $administrator->id === $currentId) {
-            return back()->with('error', __('admin/administrator.messages.cannot_delete_self'));
+        if (! $result['status']) {
+            return back()->with('error', $result['message']);
         }
 
-        if ((int) $administrator->role === AdminConst::ROLE_SUPER_ADMIN && Admin::query()->where('role', AdminConst::ROLE_SUPER_ADMIN)->count() <= 1) {
-            return back()->with('error', __('admin/administrator.messages.cannot_delete_last_super_admin'));
-        }
+        return redirect()->route('admin.administrators.index')->with('success', $result['message']);
+    }
 
-        $administrator->delete();
-
-        return redirect()->route('admin.administrators.index')->with('success', __('admin/administrator.messages.deleted'));
+    protected function actor(): Admin
+    {
+        return Auth::guard('admin')->user();
     }
 }

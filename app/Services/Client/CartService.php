@@ -2,17 +2,20 @@
 
 namespace App\Services\Client;
 
+use App\Const\CartConst;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Collection;
 
 class CartService
 {
-    public const SESSION_KEY = 'cart';
+    public const SESSION_KEY = CartConst::SESSION_KEY;
 
-    public const MAX_QUANTITY = 20;
+    public const MAX_QUANTITY = CartConst::MAX_QUANTITY;
 
-    public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): void
+    protected ?Collection $itemsCache = null;
+
+    public function add(Product $product, ?ProductVariant $variant, int $quantity = 1): bool
     {
         $items = $this->rawItems();
         $key = $this->makeKey((string) $product->id, $variant?->id ? (string) $variant->id : null);
@@ -24,7 +27,11 @@ class CartService
             unset($items[$key]);
             $this->persist($items);
 
-            return;
+            return true;
+        }
+
+        if (! isset($items[$key]) && count($items) >= CartConst::MAX_LINES) {
+            return false;
         }
 
         $items[$key] = [
@@ -34,6 +41,8 @@ class CartService
         ];
 
         $this->persist($items);
+
+        return true;
     }
 
     public function update(string $key, int $quantity): void
@@ -75,9 +84,19 @@ class CartService
     public function clear(): void
     {
         session()->forget(self::SESSION_KEY);
+        $this->itemsCache = null;
     }
 
     public function items(): Collection
+    {
+        if ($this->itemsCache !== null) {
+            return $this->itemsCache;
+        }
+
+        return $this->itemsCache = $this->loadItems();
+    }
+
+    protected function loadItems(): Collection
     {
         $raw = collect($this->rawItems());
 
@@ -161,6 +180,8 @@ class CartService
 
     protected function persist(array $items): void
     {
+        $this->itemsCache = null;
+
         if ($items === []) {
             $this->clear();
 

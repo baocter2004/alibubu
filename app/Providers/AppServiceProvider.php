@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Services\Admin\NotificationService as AdminNotificationService;
 use App\Services\Client\CartService;
 use App\Services\Client\CompareService;
+use App\Services\Client\NotificationService as ClientNotificationService;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        URL::forceRootUrl(config('app.url'));
+
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
@@ -39,13 +43,15 @@ class AppServiceProvider extends ServiceProvider
                 : route('index');
         });
 
-        View::composer('admin.layouts.*', function ($view) {
+        View::composer('admin.layouts.partials.header', function ($view) {
             $admin = Auth::guard('admin')->user();
+            $notifications = app(AdminNotificationService::class);
 
-            $view->with('adminUnreadCount', $admin ? $admin->unreadNotifications()->count() : 0);
+            $view->with('adminUnreadCount', $admin ? $notifications->unreadCount($admin) : 0);
+            $view->with('adminLatestNotifications', $admin ? $notifications->latest($admin) : collect());
         });
 
-        View::composer('client.layouts.*', function ($view) {
+        View::composer('client.layouts.app', function ($view) {
             $view->with('cartCount', app(CartService::class)->count());
             $view->with('compareItems', app(CompareService::class)->summary());
             $view->with('navCategories', Cache::remember(
@@ -57,6 +63,12 @@ class AppServiceProvider extends ServiceProvider
                     ->orderBy('ordinal')
                     ->get(['id', 'name', 'icon'])
             ));
+        });
+
+        View::composer(['client.layouts.app', 'client.pages.account.nav'], function ($view) {
+            $user = Auth::guard('user')->user();
+
+            $view->with('customerUnreadCount', $user ? app(ClientNotificationService::class)->unreadCount($user) : 0);
         });
     }
 }

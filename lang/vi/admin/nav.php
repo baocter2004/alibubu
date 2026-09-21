@@ -24,6 +24,8 @@ return [
     'orders' => 'Đơn hàng',
     'users' => 'Người dùng',
     'administrators' => 'Tài khoản quản trị',
+    'roles' => 'Phân quyền',
+    'activity_log' => 'Nhật ký thao tác',
     'provinces' => 'Tỉnh/Thành phố',
     'wards' => 'Phường/Xã',
 
