@@ -235,6 +235,7 @@ return [
         'messages' => [
             'applied' => 'Discount code applied successfully.',
             'removed' => 'Discount code removed.',
+            'invalid' => 'This discount code is invalid.',
             'not_found' => 'This discount code does not exist.',
             'inactive' => 'This discount code is no longer active.',
             'not_started' => 'This discount code is not active yet.',

@@ -267,6 +267,10 @@ class CouponService
 
     protected function messageForReason(string $reason): string
     {
+        if (in_array($reason, ['not_found', 'inactive', 'not_started'], true)) {
+            return __('client.coupon.messages.invalid');
+        }
+
         return __('client.coupon.messages.' . $reason);
     }
 }

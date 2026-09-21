@@ -235,6 +235,7 @@ return [
         'messages' => [
             'applied' => 'Áp dụng mã giảm giá thành công.',
             'removed' => 'Đã bỏ mã giảm giá.',
+            'invalid' => 'Mã giảm giá không hợp lệ.',
             'not_found' => 'Mã giảm giá không tồn tại.',
             'inactive' => 'Mã giảm giá đã ngừng hoạt động.',
             'not_started' => 'Mã giảm giá chưa đến thời gian sử dụng.',

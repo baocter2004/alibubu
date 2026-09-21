@@ -23,6 +23,12 @@
             </div>
         @endif
 
+        @if ($order)
+            <div class="text-left mb-7">
+                <x-bank-transfer-instructions :order="$order" />
+            </div>
+        @endif
+
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             @auth
                 <a href="{{ $orderId ? route('account.orders.show', $orderId) : route('account.orders') }}"
